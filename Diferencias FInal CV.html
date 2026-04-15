@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparación: CV Malo vs CV Bueno</title>
+    <style>
+        /* === VARIABLES DE COLOR Y FUENTES === */
+        :root {
+            --bg-body: #e2e8f0;
+            --card-bg: #ffffff;
+            --dark-bg: #1e293b;
+            --dark-text: #f8fafc;
+            --text-main: #334155;
+            --text-light: #475569;
+            --accent-blue: #1d4ed8;
+            --bad-red: #dc2626;
+            --bad-bg: #fef2f2;
+            --good-green: #059669;
+            --good-bg: #ecfdf5;
+            
+            /* Fuentes del sistema */
+            --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        }
+
+        /* === RESET === */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.5;
+            overflow: hidden; /* Evita el scroll general */
+        }
+
+        /* === CONTENEDOR PRINCIPAL === */
+        .app-container {
+            width: 100%;
+            max-width: 1100px;
+            height: 90vh; /* Ocupa casi toda la pantalla */
+            background-color: var(--card-bg);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* === SECCIONES (PANTALLAS) === */
+        .step-section {
+            display: none; /* Ocultas por defecto */
+            flex-grow: 1;
+            flex-direction: column;
+            justify-content: center;
+            animation: fadeIn 0.4s ease-in-out;
+            overflow-y: auto;
+        }
+
+        .step-section.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === PANTALLA 1: INTRO === */
+        .intro-header {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .intro-header h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 25px;
+            line-height: 1.1;
+            max-width: 900px;
+        }
+
+        .intro-header p {
+            font-size: 2rem;
+            color: #94a3b8;
+            font-weight: 500;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px 30px;
+            border-radius: 8px;
+            border-left: 6px solid var(--accent-blue);
+        }
+
+        /* === PANTALLAS 2 Y 3: COMPARACIÓN === */
+        .comparison-layout {
+            padding: 50px 60px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 60px;
+            align-items: center;
+            height: 100%;
+        }
+
+        .section-bad { background-color: var(--bad-bg); }
+        .section-good { background-color: var(--good-bg); }
+
+        .text-content h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .text-content.bad h2 { color: var(--bad-red); }
+        .text-content.good h2 { color: var(--good-green); }
+
+        /* Listas explicativas */
+        .bullet-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .bullet-list li {
+            font-size: 1.3rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        .bullet-list li svg {
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+
+        .bullet-list strong {
+            display: block;
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+        }
+
+        .text-content.bad strong { color: var(--bad-red); }
+        .text-content.good strong { color: var(--good-green); }
+
+        /* === MINI CVs (MOCKUPS VISUALES) === */
+        .cv-mockup-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            height: 520px;
+        }
+
+        .mini-cv-paper {
+            width: 340px;
+            height: 480px; 
+            background-color: white;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            overflow: hidden;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        /* === CV MALO (BIEN CAÓTICO) === */
+        .bad-cv {
+            padding: 15px;
+            font-family: "Comic Sans MS", "Times New Roman", serif; 
+            text-align: justify;
+            border: 2px solid #cbd5e1;
+            background-color: #fafafa;
+        }
+
+        .bad-cv h1 {
+            font-size: 20px;
+            color: #7c3aed; /* Violeta chillón */
+            text-decoration: underline;
+            margin-bottom: 5px;
+            text-align: center;
+            font-family: Impact, sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .bad-cv-photo {
+            width: 80px;
+            height: 90px;
+            background-color: #fcd34d; 
+            border: 4px dotted #ef4444; 
+            margin: 0 auto 10px;
+            float: left;
+            margin-right: 10px;
+        }
+
+        .bad-cv p {
+            font-size: 11px;
+            line-height: 1; /* Muy pegado */
+            margin-bottom: 10px;
+            color: #000000;
+        }
+
+        .bad-cv h2 {
+            font-size: 14px;
+            background-color: #fef08a; 
+            color: #000;
+            padding: 5px;
+            margin: 15px 0 5px 0;
+            text-align: right; /* Desalineado a propósito */
+            border-bottom: 2px dashed #000;
+        }
+
+        /* === CV BUENO (ORDENADO Y CLARO) === */
+        .good-cv {
+            display: flex;
+            height: 100%;
+            font-family: system-ui, sans-serif;
+        }
+
+        .good-sidebar {
+            width: 35%;
+            background-color: var(--dark-bg);
+            color: white;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .good-photo {
+            width: 60px;
+            height: 60px;
+            background-color: #f8fafc;
+            border-radius: 50%;
+            margin: 0 auto;
+        }
+
+        .good-sidebar h3 {
+            font-size: 10px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #475569;
+            padding-bottom: 4px;
+            margin-bottom: 6px;
+            color: #e2e8f0;
+        }
+
+        .good-sidebar p, .good-sidebar li {
+            font-size: 8px;
+            line-height: 1.4;
+            color: #f8fafc;
+        }
+
+        .good-sidebar ul {
+            padding-left: 10px;
+        }
+
+        .good-main {
+            width: 65%;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .good-main h1 {
+            font-size: 18px;
+            color: #0f172a;
+            margin-bottom: 2px;
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+        }
+
+        .good-main h2 {
+            font-size: 9px;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .good-main h3 {
+            font-size: 10px;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            border-bottom: 1.5px solid #e2e8f0;
+            padding-bottom: 4px;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .good-main p, .good-main li {
+            font-size: 9px;
+            line-height: 1.4;
+            color: #334155;
+        }
+
+        .good-main ul {
+            padding-left: 12px;
+        }
+
+        .good-main strong {
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        /* === BARRA DE NAVEGACIÓN INFERIOR === */
+        .nav-bar {
+            background-color: #ffffff;
+            border-top: 2px solid #e2e8f0;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background-color: var(--dark-bg);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .step-indicator {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 900px) {
+            .comparison-layout {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                padding: 30px;
+                text-align: center;
+            }
+            .cv-mockup-wrapper {
+                order: -1; 
+                height: auto;
+            }
+            .text-content h2 {
+                justify-content: center;
+            }
+            .bullet-list li {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- ==============================================
+             SECCIÓN 1: INTRODUCCIÓN 
+        =============================================== -->
+        <section id="step-1" class="step-section active">
+            <div class="intro-header">
+                <h1>¿Por qué algunos CV funcionan y otros no?</h1>
+                <p>En 10 segundos te descartan o te llaman.<br>Vamos a ver por qué pasa esto en la vida real.</p>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             SECCIÓN 2: CV MALO 
+        =============================================== -->
+        <section id="step-2" class="step-section section-bad">
+            <div class="comparison-layout">
+                <div class="text-content bad">
+                    <h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                        El CV "Caótico"
+                    </h2>
+                    <ul class="bullet-list">
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--bad-red);"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            <div>
+                                <strong>No se entiende nada en 5 segundos</strong>
+                                Todo está amontonado. El que lo lee se marea y no sabe a dónde mirar porque no hay aire ni estructura.
+                            </div>
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--bad-red);"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            <div>
+                                <strong>Hay cosas que no le importan a nadie</strong>
+                                Párrafos eternos, hablar del jardín de infantes o contar pasatiempos que no suman nada al trabajo que buscás.
+                            </div>
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--bad-red);"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            <div>
+                                <strong>No queda claro para qué servís</strong>
+                                Como es un laberinto de texto sin viñetas ni palabras clave, el reclutador lo cierra y pasa al siguiente.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Visual: CV Malo CAÓTICO -->
+                <div class="cv-mockup-wrapper">
+                    <div class="mini-cv-paper bad-cv">
+                        <h1>Curriculum Vitae de Juan</h1>
+                        <div class="bad-cv-photo"></div>
+                        <p><b>Hola a todos!</b> Me llamo Juan Perez y nací el 14 de abril de 2005. Fui a la escuela primaria N° 3 y al jardín de infantes Rayito de Sol. Soy muy buen compañero, me gusta jugar a los videojuegos de tiros en mi tiempo libre y pasear a mi perro Bobby. Estoy buscando un trabajo porque quiero ganar plata para salir con mis amigos los fines de semana al centro.</p>
+                        
+                        <h2>ESTUDIOS Y COSAS QUE HICE =></h2>
+                        <p>Fui a la secundaria y la verdad me fue re bien en casi todas las materias menos en matemática que me llevé dos veces. <i>Una vez ayudé a mi tío a pintar el frente de su casa todo un fin de semana entero sin parar.</i> También atendí el kiosco de mi barrio un par de tardes cuando el dueño se fue a dormir la siesta y yo le cobré a toda la gente que vino.</p>
+                        
+                        <h2>MIS DATOS !!</h2>
+                        <p>Vivo en la calle San Martín al 1200, timbre 2. Mi teléfono de mi casa es 1155443322. Mi mail es <u>el_kpo_juan_99@hotmail.com</u>. No sé inglés casi nada pero entiendo un poco si me hablan bien despacio o con señas.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             SECCIÓN 3: CV BUENO 
+        =============================================== -->
+        <section id="step-3" class="step-section section-good">
+            <div class="comparison-layout">
+                <div class="text-content good">
+                    <h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        El CV "Ordenado"
+                    </h2>
+                    <ul class="bullet-list">
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--good-green);"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <div>
+                                <strong>Se entiende al toque</strong>
+                                Diseño limpio, columnas marcadas y aire entre los textos. La vista viaja sola directo a lo importante.
+                            </div>
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--good-green);"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <div>
+                                <strong>Está claro y directo</strong>
+                                La info clave resalta usando negritas y buenos títulos. Cero chamuyo, cero texto de relleno.
+                            </div>
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--good-green);"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <div>
+                                <strong>Va directo a lo que importa</strong>
+                                Usa viñetas cortitas y palabras clave ("atención al cliente", "manejo de caja"). Queda clarísimo para qué servís.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Visual: CV Bueno ORDENADO -->
+                <div class="cv-mockup-wrapper">
+                    <div class="mini-cv-paper good-cv">
+                        <!-- Columna Izquierda -->
+                        <div class="good-sidebar">
+                            <div class="good-photo"></div>
+                            
+                            <div>
+                                <h3>Contacto</h3>
+                                <p>📍 Buenos Aires, Arg.</p>
+                                <p>📱 11 4321-8765</p>
+                                <p>✉️ lucas.martin@email.com</p>
+                            </div>
+
+                            <div>
+                                <h3>Habilidades</h3>
+                                <ul>
+                                    <li>Atención al cliente</li>
+                                    <li>Manejo de caja</li>
+                                    <li>Gestión de stock</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Columna Derecha -->
+                        <div class="good-main">
+                            <div>
+                                <h1>Lucas Martín</h1>
+                                <h2>Atención al cliente | Primer empleo</h2>
+                            </div>
+
+                            <div>
+                                <h3>Perfil Profesional</h3>
+                                <p>Estudiante organizado y proactivo. Busco mi primer empleo formal para sumar experiencia en <strong>atención al público</strong> y ventas.</p>
+                            </div>
+
+                            <div>
+                                <h3>Experiencia Laboral</h3>
+                                <div style="margin-bottom: 8px;">
+                                    <div style="display:flex; justify-content: space-between;">
+                                        <strong>Asistente General</strong>
+                                        <span style="color:#475569; font-size: 8px;">Ene 2024 - Act</span>
+                                    </div>
+                                    <div style="color:#475569; font-size: 8px; margin-bottom: 4px;">Comercio Familiar "El Sol"</div>
+                                    <ul>
+                                        <li><strong>Atendí clientes</strong> y asesoré en ventas.</li>
+                                        <li><strong>Manejé la caja</strong> y cobros diarios.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3>Educación</h3>
+                                <div>
+                                    <div style="display:flex; justify-content: space-between;">
+                                        <strong>Bachiller Informática</strong>
+                                        <span style="color:#475569; font-size: 8px;">En curso</span>
+                                    </div>
+                                    <div style="color:#475569; font-size: 8px;">E.E.S. N° 4</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             BARRA DE NAVEGACIÓN 
+        =============================================== -->
+        <nav class="nav-bar">
+            <button id="btn-prev" class="nav-btn" onclick="changeStep(-1)" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Anterior
+            </button>
+            
+            <div class="step-indicator">
+                <span id="current-step">1</span> de 3
+            </div>
+
+            <button id="btn-next" class="nav-btn" onclick="changeStep(1)">
+                Siguiente
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+        </nav>
+
+    </div>
+
+    <script>
+        // Lógica de navegación simple
+        let currentStep = 1;
+        const totalSteps = 3;
+
+        function changeStep(direction) {
+            // Ocultar paso actual
+            document.getElementById(`step-${currentStep}`).classList.remove('active');
+            
+            // Actualizar contador
+            currentStep += direction;
+            
+            // Límites de seguridad
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > totalSteps) currentStep = totalSteps;
+
+            // Mostrar nuevo paso
+            document.getElementById(`step-${currentStep}`).classList.add('active');
+            
+            // Actualizar UI
+            document.getElementById('current-step').innerText = currentStep;
+            
+            // Habilitar/Deshabilitar botones
+            document.getElementById('btn-prev').disabled = currentStep === 1;
+            document.getElementById('btn-next').disabled = currentStep === totalSteps;
+        }
+    </script>
+</body>
+</html>

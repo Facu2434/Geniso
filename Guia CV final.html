@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cómo armar tu primer CV</title>
+    <style>
+        /* === VARIABLES DE COLOR Y FUENTES === */
+        :root {
+            --bg-body: #e2e8f0;
+            --card-bg: #ffffff;
+            --dark-bg: #1e293b; /* Tono oscuro profesional del sidebar */
+            --dark-text: #f8fafc;
+            --text-main: #334155;
+            --text-light: #475569;
+            --accent-blue: #1d4ed8;
+            --accent-green: #059669;
+            --accent-red: #dc2626;
+            
+            /* Fuentes del sistema para funcionar offline */
+            --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        }
+
+        /* === RESET === */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            line-height: 1.5;
+        }
+
+        /* === CONTENEDOR PRINCIPAL === */
+        .infographic-container {
+            width: 100%;
+            max-width: 900px;
+            background-color: var(--card-bg);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* === HEADER === */
+        .header {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+            padding: 60px 50px;
+            text-align: center;
+            border-bottom: 6px solid var(--accent-blue);
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+            line-height: 1.1;
+        }
+
+        .header p {
+            font-size: 1.4rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        /* === SECCIONES === */
+        .section {
+            padding: 50px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: var(--dark-bg);
+            font-weight: 800;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title svg {
+            color: var(--accent-blue);
+        }
+
+        /* === INTRODUCCIÓN (QUÉ ES UN CV) === */
+        .intro-box {
+            background-color: #eff6ff; /* Azul muy clarito */
+            border-left: 6px solid var(--accent-blue);
+            padding: 30px 40px;
+            border-radius: 0 12px 12px 0;
+            font-size: 1.3rem;
+            color: #1e3a8a;
+            font-weight: 500;
+        }
+
+        .intro-box strong {
+            color: var(--accent-blue);
+            font-weight: 800;
+        }
+
+        /* === PARTES DEL CV (GRID) === */
+        .parts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .part-card {
+            background-color: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 30px;
+            transition: transform 0.2s;
+        }
+
+        .part-card:hover {
+            transform: translateY(-5px);
+            border-color: #cbd5e1;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .part-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .part-header svg {
+            color: var(--accent-blue);
+        }
+
+        .part-header h3 {
+            font-size: 1.4rem;
+            color: var(--dark-bg);
+            font-weight: 700;
+        }
+
+        .part-card p {
+            font-size: 1.15rem;
+            color: var(--text-light);
+        }
+
+        .part-card strong {
+            color: var(--text-main);
+        }
+
+        /* === DOS COLUMNAS (RECOMENDACIONES / ERRORES) === */
+        .split-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 50px;
+            background-color: #f8fafc;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .list-box h3 {
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+        }
+
+        .list-box.good h3 { color: var(--accent-green); }
+        .list-box.bad h3 { color: var(--accent-red); }
+
+        .custom-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .custom-list li {
+            font-size: 1.2rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            color: var(--text-main);
+        }
+
+        .custom-list li svg {
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+
+        .custom-list strong {
+            color: var(--dark-bg);
+        }
+
+        /* === CONSEJOS PRÁCTICOS === */
+        .tips-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .tip-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background-color: #ffffff;
+            border: 2px solid #e2e8f0;
+            padding: 20px 30px;
+            border-radius: 12px;
+        }
+
+        .tip-number {
+            background-color: var(--dark-bg);
+            color: white;
+            font-weight: 800;
+            font-size: 1.5rem;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .tip-text {
+            font-size: 1.25rem;
+            color: var(--text-main);
+        }
+
+        .tip-text strong {
+            color: var(--dark-bg);
+        }
+
+        /* === FOOTER / CIERRE === */
+        .footer {
+            background-color: var(--accent-blue);
+            color: white;
+            text-align: center;
+            padding: 50px 40px;
+        }
+
+        .footer p {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .footer p strong {
+            color: #bfdbfe; /* Azul muy claro */
+        }
+
+        /* Adaptabilidad básica */
+        @media (max-width: 768px) {
+            .split-section { grid-template-columns: 1fr; }
+            .header h1 { font-size: 2.5rem; }
+            .part-card { padding: 20px; }
+            .section { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="infographic-container">
+        
+        <!-- ENCABEZADO -->
+        <header class="header">
+            <h1>Cómo armar tu CV desde cero</h1>
+            <p>Guía rápida, práctica y al pie para armar tu hoja de vida</p>
+        </header>
+
+        <!-- SECCIÓN 1: ¿QUÉ ES? -->
+        <section class="section">
+            <div class="intro-box">
+                <p>Es tu <strong>carta de presentación</strong> para buscar trabajo. Contá rápido quién sos, qué sabés hacer y tu experiencia. ¡Tiene que mostrar tu potencial en <strong>menos de 10 segundos</strong>!</p>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: PARTES DEL CV -->
+        <section class="section">
+            <h2 class="section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="7" rx="2" ry="2"></rect><rect x="3" y="14" width="7" height="7" rx="2" ry="2"></rect><rect x="14" y="14" width="7" height="7" rx="2" ry="2"></rect></svg>
+                Las 4 partes clave
+            </h2>
+            
+            <div class="parts-grid">
+                <!-- Tarjeta 1 -->
+                <div class="part-card">
+                    <div class="part-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <h3>Datos y Perfil</h3>
+                    </div>
+                    <p>Tu <strong>contacto</strong> (teléfono, mail profesional, zona) y 2 o 3 líneas sobre <strong>qué podés aportar</strong> en el puesto.</p>
+                </div>
+
+                <!-- Tarjeta 2 -->
+                <div class="part-card">
+                    <div class="part-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                        <h3>Experiencia</h3>
+                    </div>
+                    <p>Qué hiciste antes (trabajos o experiencias concretas). Usá viñetas (bullets). Podés incluir <strong>trabajos en negocios familiares o actividades del colegio</strong> donde hayas tenido responsabilidades.</p>
+                </div>
+
+                <!-- Tarjeta 3 -->
+                <div class="part-card">
+                    <div class="part-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                        <h3>Educación</h3>
+                    </div>
+                    <p>Dónde estudiaste (o estás estudiando). Poné el colegio, título en curso y <strong>cursos extra</strong> que sumen.</p>
+                </div>
+
+                <!-- Tarjeta 4 -->
+                <div class="part-card">
+                    <div class="part-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        <h3>Habilidades</h3>
+                    </div>
+                    <p>Herramientas y aptitudes reales que <strong>sabés usar</strong> (ej: manejo de caja, Excel, atención al público, Canva).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: DOS Y DON'TS (A CIERTO Y ERRORES) -->
+        <div class="split-section">
+            
+            <!-- Recomendaciones -->
+            <div class="list-box good">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    Lo que SÍ hay que hacer
+                </h3>
+                <ul class="custom-list">
+                    <li>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Máximo 1 página:</strong> Nadie lee hojas y hojas. Sé directo.</span>
+                    </li>
+                    <li>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Lectura rápida:</strong> Que la vista viaje rápido por el documento.</span>
+                    </li>
+                    <li>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Palabras clave:</strong> Fijate qué piden en el aviso y usá esas palabras.</span>
+                    </li>
+                    <li>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Ajustalo siempre:</strong> No mandes el mismo CV para ser repositor o diseñador.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Errores -->
+            <div class="list-box bad">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                    Errores que restan
+                </h3>
+                <ul class="custom-list">
+                    <li>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        <span><strong>Muchísimo texto:</strong> Evitá los párrafos larguísimos.</span>
+                    </li>
+                    <li>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        <span><strong>Cosas que no suman:</strong> No pongas el jardín de infantes ni pasatiempos raros.</span>
+                    </li>
+                    <li>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        <span><strong>Diseños locos:</strong> Evitá formatos súper cargados o letras difíciles de leer.</span>
+                    </li>
+                    <li>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        <span><strong>Falta de claridad:</strong> Si no se entiende en 5 segundos, te descartan.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 4: CONSEJOS FINALES -->
+        <section class="section">
+            <h2 class="section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                Consejos prácticos para armarlo
+            </h2>
+
+            <div class="tips-container">
+                <div class="tip-item">
+                    <span class="tip-number">1</span>
+                    <span class="tip-text"><strong>Usá viñetas (bullets):</strong> Hacen que toda tu experiencia sea muchísimo más fácil de escanear por recursos humanos.</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-number">2</span>
+                    <span class="tip-text"><strong>Destacá lo importante:</strong> Usá negrita para resaltar herramientas clave, puestos o logros concretos.</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-number">3</span>
+                    <span class="tip-text"><strong>Ordená bien todo:</strong> Acordate de poner siempre lo más reciente primero (tanto en estudios como en experiencia).</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-number">4</span>
+                    <span class="tip-text"><strong>Revisá la ortografía:</strong> Un error de tipeo te puede dejar afuera de una entrevista. ¡Leelo dos o tres veces!</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- CIERRE -->
+        <footer class="footer">
+            <p>Tu CV es tu primera impresión.<br>Tiene que ser <strong>claro, simple y directo.</strong></p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
