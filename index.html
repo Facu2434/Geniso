@@ -7,65 +7,118 @@
 
 <style>
 :root {
-  --bg: #e2e8f0;
-  --card: #ffffff;
-  --dark: #1e293b;
-  --accent: #1d4ed8;
-  --text: #334155;
+  --bg: linear-gradient(135deg, #0f172a, #1e293b);
+  --card: rgba(255,255,255,0.05);
+  --border: rgba(255,255,255,0.08);
+  --accent: #3b82f6;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
 }
 
-* { margin:0; padding:0; box-sizing:border-box; }
+* {
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
 body {
   font-family: system-ui, sans-serif;
   background: var(--bg);
+  color: var(--text);
   padding:40px;
+  animation: fadeIn 0.6s ease;
 }
 
+@keyframes fadeIn {
+  from { opacity:0; transform: translateY(10px); }
+  to { opacity:1; transform: translateY(0); }
+}
+
+/* título */
 h1 {
   text-align:center;
-  margin-bottom:40px;
-  color: var(--dark);
+  margin-bottom:50px;
+  font-size:2.2rem;
+  font-weight:600;
 }
 
+/* secciones */
 .section {
-  max-width:1000px;
-  margin:0 auto 40px;
+  max-width:1100px;
+  margin:0 auto 50px;
 }
 
 .section h2 {
   margin-bottom:20px;
-  color: var(--dark);
+  font-size:1.2rem;
+  font-weight:500;
+  color: var(--muted);
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
 
+/* badge opcional */
+.badge {
+  font-size:0.7rem;
+  background: var(--accent);
+  color:white;
+  padding:3px 8px;
+  border-radius:999px;
+}
+
+/* grid */
 .grid {
   display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
   gap: 20px;
 }
 
+/* cards */
 .card {
   background: var(--card);
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
   padding: 25px;
   cursor: pointer;
-  transition: 0.2s;
+
+  backdrop-filter: blur(10px);
+
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
 }
 
+/* efecto brillo suave */
+.card::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.08), transparent);
+  opacity:0;
+  transition:0.3s;
+}
+
+.card:hover::after {
+  opacity:1;
+}
+
+/* hover moderno */
 .card:hover {
+  transform: translateY(-6px) scale(1.01);
   border-color: var(--accent);
-  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
+/* contenido */
 .card h3 {
-  margin-bottom:10px;
-  color: var(--dark);
+  margin-bottom:8px;
+  font-size:1.1rem;
 }
 
 .card p {
-  font-size: 0.95rem;
-  color: var(--text);
+  font-size:0.9rem;
+  color: var(--muted);
 }
 </style>
 </head>
@@ -75,32 +128,36 @@ h1 {
 <h1>Comunicación, cultura y sociedad</h1>
 
 <div class="section">
-  <h2>Clase 15/04 — Introducción al CV</h2>
+  <h2>📄 Clase 15/04 — Introducción al CV</h2>
   <div class="grid">
+
     <div class="card" onclick="go('cv.html')">
-      <h3>CV interactivo</h3>
+      <h3>📄 CV interactivo</h3>
       <p>Explicación general</p>
     </div>
 
     <div class="card" onclick="go('comparacion.html')">
-      <h3>Bueno vs Malo</h3>
+      <h3>⚖️ Bueno vs Malo</h3>
       <p>Qué funciona y qué no</p>
     </div>
 
     <div class="card" onclick="go('guia.html')">
-      <h3>Guía</h3>
+      <h3>📘 Guía</h3>
       <p>Resumen completo</p>
     </div>
+
   </div>
 </div>
 
 <div class="section">
-  <h2>Clase 22/04 — CV en Canva</h2>
+  <h2>🧠 Clase 22/04 — CV en Canva <span class="badge">Actual</span></h2>
   <div class="grid">
+
     <div class="card" onclick="go('canva2.html')">
-      <h3>Clase interactiva</h3>
+      <h3>🧠 Clase interactiva</h3>
       <p>Repaso + Canva</p>
     </div>
+
   </div>
 </div>
 
