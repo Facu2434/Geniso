@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>De CV a Canva</title>
+    <style>
+        /* === VARIABLES DE COLOR (Estilo CV Interactivo) === */
+        :root {
+            --bg-body: #e2e8f0; /* Fondo gris claro */
+            --card-bg: #ffffff; /* Tarjetas blancas */
+            --dark-bg: #1e293b; /* Azul muy oscuro para contrastes */
+            --text-main: #334155; /* Gris oscuro principal */
+            --text-light: #64748b; /* Gris medio */
+            --accent-blue: #1d4ed8; /* Azul principal */
+            --accent-hover: #1e40af;
+            --accent-green: #059669;
+            --accent-red: #dc2626;
+            
+            /* Fuentes del sistema */
+            --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        }
+
+        /* === RESET === */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.5;
+            overflow: hidden; /* Evita scroll general en la presentación */
+        }
+
+        /* === CONTENEDOR PRINCIPAL === */
+        .app-container {
+            width: 100%;
+            max-width: 1000px; /* Un poco más ancho para dar aire */
+            height: 85vh; /* Alto fijo para sensación de "pantalla" */
+            min-height: 600px;
+            background-color: var(--card-bg);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-top: 6px solid var(--accent-blue);
+        }
+
+        /* === PANTALLAS (STEPS) === */
+        .screen {
+            display: none;
+            flex-direction: column;
+            flex-grow: 1;
+            padding: 60px 80px; /* Más aire a los costados */
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; /* Animación más notoria */
+            justify-content: center;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(40px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* === TIPOGRAFÍA PENSADA PARA PROYECTOR === */
+        .title {
+            font-size: 3.5rem; /* Más grande e impactante */
+            font-weight: 800;
+            margin-bottom: 40px;
+            color: var(--dark-bg);
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+        }
+
+        .subtitle {
+            font-size: 2rem;
+            color: var(--text-light);
+            margin-bottom: 50px;
+            font-weight: 500;
+        }
+
+        .text-body {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: var(--text-main);
+        }
+
+        /* === LISTAS DE CONCEPTOS === */
+        .concept-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 35px; /* Mucho más aire entre ítems */
+        }
+
+        .concept-list li {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        .concept-list li svg {
+            flex-shrink: 0;
+            margin-top: 5px;
+            color: var(--accent-blue);
+        }
+
+        /* Modificadores de color para listas buenas/malas */
+        .list-good li svg { color: var(--accent-green); }
+        .list-bad li svg { color: var(--accent-red); }
+
+        /* === BLOQUES DESTACADOS === */
+        .highlight-box {
+            background-color: #eff6ff;
+            border-left: 8px solid var(--accent-blue);
+            padding: 40px;
+            border-radius: 0 16px 16px 0;
+            font-size: 2rem;
+            color: #1e3a8a;
+            font-weight: 700;
+            margin-top: 30px;
+            line-height: 1.4;
+        }
+
+        /* === COMPARACIÓN VISUAL === */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .mockup-cv {
+            background: #f8fafc;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            border: 2px solid #e2e8f0;
+            height: 400px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mockup-label {
+            text-align: center;
+            font-weight: 700;
+            padding: 15px;
+            font-size: 1.4rem;
+            background: #f1f5f9;
+            border-bottom: 2px solid #e2e8f0;
+            color: var(--text-main);
+        }
+
+        /* Mockup Básico */
+        .mockup-basic {
+            padding: 30px;
+            font-family: "Times New Roman", Times, serif;
+            color: #000;
+        }
+        .mockup-basic h3 { text-align: center; border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 15px; font-size: 1.4rem;}
+        .mockup-basic p { font-size: 1rem; margin-bottom: 10px; line-height: 1.2;}
+
+        /* Mockup Canva */
+        .mockup-canva {
+            display: flex;
+            flex-direction: row;
+            flex-grow: 1;
+            font-family: system-ui, sans-serif;
+            background: white;
+        }
+        .mockup-canva-side {
+            width: 35%;
+            background: var(--dark-bg);
+            color: white;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .mockup-photo { width: 50px; height: 50px; background: white; border-radius: 50%; margin: 0 auto;}
+        .mockup-canva-side h4 { font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px;}
+        .mockup-canva-side p { font-size: 0.7rem; color: #f8fafc;}
+        
+        .mockup-canva-main {
+            width: 65%;
+            padding: 25px 20px;
+        }
+        .mockup-canva-main h2 { font-size: 1.6rem; color: var(--dark-bg); margin-bottom: 5px; line-height: 1;}
+        .mockup-canva-main h3 { font-size: 0.9rem; color: var(--accent-blue); text-transform: uppercase; margin-bottom: 15px;}
+        .mockup-canva-main h4 { font-size: 0.9rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-bottom: 10px; color: var(--dark-bg);}
+        .mockup-canva-main p { font-size: 0.8rem; color: var(--text-main); margin-bottom: 10px; line-height: 1.4;}
+
+        /* === CENTRADO ABSOLUTO === */
+        .center-screen {
+            text-align: center;
+            align-items: center;
+        }
+        
+        .center-screen .title {
+            text-align: center;
+        }
+
+        /* === BARRA DE NAVEGACIÓN === */
+        .nav-bar {
+            background-color: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            padding: 25px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .step-counter {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #94a3b8;
+        }
+
+        .btn {
+            background-color: var(--dark-bg);
+            color: white;
+            border: none;
+            padding: 16px 35px;
+            border-radius: 10px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+
+        .btn-prev {
+            background-color: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        .btn-prev:hover {
+            background-color: #cbd5e1;
+        }
+
+        .btn-next {
+            background-color: var(--accent-blue);
+        }
+
+        .btn-next:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(29, 78, 216, 0.3);
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 850px) {
+            .app-container { height: 95vh; border-radius: 8px; }
+            .screen { padding: 40px 30px; }
+            .title { font-size: 2.5rem; margin-bottom: 30px;}
+            .subtitle { font-size: 1.6rem; margin-bottom: 30px;}
+            .concept-list { gap: 20px; }
+            .concept-list li { font-size: 1.4rem; }
+            .highlight-box { font-size: 1.5rem; padding: 25px; }
+            .comparison-grid { grid-template-columns: 1fr; gap: 20px;}
+            .mockup-cv { height: 300px; }
+            .nav-bar { padding: 20px; }
+            .btn { padding: 12px 20px; font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- PANTALLA 1: INTRO (NUEVA) -->
+        <div class="screen active center-screen" id="screen-1">
+            <h1 class="title" style="font-size: 5rem; line-height: 1.1; margin-bottom: 30px;">
+                Del CV básico al<br>
+                <span style="color: var(--accent-blue);">CV que llama la atención</span>
+            </h1>
+            <p class="text-body" style="font-size: 2.2rem; color: var(--text-light);">
+                Hoy vamos a ver cómo dar el salto visual.
+            </p>
+        </div>
+
+        <!-- PANTALLA 2: REPASO -->
+        <div class="screen" id="screen-2">
+            <h1 class="title">Repaso rápido</h1>
+            
+            <ul class="concept-list">
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span>El CV es tu <strong>primera impresión</strong>.</span>
+                </li>
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span>Se tiene que entender en <strong>menos de 10 segundos</strong>.</span>
+                </li>
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span>Su único objetivo es <strong>mostrar qué sabés hacer</strong>.</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- PANTALLA 3: PARTES -->
+        <div class="screen" id="screen-3">
+            <h1 class="title">Lo que no puede faltar</h1>
+            
+            <ul class="concept-list">
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    <span><strong>Datos + Perfil:</strong> Quién sos y cómo te contactan.</span>
+                </li>
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    <span><strong>Experiencia:</strong> Qué hiciste antes (usando viñetas).</span>
+                </li>
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    <span><strong>Educación:</strong> Qué estudiaste o estás estudiando.</span>
+                </li>
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    <span><strong>Habilidades:</strong> Qué herramientas dominás.</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- PANTALLA 4: REGLAS -->
+        <div class="screen" id="screen-4">
+            <h1 class="title">Reglas de Oro</h1>
+            
+            <ul class="concept-list">
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <span><strong>Máximo 1 página:</strong> Nadie lee testamentos.</span>
+                </li>
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <span><strong>Lectura veloz:</strong> Los ojos tienen que viajar rápido por el papel.</span>
+                </li>
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <span><strong>Cero bloques largos:</strong> Usá listas y cortá el texto.</span>
+                </li>
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <span><strong>Adaptalo:</strong> Cada trabajo necesita un CV distinto.</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- PANTALLA 5: TRANSICIÓN A CANVA -->
+        <div class="screen center-screen" id="screen-5">
+            <div style="margin-bottom: 40px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+            </div>
+            
+            <h1 class="title" style="font-size: 4rem;">Ahora lo llevamos a Canva</h1>
+            
+            <div class="highlight-box" style="text-align: left; max-width: 750px; margin: 20px auto 0;">
+                Canva no mejora tu CV.<br>
+                Lo hace más claro y profesional <strong>sólo si ya está bien armado</strong>.
+            </div>
+        </div>
+
+        <!-- PANTALLA 6: COMPARACIÓN (NUEVA) -->
+        <div class="screen" id="screen-6">
+            <h1 class="title" style="margin-bottom: 15px;">Mismo contenido, diferente resultado</h1>
+            
+            <div class="comparison-grid">
+                <!-- Word Básico -->
+                <div class="mockup-cv">
+                    <div class="mockup-label">Básico (Word puro)</div>
+                    <div class="mockup-basic">
+                        <h3>Lucas Martín</h3>
+                        <p>11 4321-8765 | lucas@email.com</p>
+                        <p style="margin-top: 15px; font-weight: bold;">Experiencia</p>
+                        <p>Asistente General - Comercio "El Sol"</p>
+                        <p>- Atendí clientes</p>
+                        <p>- Manejé la caja</p>
+                    </div>
+                </div>
+
+                <!-- Canva CV -->
+                <div class="mockup-cv">
+                    <div class="mockup-label" style="background: #e0e7ff; color: var(--accent-blue);">Armado en Canva</div>
+                    <div class="mockup-canva">
+                        <div class="mockup-canva-side">
+                            <div class="mockup-photo"></div>
+                            <div style="margin-top: 10px;">
+                                <h4>Contacto</h4>
+                                <p>11 4321-8765</p>
+                                <p>lucas@email.com</p>
+                            </div>
+                        </div>
+                        <div class="mockup-canva-main">
+                            <h2>Lucas Martín</h2>
+                            <h3>Atención al cliente</h3>
+                            
+                            <h4>Experiencia</h4>
+                            <p><strong>Asistente General</strong> | Comercio "El Sol"</p>
+                            <p style="padding-left: 10px; border-left: 2px solid #cbd5e1;">Atendí clientes y asesoré.<br>Manejé la caja diaria.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 7: BUEN USO -->
+        <div class="screen" id="screen-7">
+            <h1 class="title">El BUEN uso de Canva ✅</h1>
+            
+            <ul class="concept-list list-good">
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span><strong>Colores suaves:</strong> Tonos neutros que no cansen la vista.</span>
+                </li>
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span><strong>Jerarquía visual:</strong> Que se note al instante qué es un título y qué es texto normal.</span>
+                </li>
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span><strong>Destacar con sentido:</strong> Usar color o negrita SOLO para palabras clave importantes.</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- PANTALLA 8: MAL USO -->
+        <div class="screen" id="screen-8">
+            <h1 class="title">Lo que NO tenés que hacer ❌</h1>
+            
+            <ul class="concept-list list-bad">
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <span><strong>Sobrecargar la hoja:</strong> Llenar de iconitos y formas que distraen.</span>
+                </li>
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <span><strong>Carnaval de colores:</strong> Mezclar colores fuertes sin criterio.</span>
+                </li>
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <span><strong>Letras raras:</strong> Elegir tipografías que obligan a forzar la vista para leer.</span>
+                </li>
+                <li>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <span><strong>Mala legibilidad:</strong> Textos claros sobre fondos claros. Imposible de leer.</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- PANTALLA 9: CIERRE (NUEVA) -->
+        <div class="screen center-screen" id="screen-9">
+            
+            <div style="max-width: 800px; margin: 0 auto;">
+                <p class="text-body" style="font-size: 3.5rem; font-weight: 800; color: var(--accent-green); margin-bottom: 20px; line-height: 1.2;">
+                    Un CV feo pero claro, funciona.
+                </p>
+                <p class="text-body" style="font-size: 3.5rem; font-weight: 800; color: var(--accent-red); line-height: 1.2;">
+                    Un CV lindo pero confuso, no sirve.
+                </p>
+            </div>
+
+            <div style="margin-top: 60px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+        </div>
+
+        <!-- === BARRA DE NAVEGACIÓN INFERIOR === -->
+        <div class="nav-bar">
+            <button class="btn btn-prev" id="btn-prev" onclick="changeStep(-1)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Anterior
+            </button>
+            
+            <div class="step-counter" id="step-counter">
+                1 / 9
+            </div>
+
+            <button class="btn btn-next" id="btn-next" onclick="changeStep(1)">
+                Siguiente
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- === LÓGICA DE NAVEGACIÓN === -->
+    <script>
+        let currentStep = 1;
+        const totalSteps = 9;
+
+        function updateUI() {
+            // Ocultar todas las pantallas
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Mostrar la actual (forzando reflow para reiniciar animación)
+            const activeScreen = document.getElementById(`screen-${currentStep}`);
+            activeScreen.classList.remove('active');
+            void activeScreen.offsetWidth; // Trigger reflow
+            activeScreen.classList.add('active');
+
+            // Actualizar texto del contador
+            document.getElementById('step-counter').innerText = `${currentStep} / ${totalSteps}`;
+
+            // Botón Anterior
+            const btnPrev = document.getElementById('btn-prev');
+            if (currentStep === 1) {
+                btnPrev.style.visibility = 'hidden';
+            } else {
+                btnPrev.style.visibility = 'visible';
+            }
+
+            // Botón Siguiente
+            const btnNext = document.getElementById('btn-next');
+            if (currentStep === totalSteps) {
+                btnNext.style.visibility = 'hidden';
+            } else {
+                btnNext.style.visibility = 'visible';
+            }
+        }
+
+        function changeStep(direction) {
+            currentStep += direction;
+            
+            // Límites de seguridad
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > totalSteps) currentStep = totalSteps;
+
+            updateUI();
+        }
+
+        // Permitir avanzar/retroceder con teclado
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight') {
+                changeStep(1);
+            } else if (event.key === 'ArrowLeft') {
+                changeStep(-1);
+            }
+        });
+
+        // Iniciar
+        updateUI();
+    </script>
+</body>
+</html>
