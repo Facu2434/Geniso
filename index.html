@@ -30,11 +30,18 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity:0; transform: translateY(10px); }
-  to { opacity:1; transform: translateY(0); }
+  from {
+    opacity:0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity:1;
+    transform: translateY(0);
+  }
 }
 
-/* título */
+/* título principal */
 h1 {
   text-align:center;
   margin-bottom:50px;
@@ -53,48 +60,76 @@ h1 {
   font-size:1.2rem;
   font-weight:500;
   color: var(--muted);
+
   display:flex;
   align-items:center;
   gap:10px;
 }
 
-/* badge opcional */
+/* badge actual */
 .badge {
   font-size:0.7rem;
   background: var(--accent);
   color:white;
   padding:3px 8px;
   border-radius:999px;
+
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity:1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity:0.6;
+    transform: scale(1.08);
+  }
+
+  100% {
+    opacity:1;
+    transform: scale(1);
+  }
 }
 
 /* grid */
 .grid {
   display:grid;
   grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
-  gap: 20px;
+  gap:20px;
 }
 
 /* cards */
 .card {
   background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 25px;
-  cursor: pointer;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:25px;
+  cursor:pointer;
 
   backdrop-filter: blur(10px);
 
   transition: all 0.25s ease;
-  position: relative;
-  overflow: hidden;
+
+  position:relative;
+  overflow:hidden;
 }
 
-/* efecto brillo suave */
+/* brillo */
 .card::after {
   content:"";
   position:absolute;
   inset:0;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.08), transparent);
+
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.08),
+    transparent
+  );
+
   opacity:0;
   transition:0.3s;
 }
@@ -103,7 +138,7 @@ h1 {
   opacity:1;
 }
 
-/* hover moderno */
+/* hover */
 .card:hover {
   transform: translateY(-6px) scale(1.01);
   border-color: var(--accent);
@@ -127,8 +162,13 @@ h1 {
 
 <h1>Comunicación, Cultura y Sociedad</h1>
 
+<!-- ========================================================= -->
+<!-- 📄 CLASE 15/04 -->
+<!-- ========================================================= -->
+
 <div class="section">
   <h2>📄 Clase 15/04 — Introducción al CV</h2>
+
   <div class="grid">
 
     <div class="card" onclick="go('cv.html')">
@@ -149,8 +189,13 @@ h1 {
   </div>
 </div>
 
+<!-- ========================================================= -->
+<!-- 🦾 CLASE 22/04 -->
+<!-- ========================================================= -->
+
 <div class="section">
-  <h2>🦾 Clase 22/04 — CV en Canva </h2> 
+  <h2>🦾 Clase 22/04 — CV en Canva</h2>
+
   <div class="grid">
 
     <div class="card" onclick="go('canva2.html')">
@@ -162,76 +207,28 @@ h1 {
 </div>
 
 <!-- ========================================================= -->
-<!-- 📌 PLANTILLA PARA NUEVAS CLASES (copiar y pegar) -->
+<!-- 🎨 CLASE 29/04 -->
 <!-- ========================================================= -->
 
-<!--
 <div class="section">
-  <h2>📅 Clase DD/MM — Tema de la clase</h2>
-  <div class="grid">
+  <h2>🎨 Clase 29/04 — Plantilla CV en Canva</h2>
 
-    <div class="card" onclick="go('archivo.html')">
-      <h3>🧠 Módulo interactivo</h3>
-      <p>Explicación del tema</p>
-    </div>
-
-    <div class="card" onclick="go('archivo2.html')">
-      <h3>⚖️ Comparativa</h3>
-      <p>Ejemplos y diferencias</p>
-    </div>
-
-    <div class="card" onclick="go('archivo3.html')">
-      <h3>📘 Guía</h3>
-      <p>Resumen o material de apoyo</p>
-    </div>
-
-  </div>
-</div>
--->
-
-<!-- ========================================================= -->
-<!-- 🧠 NOTAS PARA USO (no borrar) -->
-<!-- ========================================================= -->
-
-<!--
-1. Copiar todo el bloque de arriba
-2. Pegar debajo de la última clase
-3. Cambiar:
-   - fecha (DD/MM)
-   - nombre del tema
-   - nombres de archivos (.html)
-4. Si la clase tiene solo 1 recurso, borrar las cards que no uses
-
-REGLAS:
-- usar nombres sin espacios → ej: clase3.html
-- mantener mismo estilo de títulos
-- no tocar CSS
-
-TIP:
-Podés usar emojis para diferenciar:
-📄 teoría
-🧠 interactivo
-⚖️ comparación
-📘 guía
--->
-<div class="section">
-  <h2>
-    <span>📅 Clase 29/04 — Plantilla CV en Canva</span>    
-  </h2>
   <div class="grid">
 
     <div class="card" onclick="go('29-04.html')">
       <h3>🧠 Repaso + Continuación</h3>
       <p>Retomamos lo de la semana pasada y lo aplicamos hoy</p>
     </div>
+
   </div>
 </div>
 
-  <div class="section">
-  <h2>
-    <span>📅 Clase 13/05 — Mejorar foto y ATS</span>
-    <span class="badge">Actual</span>
-  </h2>
+<!-- ========================================================= -->
+<!-- 📸 CLASE 13/05 -->
+<!-- ========================================================= -->
+
+<div class="section">
+  <h2>📸 Clase 13/05 — Mejorar foto y ATS</h2>
 
   <div class="grid">
 
@@ -247,7 +244,51 @@ Podés usar emojis para diferenciar:
 
   </div>
 </div>
-    
+
+<!-- ========================================================= -->
+<!-- 💼 CLASE 20/05 -->
+<!-- ========================================================= -->
+
+<div class="section">
+  <h2>
+    <span>💼 Clase 20/05 — Introducción a LinkedIn</span>
+    <span class="badge">Actual</span>
+  </h2>
+
+  <div class="grid">
+
+    <div class="card" onclick="go('intro.html')">
+      <h3>💼 Tu primer perfil profesional</h3>
+      <p>Qué es LinkedIn y cómo empezar a construir tu perfil</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================================================= -->
+<!-- 📌 PLANTILLA PARA FUTURAS CLASES -->
+<!-- ========================================================= -->
+
+<!--
+
+<div class="section">
+  <h2>
+    <span>📅 Clase DD/MM — Tema</span>
+    <span class="badge">Actual</span>
+  </h2>
+
+  <div class="grid">
+
+    <div class="card" onclick="go('archivo.html')">
+      <h3>🧠 Título</h3>
+      <p>Descripción</p>
+    </div>
+
+  </div>
+</div>
+
+-->
+
 <script>
 function go(url){
   window.location.href = url;
