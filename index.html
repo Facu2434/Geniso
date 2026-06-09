@@ -6,385 +6,294 @@
 <title>Comunicación, Cultura y Sociedad</title>
 
 <style>
-
-:root{
-    --bg:#f7f4ef;
-    --panel:#f3ede5;
-    --line:#ddd1c0;
-    --text:#1f2937;
-    --muted:#6b7280;
-    --accent:#c96d1f;
-    --current:#4b8a4d;
+:root {
+  --bg: linear-gradient(135deg, #0f172a, #1e293b);
+  --card: rgba(255,255,255,0.05);
+  --border: rgba(255,255,255,0.08);
+  --accent: #3b82f6;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
 }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
-body{
-    font-family:Inter,system-ui,sans-serif;
-    background:var(--bg);
-    color:var(--text);
+body {
+  font-family: system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding:40px;
+  animation: fadeIn 0.6s ease;
 }
 
-.container{
-    max-width:1500px;
-    margin:auto;
-    padding:40px 30px 80px;
+@keyframes fadeIn {
+  from {
+    opacity:0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity:1;
+    transform: translateY(0);
+  }
 }
 
-header{
-    margin-bottom:50px;
-    text-align:center;
+/* título principal */
+h1 {
+  text-align:center;
+  margin-bottom:50px;
+  font-size:2.2rem;
+  font-weight:600;
 }
 
-.badge{
-    display:inline-block;
-    background:#efe2cd;
-    color:var(--accent);
-    font-weight:700;
-    font-size:.85rem;
-    padding:8px 14px;
-    border-radius:10px;
-    margin-bottom:18px;
+/* secciones */
+.section {
+  max-width:1100px;
+  margin:0 auto 50px;
 }
 
-header h1{
-    font-size:clamp(2.2rem,4vw,3.8rem);
-    line-height:1;
-    font-weight:800;
-    margin-bottom:12px;
+.section h2 {
+  margin-bottom:20px;
+  font-size:1.2rem;
+  font-weight:500;
+  color: var(--muted);
+
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
 
-header p{
-    font-size:1.15rem;
-    color:var(--muted);
+/* badge actual */
+.badge {
+  font-size:0.7rem;
+  background: var(--accent);
+  color:white;
+  padding:3px 8px;
+  border-radius:999px;
+
+  animation: pulse 1.5s infinite;
 }
 
-.timeline{
+@keyframes pulse {
+  0% {
+    opacity:1;
+    transform: scale(1);
+  }
 
-    position:relative;
+  50% {
+    opacity:0.6;
+    transform: scale(1.08);
+  }
 
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    gap:40px;
-
-    flex-wrap:wrap;
+  100% {
+    opacity:1;
+    transform: scale(1);
+  }
 }
 
-.timeline::before{
-    content:"";
-    position:absolute;
-    top:115px;
-    left:120px;
-    right:120px;
-    height:3px;
-
-    background:
-    repeating-linear-gradient(
-        to right,
-        #d9cdbd 0 8px,
-        transparent 8px 18px
-    );
+/* grid */
+.grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+  gap:20px;
 }
 
-.lesson{
-    width:230px;
-    text-align:center;
-    position:relative;
-    z-index:2;
+/* cards */
+.card {
+  background: var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:25px;
+  cursor:pointer;
+
+  backdrop-filter: blur(10px);
+
+  transition: all 0.25s ease;
+
+  position:relative;
+  overflow:hidden;
 }
 
-.circle{
+/* brillo */
+.card::after {
+  content:"";
+  position:absolute;
+  inset:0;
 
-    width:220px;
-    height:220px;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.08),
+    transparent
+  );
 
-    border-radius:50%;
-
-    background:var(--panel);
-
-    border:2px solid #e5d9ca;
-
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-
-    cursor:pointer;
-
-    transition:.25s;
+  opacity:0;
+  transition:0.3s;
 }
 
-.circle:hover{
-    transform:translateY(-6px);
+.card:hover::after {
+  opacity:1;
 }
 
-.current .circle{
-    border:3px solid var(--current);
-    background:#f2f7f2;
+/* hover */
+.card:hover {
+  transform: translateY(-6px) scale(1.01);
+  border-color: var(--accent);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
-.icon{
-
-    width:56px;
-    height:56px;
-
-    border-radius:50%;
-
-    background:white;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    font-size:26px;
-
-    margin-bottom:14px;
-
-    border:2px solid #eadfce;
+/* contenido */
+.card h3 {
+  margin-bottom:8px;
+  font-size:1.1rem;
 }
 
-.current .icon{
-    color:var(--current);
-    border-color:#cce3cd;
+.card p {
+  font-size:0.9rem;
+  color: var(--muted);
 }
-
-.date{
-    font-size:1.05rem;
-    font-weight:800;
-    margin-bottom:10px;
-}
-
-.separator{
-    width:80px;
-    height:2px;
-    background:var(--accent);
-    margin-bottom:14px;
-}
-
-.title{
-    font-size:1rem;
-    font-weight:700;
-    line-height:1.25;
-    max-width:160px;
-}
-
-.resources{
-
-    margin-top:20px;
-
-    text-align:left;
-
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-}
-
-.resources a{
-    text-decoration:none;
-    color:var(--text);
-    font-size:.95rem;
-}
-
-.resources a:hover{
-    color:var(--accent);
-}
-
-.resources a::before{
-    content:"•";
-    color:var(--accent);
-    margin-right:10px;
-}
-
-.current-tag{
-
-    display:inline-block;
-
-    background:var(--current);
-    color:white;
-
-    padding:8px 14px;
-
-    border-radius:8px;
-
-    font-size:.8rem;
-    font-weight:700;
-
-    margin-bottom:12px;
-}
-
-.footer-note{
-
-    text-align:center;
-
-    margin-top:50px;
-
-    color:#8b7355;
-
-    font-size:1rem;
-}
-
-@media(max-width:1200px){
-
-    .timeline::before{
-        display:none;
-    }
-
-}
-
 </style>
-
 </head>
+
 <body>
 
-<div class="container">
+<h1>Comunicación, Cultura y Sociedad</h1>
 
-<header>
+<!-- ========================================================= -->
+<!-- 📄 CLASE 15/04 -->
+<!-- ========================================================= -->
 
-    <div class="badge">
-        CURSO 2026
+<div class="section">
+  <h2>📄 Clase 15/04 — Introducción al CV</h2>
+
+  <div class="grid">
+
+    <div class="card" onclick="go('cv.html')">
+      <h3>📄 CV interactivo</h3>
+      <p>Explicación general</p>
     </div>
 
-    <h1>
-        Comunicación, Cultura y Sociedad
-    </h1>
+    <div class="card" onclick="go('comparacion.html')">
+      <h3>⚖️ Bueno vs Malo</h3>
+      <p>Qué funciona y qué no</p>
+    </div>
 
-    <p>
-        Clases y materiales
-    </p>
+    <div class="card" onclick="go('guia.html')">
+      <h3>📘 Guía</h3>
+      <p>Resumen completo</p>
+    </div>
 
-</header>
-
-<section class="timeline">
-
-    <article class="lesson">
-
-        <div class="circle" onclick="window.location.href='cv.html'">
-
-            <div class="icon">📄</div>
-
-            <div class="date">15/04</div>
-
-            <div class="separator"></div>
-
-            <div class="title">
-                Introducción al CV
-            </div>
-
-        </div>
-
-        <div class="resources">
-            <a href="cv.html">CV interactivo</a>
-            <a href="comparacion.html">Bueno vs Malo</a>
-            <a href="guia.html">Guía Completa</a>
-        </div>
-
-    </article>
-
-    <article class="lesson">
-
-        <div class="circle" onclick="window.location.href='canva2.html'">
-
-            <div class="icon">🖥️</div>
-
-            <div class="date">22/04</div>
-
-            <div class="separator"></div>
-
-            <div class="title">
-                CV en Canva
-            </div>
-
-        </div>
-
-        <div class="resources">
-            <a href="canva2.html">Lo pasamos a Canva</a>
-        </div>
-
-    </article>
-
-    <article class="lesson">
-
-        <div class="circle" onclick="window.location.href='29-04.html'">
-
-            <div class="icon">✏️</div>
-
-            <div class="date">29/04</div>
-
-            <div class="separator"></div>
-
-            <div class="title">
-                Plantilla CV en Canva
-            </div>
-
-        </div>
-
-        <div class="resources">
-            <a href="29-04.html">Repaso + Continuación</a>
-        </div>
-
-    </article>
-
-    <article class="lesson">
-
-        <div class="circle" onclick="window.location.href='foto.html'">
-
-            <div class="icon">📷</div>
-
-            <div class="date">13/05</div>
-
-            <div class="separator"></div>
-
-            <div class="title">
-                Mejorar foto y ATS
-            </div>
-
-        </div>
-
-        <div class="resources">
-            <a href="foto.html">Nos hacemos profesionales</a>
-            <a href="guia-foto.pdf">Guía PDF</a>
-        </div>
-
-    </article>
-
-    <article class="lesson current">
-
-        <div class="current-tag">
-            CLASE ACTUAL
-        </div>
-
-        <div class="circle" onclick="window.location.href='intro.html'">
-
-            <div class="icon">👤</div>
-
-            <div class="date">20/05</div>
-
-            <div class="separator"></div>
-
-            <div class="title">
-                Introducción a LinkedIn
-            </div>
-
-        </div>
-
-        <div class="resources">
-            <a href="intro.html">Tu primer perfil profesional</a>
-        </div>
-
-    </article>
-
-</section>
-
-<div class="footer-note">
-    Hacé clic en cada clase para ver los materiales
+  </div>
 </div>
 
+<!-- ========================================================= -->
+<!-- 🦾 CLASE 22/04 -->
+<!-- ========================================================= -->
+
+<div class="section">
+  <h2>🦾 Clase 22/04 — CV en Canva</h2>
+
+  <div class="grid">
+
+    <div class="card" onclick="go('canva2.html')">
+      <h3>❤️ Lo pasamos a Canva</h3>
+      <p>Repaso + Canva</p>
+    </div>
+
+  </div>
 </div>
+
+<!-- ========================================================= -->
+<!-- 🎨 CLASE 29/04 -->
+<!-- ========================================================= -->
+
+<div class="section">
+  <h2>🎨 Clase 29/04 — Plantilla CV en Canva</h2>
+
+  <div class="grid">
+
+    <div class="card" onclick="go('29-04.html')">
+      <h3>🧠 Repaso + Continuación</h3>
+      <p>Retomamos lo de la semana pasada y lo aplicamos hoy</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================================================= -->
+<!-- 📸 CLASE 13/05 -->
+<!-- ========================================================= -->
+
+<div class="section">
+  <h2>📸 Clase 13/05 — Mejorar foto y ATS</h2>
+
+  <div class="grid">
+
+    <div class="card" onclick="go('foto.html')">
+      <h3>🧠 Nos hacemos más profesionales</h3>
+      <p>Mejoramos con IA nuestra foto de perfil y preparamos el CV</p>
+    </div>
+
+    <div class="card" onclick="go('guia-foto.pdf')">
+      <h3>📘 Guía PDF</h3>
+      <p>Prompts y recomendaciones para fotos con IA</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================================================= -->
+<!-- 💼 CLASE 20/05 -->
+<!-- ========================================================= -->
+
+<div class="section">
+  <h2>
+    <span>💼 Clase 20/05 — Introducción a LinkedIn</span>
+    <span class="badge">Actual</span>
+  </h2>
+
+  <div class="grid">
+
+    <div class="card" onclick="go('intro.html')">
+      <h3>💼 Tu primer perfil profesional</h3>
+      <p>Qué es LinkedIn y cómo empezar a construir tu perfil</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================================================= -->
+<!-- 📌 PLANTILLA PARA FUTURAS CLASES -->
+<!-- ========================================================= -->
+
+<!--
+
+<div class="section">
+  <h2>
+    <span>📅 Clase DD/MM — Tema</span>
+    <span class="badge">Actual</span>
+  </h2>
+
+  <div class="grid">
+
+    <div class="card" onclick="go('archivo.html')">
+      <h3>🧠 Título</h3>
+      <p>Descripción</p>
+    </div>
+
+  </div>
+</div>
+
+-->
+
+<script>
+function go(url){
+  window.location.href = url;
+}
+</script>
 
 </body>
 </html>
