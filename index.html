@@ -6,293 +6,450 @@
 <title>Comunicación, Cultura y Sociedad</title>
 
 <style>
+/* =========================================================
+   VARIABLES & RESET
+========================================================= */
 :root {
-  --bg: linear-gradient(135deg, #0f172a, #1e293b);
-  --card: rgba(255,255,255,0.05);
-  --border: rgba(255,255,255,0.08);
-  --accent: #3b82f6;
-  --text: #e2e8f0;
-  --muted: #94a3b8;
+  --bg-color: #0b1121;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --accent-blue: #3b82f6;
+  --accent-purple: #8b5cf6;
+  --accent-glow: rgba(59, 130, 246, 0.4);
+  --actual-color: #10b981;
+  --actual-glow: rgba(16, 185, 129, 0.3);
+  
+  --glass-bg: rgba(30, 41, 59, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-hover: rgba(40, 53, 75, 0.6);
 }
 
 * {
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  font-family: system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  padding:40px;
-  animation: fadeIn 0.6s ease;
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.6;
+  overflow-x: hidden;
+  
+  /* Imagen de fondo generada e incrustada (Entramado tecnológico y gradientes) */
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+    url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M40 40c0-1.1-.9-2-2-2s-2 .9-2 2 .9 2 2 2 2-.9 2-2zm15 0c0-1.1-.9-2-2-2s-2 .9-2 2 .9 2 2 2 2-.9 2-2zM25 40c0-1.1-.9-2-2-2s-2 .9-2 2 .9 2 2 2 2-.9 2-2zm15 15c0-1.1-.9-2-2-2s-2 .9-2 2 .9 2 2 2 2-.9 2-2zm0-30c0-1.1-.9-2-2-2s-2 .9-2 2 .9 2 2 2 2-.9 2-2z'/%3E%3Cpath d='M38 40h-13v-1h13v1zm15 0H40v-1h13v1zm-15 15v-13h1v13h-1zm0-30v13h1v-13h-1z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background-attachment: fixed;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity:0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity:1;
-    transform: translateY(0);
-  }
+/* =========================================================
+   HERO SECTION
+========================================================= */
+.hero {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 20px 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: fadeInDown 0.8s ease-out;
 }
 
-/* título principal */
-h1 {
-  text-align:center;
-  margin-bottom:50px;
-  font-size:2.2rem;
-  font-weight:600;
+.hero-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid var(--accent-blue);
+  color: var(--accent-blue);
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
 }
 
-/* secciones */
-.section {
-  max-width:1100px;
-  margin:0 auto 50px;
+.hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-bottom: 20px;
+  background: linear-gradient(to right, #fff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.section h2 {
-  margin-bottom:20px;
-  font-size:1.2rem;
-  font-weight:500;
-  color: var(--muted);
-
-  display:flex;
-  align-items:center;
-  gap:10px;
+.hero p {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--text-muted);
+  max-width: 600px;
+  margin-bottom: 40px;
 }
 
-/* badge actual */
-.badge {
-  font-size:0.7rem;
-  background: var(--accent);
-  color:white;
-  padding:3px 8px;
-  border-radius:999px;
-
-  animation: pulse 1.5s infinite;
+/* Ilustración destacada incrustada */
+.hero-illustration {
+  width: 100%;
+  max-width: 350px;
+  height: auto;
+  filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
+  animation: float 6s ease-in-out infinite;
 }
 
-@keyframes pulse {
-  0% {
-    opacity:1;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity:0.6;
-    transform: scale(1.08);
-  }
-
-  100% {
-    opacity:1;
-    transform: scale(1);
-  }
+/* =========================================================
+   TIMELINE & MODULES
+========================================================= */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px 80px;
+  position: relative;
 }
 
-/* grid */
+/* Línea de tiempo vertical */
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 40px;
+  width: 2px;
+  background: linear-gradient(to bottom, transparent, var(--glass-border), transparent);
+}
+
+.module {
+  position: relative;
+  padding-left: 60px;
+  margin-bottom: 60px;
+  animation: fadeInUp 0.8s ease-out both;
+}
+
+/* Nodos de la línea de tiempo */
+.module::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--bg-color);
+  border: 3px solid var(--accent-purple);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+  z-index: 2;
+  transform: translateX(-50%);
+}
+
+.module:nth-child(even)::before {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.module h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* =========================================================
+   ESTADO "ACTUAL" (HIGHLIGHT)
+========================================================= */
+.module.is-current::before {
+  border-color: var(--actual-color);
+  box-shadow: 0 0 20px var(--actual-color);
+  animation: pulseNode 2s infinite;
+}
+
+.badge-actual {
+  font-size: 0.75rem;
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--actual-color);
+  border: 1px solid var(--actual-color);
+  padding: 4px 12px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: bold;
+  box-shadow: 0 0 15px var(--actual-glow);
+  animation: pulseBadge 2s infinite;
+}
+
+/* =========================================================
+   CARDS (GLASSMORPHISM)
+========================================================= */
 .grid {
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
-  gap:20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
 }
 
-/* cards */
 .card {
-  background: var(--card);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:25px;
-  cursor:pointer;
-
-  backdrop-filter: blur(10px);
-
-  transition: all 0.25s ease;
-
-  position:relative;
-  overflow:hidden;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 24px;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  outline: none;
 }
 
-/* brillo */
-.card::after {
-  content:"";
-  position:absolute;
-  inset:0;
-
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(255,255,255,0.08),
-    transparent
-  );
-
-  opacity:0;
-  transition:0.3s;
+/* Efecto de borde brillante en hover */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent 50%, rgba(255,255,255,0.1));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-.card:hover::after {
-  opacity:1;
+.card:hover::before, .card:focus::before {
+  opacity: 1;
 }
 
-/* hover */
-.card:hover {
-  transform: translateY(-6px) scale(1.01);
-  border-color: var(--accent);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+.card:hover, .card:focus {
+  transform: translateY(-8px);
+  background: var(--glass-hover);
+  border-color: rgba(255,255,255,0.15);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.1);
 }
 
-/* contenido */
+.card.is-current-card {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(16, 185, 129, 0.05));
+}
+
+.card.is-current-card:hover, .card.is-current-card:focus {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 25px rgba(16, 185, 129, 0.2);
+}
+
+/* Contenido de la tarjeta */
 .card h3 {
-  margin-bottom:8px;
-  font-size:1.1rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .card p {
-  font-size:0.9rem;
-  color: var(--muted);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  margin-bottom: 16px;
+  font-size: 1.2rem;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseNode {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+@keyframes pulseBadge {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
+  100% { opacity: 1; }
+}
+
+/* Stagger de animaciones */
+.module:nth-child(1) { animation-delay: 0.1s; }
+.module:nth-child(2) { animation-delay: 0.2s; }
+.module:nth-child(3) { animation-delay: 0.3s; }
+.module:nth-child(4) { animation-delay: 0.4s; }
+.module:nth-child(5) { animation-delay: 0.5s; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container::before { left: 20px; }
+  .module { padding-left: 40px; }
+  .module::before { left: 21px; }
+  .hero h1 { font-size: 2.2rem; }
 }
 </style>
 </head>
 
 <body>
 
-<h1>Comunicación, Cultura y Sociedad</h1>
+<header class="hero">
+  <div class="hero-badge">Portal Educativo</div>
+  <h1>Comunicación, Cultura y Sociedad</h1>
+  <p>Construyendo ciudadanía digital y habilidades para el mundo laboral contemporáneo.</p>
+  
+  <svg class="hero-illustration" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+      </linearGradient>
+      <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="5" result="blur" />
+        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+      </filter>
+    </defs>
+    <path d="M100 100 L200 60 L300 120 L250 160 Z" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2" stroke-dasharray="5,5"/>
+    <path d="M50 140 L100 100 L150 160" fill="none" stroke="rgba(59,130,246,0.3)" stroke-width="3"/>
+    <path d="M200 60 L280 40" fill="none" stroke="rgba(139,92,246,0.3)" stroke-width="3"/>
+    
+    <circle cx="200" cy="60" r="12" fill="url(#grad1)" filter="url(#glow)"/>
+    <circle cx="100" cy="100" r="8" fill="#3b82f6" filter="url(#glow)"/>
+    <circle cx="300" cy="120" r="10" fill="#8b5cf6" filter="url(#glow)"/>
+    <circle cx="250" cy="160" r="6" fill="#10b981" filter="url(#glow)"/>
+    <circle cx="150" cy="160" r="7" fill="#f59e0b" filter="url(#glow)"/>
+    <circle cx="50" cy="140" r="5" fill="#ec4899" filter="url(#glow)"/>
+    <circle cx="280" cy="40" r="5" fill="#3b82f6" filter="url(#glow)"/>
 
-<!-- ========================================================= -->
-<!-- 📄 CLASE 15/04 -->
-<!-- ========================================================= -->
+    <rect x="185" y="45" width="30" height="30" rx="8" fill="none" stroke="#fff" stroke-width="1" opacity="0.3" transform="rotate(45 200 60)"/>
+    <circle cx="100" cy="100" r="15" fill="none" stroke="#fff" stroke-width="1" opacity="0.2"/>
+    <circle cx="300" cy="120" r="20" fill="none" stroke="#fff" stroke-width="1" opacity="0.2"/>
+  </svg>
+</header>
 
-<div class="section">
-  <h2>📄 Clase 15/04 — Introducción al CV</h2>
+<main class="container">
 
-  <div class="grid">
-
-    <div class="card" onclick="go('cv.html')">
-      <h3>📄 CV interactivo</h3>
-      <p>Explicación general</p>
+  <section class="module">
+    <h2>📄 Clase 15/04 — Introducción al CV</h2>
+    <div class="grid">
+      <div class="card" onclick="go('cv.html')" tabindex="0">
+        <div class="icon-wrapper">📄</div>
+        <h3>CV interactivo</h3>
+        <p>Explicación general sobre la estructura y armado.</p>
+      </div>
+      <div class="card" onclick="go('comparacion.html')" tabindex="0">
+        <div class="icon-wrapper">⚖️</div>
+        <h3>Bueno vs Malo</h3>
+        <p>Análisis de qué funciona y qué no en un currículum.</p>
+      </div>
+      <div class="card" onclick="go('guia.html')" tabindex="0">
+        <div class="icon-wrapper">📘</div>
+        <h3>Guía Completa</h3>
+        <p>Resumen detallado de todos los conceptos vistos.</p>
+      </div>
     </div>
+  </section>
 
-    <div class="card" onclick="go('comparacion.html')">
-      <h3>⚖️ Bueno vs Malo</h3>
-      <p>Qué funciona y qué no</p>
+  <section class="module">
+    <h2>🦾 Clase 22/04 — CV en Canva</h2>
+    <div class="grid">
+      <div class="card" onclick="go('canva2.html')" tabindex="0">
+        <div class="icon-wrapper">❤️</div>
+        <h3>Lo pasamos a Canva</h3>
+        <p>Repaso teórico y aplicación práctica en la plataforma.</p>
+      </div>
     </div>
+  </section>
 
-    <div class="card" onclick="go('guia.html')">
-      <h3>📘 Guía</h3>
-      <p>Resumen completo</p>
+  <section class="module">
+    <h2>🎨 Clase 29/04 — Plantilla CV en Canva</h2>
+    <div class="grid">
+      <div class="card" onclick="go('29-04.html')" tabindex="0">
+        <div class="icon-wrapper">🧠</div>
+        <h3>Repaso + Continuación</h3>
+        <p>Retomamos el trabajo de la semana pasada y cerramos el diseño.</p>
+      </div>
     </div>
+  </section>
 
-  </div>
-</div>
-
-<!-- ========================================================= -->
-<!-- 🦾 CLASE 22/04 -->
-<!-- ========================================================= -->
-
-<div class="section">
-  <h2>🦾 Clase 22/04 — CV en Canva</h2>
-
-  <div class="grid">
-
-    <div class="card" onclick="go('canva2.html')">
-      <h3>❤️ Lo pasamos a Canva</h3>
-      <p>Repaso + Canva</p>
+  <section class="module">
+    <h2>📸 Clase 13/05 — Mejorar foto y ATS</h2>
+    <div class="grid">
+      <div class="card" onclick="go('foto.html')" tabindex="0">
+        <div class="icon-wrapper">🧠</div>
+        <h3>Nos hacemos profesionales</h3>
+        <p>Mejoramos con IA nuestra foto de perfil y preparamos el CV.</p>
+      </div>
+      <div class="card" onclick="go('guia-foto.pdf')" tabindex="0">
+        <div class="icon-wrapper">📘</div>
+        <h3>Guía PDF</h3>
+        <p>Prompts y recomendaciones clave para generar fotos con IA.</p>
+      </div>
     </div>
+  </section>
 
-  </div>
-</div>
-
-<!-- ========================================================= -->
-<!-- 🎨 CLASE 29/04 -->
-<!-- ========================================================= -->
-
-<div class="section">
-  <h2>🎨 Clase 29/04 — Plantilla CV en Canva</h2>
-
-  <div class="grid">
-
-    <div class="card" onclick="go('29-04.html')">
-      <h3>🧠 Repaso + Continuación</h3>
-      <p>Retomamos lo de la semana pasada y lo aplicamos hoy</p>
+  <section class="module is-current">
+    <h2>
+      💼 Clase 20/05 — Introducción a LinkedIn
+      <span class="badge-actual">Clase Actual</span>
+    </h2>
+    <div class="grid">
+      <div class="card is-current-card" onclick="go('intro.html')" tabindex="0">
+        <div class="icon-wrapper">💼</div>
+        <h3>Tu primer perfil profesional</h3>
+        <p>Qué es LinkedIn, su importancia hoy y cómo empezar a construir tu perfil paso a paso.</p>
+      </div>
     </div>
+  </section>
 
-  </div>
-</div>
-
-<!-- ========================================================= -->
-<!-- 📸 CLASE 13/05 -->
-<!-- ========================================================= -->
-
-<div class="section">
-  <h2>📸 Clase 13/05 — Mejorar foto y ATS</h2>
-
-  <div class="grid">
-
-    <div class="card" onclick="go('foto.html')">
-      <h3>🧠 Nos hacemos más profesionales</h3>
-      <p>Mejoramos con IA nuestra foto de perfil y preparamos el CV</p>
-    </div>
-
-    <div class="card" onclick="go('guia-foto.pdf')">
-      <h3>📘 Guía PDF</h3>
-      <p>Prompts y recomendaciones para fotos con IA</p>
-    </div>
-
-  </div>
-</div>
-
-<!-- ========================================================= -->
-<!-- 💼 CLASE 20/05 -->
-<!-- ========================================================= -->
-
-<div class="section">
-  <h2>
-    <span>💼 Clase 20/05 — Introducción a LinkedIn</span>
-    <span class="badge">Actual</span>
-  </h2>
-
-  <div class="grid">
-
-    <div class="card" onclick="go('intro.html')">
-      <h3>💼 Tu primer perfil profesional</h3>
-      <p>Qué es LinkedIn y cómo empezar a construir tu perfil</p>
-    </div>
-
-  </div>
-</div>
-
-<!-- ========================================================= -->
-<!-- 📌 PLANTILLA PARA FUTURAS CLASES -->
-<!-- ========================================================= -->
-
-<!--
-
-<div class="section">
-  <h2>
-    <span>📅 Clase DD/MM — Tema</span>
-    <span class="badge">Actual</span>
-  </h2>
-
-  <div class="grid">
-
-    <div class="card" onclick="go('archivo.html')">
-      <h3>🧠 Título</h3>
-      <p>Descripción</p>
-    </div>
-
-  </div>
-</div>
-
--->
+  </main>
 
 <script>
+// Navegación mediante clic
 function go(url){
   window.location.href = url;
 }
+
+// Soporte de navegación por teclado para mayor accesibilidad
+document.addEventListener('DOMContentLoaded', () => {
+  const cards = document.querySelectorAll('.card');
+  cards.forEach(card => {
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        card.click();
+      }
+    });
+  });
+});
 </script>
 
 </body>
