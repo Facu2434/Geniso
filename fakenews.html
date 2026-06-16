@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desinformación y Fake News</title>
+    <style>
+        /* === VARIABLES DE COLOR === */
+        :root {
+            --bg-body: #e2e8f0; 
+            --card-bg: #ffffff;
+            --dark-bg: #1e293b; 
+            --text-main: #334155; 
+            --text-light: #64748b; 
+            --accent-blue: #1d4ed8; 
+            --accent-blue-light: #eff6ff;
+            --accent-hover: #1e40af;
+            
+            --accent-green: #059669;
+            --accent-green-light: #ecfdf5;
+            
+            --accent-red: #dc2626;
+            --accent-red-light: #fef2f2;
+            
+            --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        }
+
+        /* === RESET === */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.5;
+            overflow: hidden;
+        }
+
+        /* === CONTENEDOR PRINCIPAL === */
+        .app-container {
+            width: 100%;
+            max-width: 1100px;
+            height: 85vh; 
+            min-height: 600px;
+            max-height: 850px;
+            background-color: var(--card-bg);
+            box-shadow: 0 20px 40px -10px rgba(30, 41, 59, 0.1), 0 10px 20px -5px rgba(30, 41, 59, 0.05);
+            border-radius: 20px; 
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            border-top: 6px solid var(--accent-blue);
+        }
+
+        /* === PANTALLAS (STEPS) === */
+        .screen {
+            display: none;
+            flex-direction: column;
+            flex-grow: 1;
+            padding: 50px 70px; 
+            overflow-y: auto; 
+            animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+            justify-content: center;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        .screen::-webkit-scrollbar { width: 6px; }
+        .screen::-webkit-scrollbar-track { background: transparent; }
+        .screen::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === TIPOGRAFÍA === */
+        .title {
+            font-size: clamp(2.5rem, 5vw, 3.8rem);
+            font-weight: 800;
+            margin-bottom: 25px;
+            color: var(--dark-bg);
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: clamp(1.6rem, 3vw, 2rem);
+            color: var(--text-light);
+            margin-bottom: 40px;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        /* === LISTAS DE CONCEPTOS === */
+        .concept-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 20px; 
+        }
+
+        .concept-list li {
+            font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            color: var(--text-main);
+            line-height: 1.4;
+            background: #f8fafc;
+            padding: 20px 25px;
+            border-radius: 16px;
+            border: 1px solid #f1f5f9;
+            transition: transform 0.2s ease;
+        }
+
+        .concept-list li:hover {
+            transform: translateX(5px);
+            border-color: #e2e8f0;
+        }
+
+        .icon-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            background-color: var(--accent-blue-light);
+            color: var(--accent-blue);
+            flex-shrink: 0;
+        }
+
+        .list-good li .icon-box { background-color: var(--accent-green-light); color: var(--accent-green); }
+        .list-bad li .icon-box { background-color: var(--accent-red-light); color: var(--accent-red); }
+
+        /* === BLOQUES DESTACADOS === */
+        .highlight-box {
+            background-color: var(--accent-blue-light); 
+            border-left: 6px solid var(--accent-blue);
+            padding: 35px 40px;
+            border-radius: 0 16px 16px 0;
+            font-size: clamp(1.8rem, 3vw, 2.2rem);
+            color: #1e3a8a;
+            font-weight: 700;
+            margin-top: 30px;
+            line-height: 1.4;
+        }
+
+        /* === GRIDS (Tarjetas e Íconos) === */
+        .parts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 10px;
+        }
+
+        .part-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .part-card .icon-box {
+            background: var(--dark-bg);
+            color: white;
+            width: 50px;
+            height: 50px;
+        }
+
+        .part-card h3 {
+            font-size: 1.5rem;
+            color: var(--dark-bg);
+            margin-bottom: 5px;
+        }
+
+        .part-card p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+        }
+
+        /* Grid de iconos simples (Pantalla 3) */
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .icon-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 15px;
+            transition: transform 0.2s;
+        }
+
+        .icon-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-blue);
+        }
+
+        .icon-card .icon-box {
+            width: 70px;
+            height: 70px;
+            background: var(--accent-blue-light);
+        }
+
+        .icon-card h3 {
+            font-size: 1.3rem;
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        /* === EJEMPLO COTIDIANO (Pantalla 6) === */
+        .message-mockup {
+            background: #eef2ff;
+            border: 2px solid #c7d2fe;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .message-mockup::before {
+            content: "Mensaje Reenviado";
+            position: absolute;
+            top: 15px;
+            left: 40px;
+            font-size: 1rem;
+            color: #6366f1;
+            font-weight: 700;
+            font-style: italic;
+        }
+
+        .message-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #312e81;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+
+        .message-context {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .context-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.4rem;
+            color: var(--text-main);
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        /* === CENTRADO ABSOLUTO === */
+        .center-screen {
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .center-screen .title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* === BARRA DE NAVEGACIÓN === */
+        .nav-bar {
+            background-color: #ffffff;
+            border-top: 1px solid #f1f5f9;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .step-counter {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #94a3b8;
+            background: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+
+        .btn {
+            background-color: var(--dark-bg);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-prev {
+            background-color: transparent;
+            color: var(--text-light);
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-prev:hover {
+            background-color: #f8fafc;
+            color: var(--text-main);
+            border-color: #cbd5e1;
+        }
+
+        .btn-next {
+            background-color: var(--accent-blue);
+        }
+
+        .btn-next:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2);
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 850px) {
+            .app-container { height: 95vh; border-radius: 16px; }
+            .screen { padding: 30px 25px; }
+            .concept-list { gap: 15px; }
+            .concept-list li { padding: 15px; font-size: 1.2rem; }
+            .icon-box { width: 45px; height: 45px; }
+            .parts-grid, .icon-grid { grid-template-columns: 1fr; gap: 15px;}
+            .nav-bar { padding: 15px 20px; }
+            .btn { padding: 12px 20px; font-size: 1.1rem; }
+            .highlight-box { padding: 25px; font-size: 1.4rem; }
+            .message-mockup { padding: 25px; }
+            .message-text { font-size: 1.4rem; }
+            .context-item { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- PANTALLA 1: IMPACTO -->
+        <div class="screen active center-screen" id="screen-1">
+            <h1 class="title" style="font-size: clamp(3rem, 6vw, 5rem);">
+                ¿Todo lo que vemos en internet<br>
+                <span style="color: var(--accent-blue);">es verdad?</span>
+            </h1>
+            <p class="subtitle" style="margin-top: 20px; max-width: 800px;">
+                Vivimos rodeados de información.
+            </p>
+        </div>
+
+        <!-- PANTALLA 2: ¿QUÉ SON? -->
+        <div class="screen" id="screen-2">
+            <h1 class="title">¿Qué son las Fake News?</h1>
+            
+            <ul class="concept-list">
+                <li>
+                    <div class="icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    </div>
+                    <span>Son noticias <strong>falsas o engañosas</strong>.</span>
+                </li>
+                <li>
+                    <div class="icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    </div>
+                    <span>Se presentan como si fueran <strong>verdaderas</strong>.</span>
+                </li>
+                <li>
+                    <div class="icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    </div>
+                    <span>Buscan generar <strong>impacto o confusión</strong>.</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- PANTALLA 3: DÓNDE APARECEN -->
+        <div class="screen" id="screen-3">
+            <h1 class="title">¿Dónde aparecen?</h1>
+            
+            <div class="icon-grid">
+                <div class="icon-card">
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5c-1.1 0-2 .9-2 2v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+                    <h3>Redes sociales</h3>
+                </div>
+                <div class="icon-card">
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></div>
+                    <h3>Sitios web</h3>
+                </div>
+                <div class="icon-card">
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg></div>
+                    <h3>Videos</h3>
+                </div>
+                <div class="icon-card">
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></div>
+                    <h3>WhatsApp</h3>
+                </div>
+                <div class="icon-card">
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></div>
+                    <h3>Publicaciones compartidas</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 4: POR QUÉ SE DIFUNDEN -->
+        <div class="screen" id="screen-4">
+            <h1 class="title">¿Por qué se difunden?</h1>
+            
+            <ul class="concept-list">
+                <li>
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div>
+                    <span>Generan <strong>emociones fuertes</strong> (enojo, miedo, alegría).</span>
+                </li>
+                <li>
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 14 20 9 15 4"></polyline><path d="M4 20v-7a4 4 0 0 1 4-4h12"></path></svg></div>
+                    <span>Muchas personas <strong>comparten sin verificar</strong>.</span>
+                </li>
+                <li>
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
+                    <span>Algunas buscan <strong>visitas o dinero</strong> mediante clics.</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- PANTALLA 5: REDES SOCIALES -->
+        <div class="screen" id="screen-5">
+            <h1 class="title">Redes sociales y desinformación</h1>
+            
+            <p class="subtitle" style="margin-bottom: 20px; color: var(--text-main);">
+                La información viaja muy rápido. Una noticia falsa puede llegar a miles de personas en minutos.
+            </p>
+
+            <div class="highlight-box">
+                Compartir lleva segundos.<br>
+                Verificar lleva unos minutos.
+            </div>
+        </div>
+
+        <!-- PANTALLA 6: EJEMPLO COTIDIANO -->
+        <div class="screen" id="screen-6">
+            <h1 class="title">Ejemplo cotidiano</h1>
+            
+            <div class="message-mockup">
+                <div class="message-text">
+                    "🚨 ¡Urgente! Se suspenden las clases en todo el país a partir de mañana por tiempo indeterminado. Compartí para que todos se enteren."
+                </div>
+            </div>
+
+            <div class="message-context">
+                <div class="context-item">
+                    <div class="icon-box" style="width: 40px; height: 40px; background: var(--accent-blue-light);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5c-1.1 0-2 .9-2 2v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+                    <span>Miles de personas lo comparten asustadas.</span>
+                </div>
+                <div class="context-item">
+                    <div class="icon-box" style="width: 40px; height: 40px; background: var(--accent-red-light);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-red)" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
+                    <span><strong>No existe ninguna confirmación oficial.</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 7: CÓMO DETECTAR -->
+        <div class="screen" id="screen-7">
+            <h1 class="title">¿Cómo detectar una noticia falsa?</h1>
+            
+            <ul class="concept-list list-good">
+                <li>
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+                    <span><strong>Revisá la fuente.</strong> ¿Es un medio conocido?</span>
+                </li>
+                <li>
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+                    <span><strong>Verificá el autor.</strong> ¿Quién firma la nota?</span>
+                </li>
+                <li>
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
+                    <span><strong>Leé la noticia completa</strong>, no solo el título.</span>
+                </li>
+                <li>
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></div>
+                    <span><strong>Comprobá la fecha.</strong> A veces se reciclan noticias viejas.</span>
+                </li>
+                <li>
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg></div>
+                    <span><strong>Compará con otros medios.</strong> ¿Alguien más lo publicó?</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- PANTALLA 8: SEÑALES DE ALERTA -->
+        <div class="screen" id="screen-8">
+            <h1 class="title">Señales de alerta</h1>
+            
+            <ul class="concept-list list-bad">
+                <li>
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
+                    <span><strong>Títulos exagerados</strong> o escritos todo en mayúsculas.</span>
+                </li>
+                <li>
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
+                    <span><strong>Promesas increíbles</strong> o curas milagrosas.</span>
+                </li>
+                <li>
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></div>
+                    <span><strong>Falta de fuentes.</strong> No citan a nadie ni muestran pruebas.</span>
+                </li>
+                <li>
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
+                    <span>Información que es <strong>difícil de verificar</strong> en otro lado.</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- PANTALLA 9: POR QUÉ VERIFICAR -->
+        <div class="screen" id="screen-9">
+            <h1 class="title">¿Por qué es importante verificar?</h1>
+            
+            <div class="parts-grid">
+                <div class="part-card">
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+                    <div>
+                        <h3>Evita errores</h3>
+                        <p>No compartís datos falsos que puedan perjudicar a otros.</p>
+                    </div>
+                </div>
+                <div class="part-card">
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg></div>
+                    <div>
+                        <h3>Reduce la desinformación</h3>
+                        <p>Frenás la cadena de engaños en tus grupos o redes.</p>
+                    </div>
+                </div>
+                <div class="part-card">
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg></div>
+                    <div>
+                        <h3>Toma de decisiones</h3>
+                        <p>Te ayuda a decidir mejor basándote en hechos reales.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 10: CONSEJOS RÁPIDOS -->
+        <div class="screen" id="screen-10">
+            <h1 class="title">Consejos rápidos</h1>
+            
+            <ul class="concept-list">
+                <li>
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
+                    <span><strong>Pensá</strong> antes de compartir.</span>
+                </li>
+                <li>
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+                    <span><strong>Buscá</strong> otras fuentes.</span>
+                </li>
+                <li>
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+                    <span><strong>Consultá</strong> sitios confiables u oficiales.</span>
+                </li>
+                <li>
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
+                    <span><strong>Verificá</strong> la información.</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- PANTALLA 11: CIERRE -->
+        <div class="screen center-screen" id="screen-11">
+            <div style="max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; align-items: center;">
+                
+                <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+
+                <p style="font-size: clamp(3rem, 5vw, 4rem); font-weight: 800; color: var(--dark-bg); line-height: 1.2; margin: 0;">
+                    La información está en internet.
+                </p>
+                <p style="font-size: clamp(2.5rem, 4vw, 3.5rem); font-weight: 600; color: var(--accent-blue); line-height: 1.2; margin: 0;">
+                    Lo importante es saber analizarla.
+                </p>
+                
+            </div>
+        </div>
+
+        <!-- === BARRA DE NAVEGACIÓN INFERIOR === -->
+        <div class="nav-bar">
+            <button class="btn btn-prev" id="btn-prev" onclick="changeStep(-1)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Anterior
+            </button>
+            
+            <div class="step-counter" id="step-counter">
+                1 / 11
+            </div>
+
+            <button class="btn btn-next" id="btn-next" onclick="changeStep(1)">
+                Siguiente
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- === LÓGICA DE NAVEGACIÓN === -->
+    <script>
+        let currentStep = 1;
+        const totalSteps = 11;
+
+        function updateUI() {
+            // Ocultar todas las pantallas
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Mostrar la actual (forzando reflow para reiniciar animación)
+            const activeScreen = document.getElementById(`screen-${currentStep}`);
+            activeScreen.classList.remove('active');
+            void activeScreen.offsetWidth; // Trigger reflow
+            activeScreen.classList.add('active');
+
+            // Actualizar texto del contador
+            document.getElementById('step-counter').innerText = `${currentStep} / ${totalSteps}`;
+
+            // Botón Anterior
+            const btnPrev = document.getElementById('btn-prev');
+            if (currentStep === 1) {
+                btnPrev.style.visibility = 'hidden';
+            } else {
+                btnPrev.style.visibility = 'visible';
+            }
+
+            // Botón Siguiente
+            const btnNext = document.getElementById('btn-next');
+            if (currentStep === totalSteps) {
+                btnNext.style.visibility = 'hidden';
+            } else {
+                btnNext.style.visibility = 'visible';
+            }
+        }
+
+        function changeStep(direction) {
+            currentStep += direction;
+            
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > totalSteps) currentStep = totalSteps;
+
+            updateUI();
+        }
+
+        // Navegación con flechas del teclado
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight') {
+                changeStep(1);
+            } else if (event.key === 'ArrowLeft') {
+                changeStep(-1);
+            }
+        });
+
+        // Iniciar
+        updateUI();
+    </script>
+</body>
+</html>
