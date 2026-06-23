@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control de Avance</title>
+    <style>
+        /* === VARIABLES DE COLOR === */
+        :root {
+            --bg-body: #e2e8f0; 
+            --card-bg: #ffffff;
+            --dark-bg: #1e293b; 
+            --text-main: #334155; 
+            --text-light: #64748b; 
+            --accent-blue: #1d4ed8; 
+            --accent-blue-light: #eff6ff;
+            --accent-hover: #1e40af;
+            
+            --accent-green: #059669;
+            --accent-green-light: #ecfdf5;
+            
+            --accent-red: #dc2626;
+            --accent-red-light: #fef2f2;
+            
+            --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        }
+
+        /* === RESET === */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        /* === CONTENEDOR PRINCIPAL === */
+        .app-container {
+            width: 100%;
+            max-width: 1050px;
+            height: 85vh; 
+            min-height: 550px;
+            max-height: 800px;
+            background-color: var(--card-bg);
+            box-shadow: 0 20px 40px -10px rgba(30, 41, 59, 0.1), 0 10px 20px -5px rgba(30, 41, 59, 0.05);
+            border-radius: 20px; 
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            border-top: 6px solid var(--accent-blue);
+        }
+
+        /* === PANTALLAS (STEPS) === */
+        .screen {
+            display: none;
+            flex-direction: column;
+            flex-grow: 1;
+            padding: 40px 60px; 
+            overflow-y: auto; 
+            animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+            justify-content: center;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        .screen::-webkit-scrollbar { width: 6px; }
+        .screen::-webkit-scrollbar-track { background: transparent; }
+        .screen::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === TIPOGRAFÍA === */
+        .title {
+            font-size: clamp(2.2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: var(--dark-bg);
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+            color: var(--text-light);
+            margin-bottom: 30px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* === BLOQUES DESTACADOS === */
+        .highlight-box {
+            background-color: var(--accent-blue-light); 
+            border-left: 6px solid var(--accent-blue);
+            padding: 25px;
+            border-radius: 0 16px 16px 0;
+            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+            color: #1e3a8a;
+            font-weight: 700;
+            margin-top: 30px;
+            line-height: 1.4;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* === GRIDS (Tarjetas) === */
+        .parts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .part-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .part-card:hover {
+            transform: translateY(-3px);
+            border-color: #cbd5e1;
+        }
+
+        .icon-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background-color: var(--accent-blue-light);
+            color: var(--accent-blue);
+            flex-shrink: 0;
+        }
+
+        .part-card h3 {
+            font-size: 1.3rem;
+            color: var(--dark-bg);
+            margin-bottom: 2px;
+        }
+
+        .part-card p {
+            font-size: 1rem;
+            color: var(--text-light);
+        }
+
+        /* Grid de iconos simples (Pantalla 1 y otras) */
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .icon-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 25px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .icon-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+        }
+
+        .icon-card .emoji {
+            font-size: 3rem;
+            line-height: 1;
+        }
+
+        .icon-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* === COMPARACIÓN VISUAL === */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .compare-card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            border: 2px solid #e2e8f0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .compare-label {
+            text-align: center;
+            font-weight: 800;
+            padding: 15px;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: white;
+        }
+
+        .label-green { background: var(--accent-green); }
+        .label-red { background: var(--accent-red); }
+
+        .compare-content { 
+            padding: 30px 25px; 
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex-grow: 1;
+            background: #f8fafc;
+        }
+
+        .compare-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .compare-item svg { flex-shrink: 0; }
+
+        /* === COMPONENTES ESPECIALES VISUALES === */
+        /* Mockup CV (Pantalla 2) */
+        .cv-mockup {
+            width: 100%;
+            max-width: 400px;
+            height: 380px;
+            background: white;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            margin: 0 auto;
+            position: relative;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .hotspot {
+            background: var(--accent-blue);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            position: absolute;
+            box-shadow: 0 4px 10px rgba(29, 78, 216, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .hotspot::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-blue);
+            transform: rotate(45deg);
+        }
+
+        /* Mockup LinkedIn (Pantalla 6) */
+        .linkedin-mockup {
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08);
+        }
+
+        .li-banner { height: 100px; background: #cbd5e1; }
+        .li-body { padding: 0 20px 20px; position: relative; }
+        .li-avatar { 
+            width: 90px; height: 90px; 
+            border-radius: 50%; background: var(--dark-bg); 
+            border: 4px solid white; 
+            margin-top: -45px; margin-bottom: 15px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 2rem;
+        }
+        
+        /* Flow Diagram (Pantallas 9 y 12) */
+        .visual-flow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .flow-step {
+            background: white;
+            border: 2px solid var(--accent-blue);
+            border-radius: 12px;
+            padding: 15px 30px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--accent-blue);
+            text-align: center;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .flow-arrow {
+            color: #94a3b8;
+        }
+
+        /* Big Checkboxes (Pantalla 7 y 14) */
+        .big-checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .checklist-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .checklist-row:hover { background: #f8fafc; }
+        .checklist-row input[type="checkbox"] {
+            width: 24px; height: 24px;
+            cursor: pointer;
+            accent-color: var(--accent-green);
+        }
+
+        /* === BARRA DE NAVEGACIÓN E INTERFAZ === */
+        .nav-bar {
+            background-color: #ffffff;
+            border-top: 1px solid #f1f5f9;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .step-counter {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #94a3b8;
+            background: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+
+        .btn {
+            background-color: var(--dark-bg);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-prev {
+            background-color: transparent;
+            color: var(--text-light);
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-prev:hover {
+            background-color: #f8fafc;
+            color: var(--text-main);
+            border-color: #cbd5e1;
+        }
+
+        .btn-next { background-color: var(--accent-blue); }
+        .btn-next:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2);
+        }
+
+        .btn-close {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: #f8fafc; border: 2px solid #e2e8f0;
+            color: var(--text-light); cursor: pointer;
+            width: 44px; height: 44px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; z-index: 100;
+        }
+        .btn-close:hover {
+            background-color: var(--accent-red-light);
+            color: var(--accent-red); border-color: #fca5a5;
+            transform: rotate(90deg);
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .app-container { height: 95vh; border-radius: 16px; }
+            .screen { padding: 30px 25px; }
+            .comparison-grid, .parts-grid { grid-template-columns: 1fr; gap: 15px;}
+            .nav-bar { padding: 15px 20px; }
+            .btn { padding: 12px 20px; font-size: 1.1rem; }
+            .cv-mockup { transform: scale(0.9); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- BOTÓN CERRAR MÓDULO -->
+        <button class="btn-close" onclick="closeModule()" title="Cerrar módulo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+
+        <!-- PANTALLA 1: IMPACTO -->
+        <div class="screen active" id="screen-1">
+            <h1 class="title">¿Qué tenemos que terminar hoy?</h1>
+            
+            <div class="icon-grid" style="margin-top: 20px;">
+                <div class="icon-card"><div class="emoji">📄</div><h3>CV completo</h3></div>
+                <div class="icon-card"><div class="emoji">🎨</div><h3>CV en Canva</h3></div>
+                <div class="icon-card"><div class="emoji">📷</div><h3>Foto prof.</h3></div>
+                <div class="icon-card"><div class="emoji">💼</div><h3>LinkedIn básico</h3></div>
+                <div class="icon-card"><div class="emoji">🤖</div><h3>NotebookLM</h3></div>
+            </div>
+
+            <div class="highlight-box">
+                Hoy el objetivo principal es dejar todo esto al día.
+            </div>
+        </div>
+
+        <!-- PANTALLA 2: ESTRUCTURA CV -->
+        <div class="screen" id="screen-2">
+            <h1 class="title">CV: estructura mínima</h1>
+            
+            <div class="cv-mockup">
+                <!-- Líneas falsas de texto -->
+                <div style="width: 40%; height: 24px; background: #94a3b8; border-radius: 4px; margin-bottom: 20px;"></div>
+                <div style="width: 100%; height: 12px; background: #e2e8f0; border-radius: 4px;"></div>
+                <div style="width: 80%; height: 12px; background: #e2e8f0; border-radius: 4px; margin-bottom: 20px;"></div>
+                <div style="width: 100%; height: 12px; background: #e2e8f0; border-radius: 4px;"></div>
+                <div style="width: 90%; height: 12px; background: #e2e8f0; border-radius: 4px; margin-bottom: 20px;"></div>
+                
+                <div style="width: 60%; height: 12px; background: #e2e8f0; border-radius: 4px;"></div>
+                <div style="width: 70%; height: 12px; background: #e2e8f0; border-radius: 4px;"></div>
+
+                <!-- Hotspots -->
+                <div class="hotspot" style="top: -15px; left: 10%;">
+                    <span style="font-size: 1.2rem;">👤</span> Datos personales
+                    <style>.hotspot:nth-child(8)::before { bottom: -5px; left: 20px; }</style>
+                </div>
+                
+                <div class="hotspot" style="top: 80px; right: -20px; background: var(--dark-bg);">
+                    <span style="font-size: 1.2rem;">🎓</span> Educación
+                    <style>.hotspot:nth-child(9)::before { top: 12px; left: -5px; background: var(--dark-bg); }</style>
+                </div>
+
+                <div class="hotspot" style="top: 150px; left: -20px; background: var(--dark-bg);">
+                    <span style="font-size: 1.2rem;">💼</span> Experiencia
+                    <style>.hotspot:nth-child(10)::before { top: 12px; right: -5px; background: var(--dark-bg); }</style>
+                </div>
+
+                <div class="hotspot" style="bottom: 80px; right: 10px; background: var(--dark-bg);">
+                    <span style="font-size: 1.2rem;">🛠</span> Habilidades
+                    <style>.hotspot:nth-child(11)::before { top: 12px; left: -5px; background: var(--dark-bg); }</style>
+                </div>
+
+                <div class="hotspot" style="bottom: -15px; left: 20px;">
+                    <span style="font-size: 1.2rem;">📚</span> Cursos
+                    <style>.hotspot:nth-child(12)::before { top: -5px; right: 20px; }</style>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 3: ANTES DE CANVA -->
+        <div class="screen" id="screen-3">
+            <h1 class="title">Antes de pasarlo a Canva</h1>
+            <p class="subtitle">Asegurate de que tu texto esté impecable primero.</p>
+            
+            <div class="parts-grid">
+                <div class="part-card">
+                    <div class="icon-box" style="font-size: 1.5rem;">✍</div>
+                    <div><h3>Ortografía</h3><p>Revisá tildes y errores de tipeo.</p></div>
+                </div>
+                <div class="part-card">
+                    <div class="icon-box" style="font-size: 1.5rem;">📅</div>
+                    <div><h3>Fechas</h3><p>Orden cronológico inverso (lo más nuevo arriba).</p></div>
+                </div>
+                <div class="part-card">
+                    <div class="icon-box" style="font-size: 1.5rem;">📧</div>
+                    <div><h3>Contacto</h3><p>Mail serio y teléfono bien escrito.</p></div>
+                </div>
+                <div class="part-card">
+                    <div class="icon-box" style="font-size: 1.5rem; background: var(--accent-red-light); color: var(--accent-red);">🗑</div>
+                    <div><h3>Info repetida</h3><p>Eliminá lo que no sume al perfil.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 4: ATS -->
+        <div class="screen" id="screen-4">
+            <h1 class="title">ATS Friendly vs Problemático</h1>
+            
+            <div class="comparison-grid">
+                <!-- Verde -->
+                <div class="compare-card">
+                    <div class="compare-label label-green">Friendly (Filtros IA)</div>
+                    <div class="compare-content">
+                        <div class="compare-item">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Texto claro
+                        </div>
+                        <div class="compare-item">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Títulos simples
+                        </div>
+                        <div class="compare-item">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Información ordenada
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rojo -->
+                <div class="compare-card">
+                    <div class="compare-label label-red">Problemático</div>
+                    <div class="compare-content">
+                        <div class="compare-item">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-red)" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            Exceso de gráficos/barras
+                        </div>
+                        <div class="compare-item">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-red)" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            Columnas complejas
+                        </div>
+                        <div class="compare-item">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-red)" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            Diseño difícil de leer
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 5: CANVA MINIS -->
+        <div class="screen" id="screen-5">
+            <h1 class="title">Canva: ¿Qué elegimos?</h1>
+            <p class="subtitle">Menos es más a la hora de buscar trabajo.</p>
+            
+            <div class="parts-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <!-- Buena -->
+                <div class="icon-card" style="border-color: var(--accent-green);">
+                    <div style="width: 80px; height: 110px; border: 2px solid #cbd5e1; border-top: 15px solid var(--dark-bg); padding: 5px; display:flex; flex-direction:column; gap:4px; border-radius: 4px;">
+                        <div style="width: 100%; height: 6px; background:#e2e8f0;"></div>
+                        <div style="width: 80%; height: 6px; background:#e2e8f0;"></div>
+                        <div style="width: 100%; height: 6px; background:#e2e8f0; margin-top:5px;"></div>
+                    </div>
+                    <h3 style="color: var(--accent-green);">Buena (Simple)</h3>
+                </div>
+                
+                <!-- Aceptable -->
+                <div class="icon-card">
+                    <div style="width: 80px; height: 110px; border: 2px solid #cbd5e1; display:flex; gap: 4px; padding: 5px; border-radius: 4px;">
+                        <div style="width: 30%; height: 100%; background: var(--accent-blue-light);"></div>
+                        <div style="width: 70%; height: 100%; display:flex; flex-direction:column; gap:4px;">
+                             <div style="width: 100%; height: 6px; background:#e2e8f0;"></div>
+                             <div style="width: 100%; height: 6px; background:#e2e8f0;"></div>
+                        </div>
+                    </div>
+                    <h3 style="color: var(--text-main);">Aceptable (2 Columnas)</h3>
+                </div>
+
+                <!-- Recargada -->
+                <div class="icon-card" style="border-color: var(--accent-red);">
+                    <div style="width: 80px; height: 110px; border: 2px solid #cbd5e1; display:flex; flex-wrap: wrap; gap: 4px; padding: 5px; border-radius: 4px; background: #fef2f2;">
+                        <div style="width: 30px; height: 30px; border-radius:50%; background:var(--accent-red); margin: 0 auto;"></div>
+                        <div style="width: 100%; height: 15px; background:var(--dark-bg);"></div>
+                        <div style="width: 45%; height: 20px; background:#fca5a5;"></div>
+                        <div style="width: 45%; height: 20px; background:#fca5a5;"></div>
+                    </div>
+                    <h3 style="color: var(--accent-red);">Recargada</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 6: LINKEDIN MOCKUP -->
+        <div class="screen" id="screen-6">
+            <h1 class="title">LinkedIn: Perfil Básico</h1>
+            
+            <div class="linkedin-mockup">
+                <div class="li-banner"></div>
+                <div class="li-body">
+                    <div class="li-avatar">👤</div>
+                    <div style="font-size: 1.5rem; font-weight: 800; color: var(--dark-bg); margin-bottom: 5px;">Tu Nombre Completo</div>
+                    <div style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 10px;">Titular: A qué te dedicás o qué buscás (Ej: Estudiante de X | Buscando oportunidades en Y)</div>
+                    <div style="font-size: 0.9rem; color: var(--text-light); display: flex; gap: 15px; margin-bottom: 15px;">
+                        <span>📍 Tu Ubicación</span>
+                        <span>🎓 Institución Educativa</span>
+                    </div>
+                    <div style="width: 120px; height: 35px; background: var(--accent-blue); border-radius: 20px; display:flex; align-items:center; justify-content:center; color:white; font-weight: bold; font-size: 0.9rem;">Tengo interés en</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 7: CHECKLIST -->
+        <div class="screen" id="screen-7">
+            <h1 class="title">¿Qué te falta completar?</h1>
+            
+            <div class="big-checklist">
+                <label class="checklist-row"><input type="checkbox"> <span>📷 Foto de perfil</span></label>
+                <label class="checklist-row"><input type="checkbox"> <span>💬 Titular descriptivo</span></label>
+                <label class="checklist-row"><input type="checkbox"> <span>🎓 Estudios e Institución</span></label>
+                <label class="checklist-row"><input type="checkbox"> <span>📝 Sección "Acerca de"</span></label>
+                <label class="checklist-row"><input type="checkbox"> <span>💼 Experiencia (si la hay)</span></label>
+            </div>
+        </div>
+
+        <!-- PANTALLA 8: BUSQUEDAS -->
+        <div class="screen" id="screen-8">
+            <h1 class="title">Primeras búsquedas</h1>
+            <p class="subtitle">Ejemplos de palabras clave para empezar.</p>
+            
+            <div style="background: white; border: 2px solid #e2e8f0; border-radius: 30px; padding: 15px 25px; display: flex; align-items:center; gap: 10px; width: 100%; max-width: 600px; margin: 0 auto 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <span style="color: var(--text-light); font-size: 1.2rem;">Buscar puestos o empresas...</span>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; max-width: 700px; margin: 0 auto;">
+                <span style="background: var(--dark-bg); color: white; padding: 10px 20px; border-radius: 20px; font-weight: 600;">Auxiliar administrativo</span>
+                <span style="background: var(--dark-bg); color: white; padding: 10px 20px; border-radius: 20px; font-weight: 600;">Atención al cliente</span>
+                <span style="background: var(--dark-bg); color: white; padding: 10px 20px; border-radius: 20px; font-weight: 600;">Operario</span>
+                <span style="background: var(--dark-bg); color: white; padding: 10px 20px; border-radius: 20px; font-weight: 600;">Recepcionista</span>
+                <span style="background: #e2e8f0; color: var(--text-main); padding: 10px 20px; border-radius: 20px; font-weight: 600; border: 1px dashed #94a3b8;">+ Tu rubro específico</span>
+            </div>
+        </div>
+
+        <!-- PANTALLA 9: ALERTAS -->
+        <div class="screen" id="screen-9">
+            <h1 class="title">Alertas laborales</h1>
+            
+            <div class="visual-flow">
+                <div class="flow-step" style="background: var(--dark-bg); color: white; border: none;">🔍 Buscar empleo</div>
+                <div class="flow-arrow"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                <div class="flow-step">💾 Guardar búsqueda</div>
+                <div class="flow-arrow"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                <div class="flow-step">🔔 Activar alerta</div>
+                <div class="flow-arrow"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                <div class="flow-step" style="background: var(--accent-green); color: white; border: none;">📩 Recibir novedades</div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 10: FOTOS -->
+        <div class="screen" id="screen-10">
+            <h1 class="title">¿Sirve esta foto para un CV?</h1>
+            
+            <div class="comparison-grid" style="grid-template-columns: 1fr 1fr; gap: 20px; max-width: 600px; margin: 0 auto;">
+                <!-- Correctas -->
+                <div class="icon-card" style="border: 3px solid var(--accent-green); background: var(--accent-green-light);">
+                    <div style="font-size: 3rem;">😊</div>
+                    <div style="background: var(--accent-green); color: white; padding: 5px 15px; border-radius: 12px; font-weight: bold;">✅ Fondo liso</div>
+                </div>
+                <div class="icon-card" style="border: 3px solid var(--accent-green); background: var(--accent-green-light);">
+                    <div style="font-size: 3rem;">🧑‍💼</div>
+                    <div style="background: var(--accent-green); color: white; padding: 5px 15px; border-radius: 12px; font-weight: bold;">✅ Bien iluminada</div>
+                </div>
+
+                <!-- Incorrectas -->
+                <div class="icon-card" style="border: 3px solid var(--accent-red); background: var(--accent-red-light);">
+                    <div style="font-size: 3rem;">🕶️</div>
+                    <div style="background: var(--accent-red); color: white; padding: 5px 15px; border-radius: 12px; font-weight: bold;">❌ Anteojos/Gorra</div>
+                </div>
+                <div class="icon-card" style="border: 3px solid var(--accent-red); background: var(--accent-red-light);">
+                    <div style="font-size: 3rem;">🤳</div>
+                    <div style="background: var(--accent-red); color: white; padding: 5px 15px; border-radius: 12px; font-weight: bold;">❌ Selfie en baño</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 11: IA FOTOS -->
+        <div class="screen" id="screen-11">
+            <h1 class="title">IA para mejorar fotos</h1>
+            <p class="subtitle">Herramientas útiles, pero sin modificar tu identidad.</p>
+            
+            <div class="parts-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="part-card" style="flex-direction: column; text-align: center;">
+                    <div class="icon-box" style="font-size: 1.5rem;">☀</div>
+                    <div><h3>Iluminación</h3><p>Aclarar sombras fuertes.</p></div>
+                </div>
+                <div class="part-card" style="flex-direction: column; text-align: center;">
+                    <div class="icon-box" style="font-size: 1.5rem;">🖼</div>
+                    <div><h3>Fondo</h3><p>Quitar fondos desprolijos o ruidosos.</p></div>
+                </div>
+                <div class="part-card" style="flex-direction: column; text-align: center;">
+                    <div class="icon-box" style="font-size: 1.5rem;">✨</div>
+                    <div><h3>Nitidez</h3><p>Mejorar fotos un poco borrosas.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 12: NOTEBOOKLM -->
+        <div class="screen" id="screen-12">
+            <h1 class="title">NotebookLM: ¿Cómo funciona?</h1>
+            
+            <div class="visual-flow">
+                <div class="flow-step" style="border-color: var(--text-light); color: var(--text-main);">📄 Documento (Tu material)</div>
+                <div class="flow-arrow"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                <div class="flow-step" style="background: var(--accent-blue); color: white;">🤖 NotebookLM</div>
+                <div class="flow-arrow"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+                
+                <div style="display: flex; gap: 15px; width: 100%;">
+                    <div class="flow-step" style="background: #f8fafc;">📝 Resumen</div>
+                    <div class="flow-step" style="background: #f8fafc;">❓ Preguntas</div>
+                    <div class="flow-step" style="background: #f8fafc;">💡 Ideas</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 13: PARA QUE SIRVE NLM -->
+        <div class="screen" id="screen-13">
+            <h1 class="title">¿Para qué sirve?</h1>
+            
+            <div class="parts-grid">
+                <div class="part-card">
+                    <div class="icon-box" style="font-size: 1.5rem;">📚</div>
+                    <div><h3>Estudiar</h3></div>
+                </div>
+                <div class="part-card">
+                    <div class="icon-box" style="font-size: 1.5rem;">🔍</div>
+                    <div><h3>Investigar</h3></div>
+                </div>
+                <div class="part-card">
+                    <div class="icon-box" style="font-size: 1.5rem;">📝</div>
+                    <div><h3>Resumir</h3></div>
+                </div>
+                <div class="part-card">
+                    <div class="icon-box" style="font-size: 1.5rem;">🗂</div>
+                    <div><h3>Organizar info</h3></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 14: CHECKLIST FINAL -->
+        <div class="screen" id="screen-14">
+            <h1 class="title" style="color: var(--accent-green);">Checklist Final</h1>
+            <p class="subtitle">¡Marcá todo lo logrado hoy!</p>
+            
+            <div class="big-checklist" style="border: 4px solid var(--accent-green-light); padding: 20px; border-radius: 16px;">
+                <label class="checklist-row" style="border-color: var(--accent-green-light);"><input type="checkbox"> <span>✅ CV terminado</span></label>
+                <label class="checklist-row" style="border-color: var(--accent-green-light);"><input type="checkbox"> <span>✅ Canva terminado</span></label>
+                <label class="checklist-row" style="border-color: var(--accent-green-light);"><input type="checkbox"> <span>✅ Foto actualizada</span></label>
+                <label class="checklist-row" style="border-color: var(--accent-green-light);"><input type="checkbox"> <span>✅ LinkedIn completo</span></label>
+                <label class="checklist-row" style="border-color: var(--accent-green-light);"><input type="checkbox"> <span>✅ Probé NotebookLM</span></label>
+            </div>
+        </div>
+
+        <!-- PANTALLA 15: EXTRA -->
+        <div class="screen" id="screen-15">
+            <h1 class="title">Si terminás antes...</h1>
+            
+            <div class="parts-grid">
+                <div class="icon-card">
+                    <div class="icon-box" style="background: var(--dark-bg); color: white;">🔧</div>
+                    <h3>Mejorá tu CV</h3>
+                </div>
+                <div class="icon-card">
+                    <div class="icon-box" style="background: var(--dark-bg); color: white;">💼</div>
+                    <h3>Revisá LinkedIn</h3>
+                </div>
+                <div class="icon-card">
+                    <div class="icon-box" style="background: var(--dark-bg); color: white;">🎨</div>
+                    <h3>Probá otra plantilla</h3>
+                </div>
+                <div class="icon-card" style="border-color: var(--accent-blue); background: var(--accent-blue-light);">
+                    <div class="icon-box" style="background: var(--accent-blue); color: white;">🤝</div>
+                    <h3 style="color: var(--accent-blue);">Ayudá a un compañero</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- === BARRA DE NAVEGACIÓN INFERIOR === -->
+        <div class="nav-bar">
+            <button class="btn btn-prev" id="btn-prev" onclick="changeStep(-1)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Anterior
+            </button>
+            
+            <div class="step-counter" id="step-counter">
+                1 / 15
+            </div>
+
+            <button class="btn btn-next" id="btn-next" onclick="changeStep(1)">
+                Siguiente
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- === LÓGICA DE NAVEGACIÓN === -->
+    <script>
+        let currentStep = 1;
+        const totalSteps = 15;
+
+        function updateUI() {
+            // Ocultar todas las pantallas
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Mostrar la actual (forzando reflow para reiniciar animación)
+            const activeScreen = document.getElementById(`screen-${currentStep}`);
+            if(activeScreen) {
+                activeScreen.classList.remove('active');
+                void activeScreen.offsetWidth; // Trigger reflow
+                activeScreen.classList.add('active');
+            }
+
+            // Actualizar texto del contador
+            document.getElementById('step-counter').innerText = `${currentStep} / ${totalSteps}`;
+
+            // Botón Anterior
+            const btnPrev = document.getElementById('btn-prev');
+            btnPrev.style.visibility = (currentStep === 1) ? 'hidden' : 'visible';
+
+            // Botón Siguiente
+            const btnNext = document.getElementById('btn-next');
+            btnNext.style.visibility = (currentStep === totalSteps) ? 'hidden' : 'visible';
+        }
+
+        function changeStep(direction) {
+            currentStep += direction;
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > totalSteps) currentStep = totalSteps;
+            updateUI();
+        }
+
+        // Navegación con flechas del teclado
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight') {
+                changeStep(1);
+            } else if (event.key === 'ArrowLeft') {
+                changeStep(-1);
+            }
+        });
+
+        // Función de cierre
+        function closeModule(){
+            if(document.referrer){
+                history.back();
+            } else {
+                window.close();
+            }
+        }
+
+        // Iniciar
+        updateUI();
+    </script>
+</body>
+</html>
