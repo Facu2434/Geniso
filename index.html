@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<script>
+(function(){
+    try{
+        if(localStorage.getItem('geniso-theme')==='dark'){
+            document.documentElement.setAttribute('data-theme','dark');
+        }
+    }catch(e){}
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Comunicación, Cultura y Sociedad</title>
@@ -15,6 +24,32 @@
     --muted:#6b7280;
     --accent:#c96d1f;
     --current:#4b8a4d;
+    --badge-bg:#efe2cd;
+    --icon-bg:#ffffff;
+    --icon-border:#eadfce;
+    --card-border:#e5d9ca;
+    --modal-bg:#ffffff;
+    --footer-color:#8b7355;
+    --btn-bg:#ffffff;
+    --current-icon-border:#cce3cd;
+}
+
+:root[data-theme="dark"]{
+    --bg:#0f172a;
+    --panel:#1e293b;
+    --line:#334155;
+    --text:#e5e7eb;
+    --muted:#94a3b8;
+    --accent:#e08a4f;
+    --current:#5fb463;
+    --badge-bg:#3a2c1c;
+    --icon-bg:#1e293b;
+    --icon-border:#334155;
+    --card-border:#334155;
+    --modal-bg:#1e293b;
+    --footer-color:#a68a6d;
+    --btn-bg:#1e293b;
+    --current-icon-border:#2f5a34;
 }
 
 *{
@@ -27,6 +62,7 @@ body{
     font-family:Inter,system-ui,sans-serif;
     background:var(--bg);
     color:var(--text);
+    transition:background .3s, color .3s;
 }
 
 .container{
@@ -40,9 +76,17 @@ header{
     text-align:center;
 }
 
+.header-actions{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-top:18px;
+}
+
 .badge{
     display:inline-block;
-    background:#efe2cd;
+    background:var(--badge-bg);
     color:var(--accent);
     font-weight:700;
     font-size:.85rem;
@@ -63,6 +107,16 @@ header p{
     color:var(--muted);
 }
 
+.timeline-scroll{
+    overflow-x:auto;
+    overflow-y:hidden;
+    padding:10px 4px 20px;
+}
+
+.timeline-scroll::-webkit-scrollbar{ height:8px; }
+.timeline-scroll::-webkit-scrollbar-track{ background:transparent; }
+.timeline-scroll::-webkit-scrollbar-thumb{ background:var(--line); border-radius:10px; }
+
 .timeline{
 
     position:relative;
@@ -72,7 +126,10 @@ header p{
     align-items:flex-start;
     gap:40px;
 
-    flex-wrap:wrap;
+    flex-wrap:nowrap;
+    width:max-content;
+    min-width:100%;
+    margin:0 auto;
 }
 
 .timeline::before{
@@ -86,7 +143,7 @@ header p{
     background:
     repeating-linear-gradient(
         to right,
-        #d9cdbd 0 8px,
+        var(--line) 0 8px,
         transparent 8px 18px
     );
 }
@@ -107,7 +164,7 @@ header p{
 
     background:var(--panel);
 
-    border:2px solid #e5d9ca;
+    border:2px solid var(--card-border);
 
     display:flex;
     flex-direction:column;
@@ -116,16 +173,21 @@ header p{
 
     cursor:pointer;
 
-    transition:.25s;
+    transition:.25s, background .3s, border-color .3s;
 }
 
 .circle:hover{
     transform:translateY(-6px);
 }
 
+.circle:focus-visible{
+    outline:3px solid var(--accent);
+    outline-offset:3px;
+}
+
 .current .circle{
     border:3px solid var(--current);
-    background:#f2f7f2;
+    background:var(--panel);
 }
 
 .icon{
@@ -135,7 +197,7 @@ header p{
 
     border-radius:50%;
 
-    background:white;
+    background:var(--icon-bg);
 
     display:flex;
     align-items:center;
@@ -145,12 +207,13 @@ header p{
 
     margin-bottom:14px;
 
-    border:2px solid #eadfce;
+    border:2px solid var(--icon-border);
+    transition:background .3s, border-color .3s;
 }
 
 .current .icon{
     color:var(--current);
-    border-color:#cce3cd;
+    border-color:var(--current-icon-border);
 }
 
 .date{
@@ -223,31 +286,24 @@ header p{
 
     margin-top:50px;
 
-    color:#8b7355;
+    color:var(--footer-color);
 
     font-size:1rem;
 }
 
-@media(max-width:1200px){
-
-    .timeline::before{
-        display:none;
-    }
-
-}
-
-
-.orientation-btn{
-    margin-top:18px;
-    background:white;
+.orientation-btn,
+.theme-toggle-btn{
+    background:var(--btn-bg);
     color:var(--accent);
     border:2px solid var(--line);
     padding:10px 18px;
     border-radius:10px;
     font-weight:700;
     cursor:pointer;
+    transition:transform .2s, background .3s, border-color .3s;
 }
-.orientation-btn:hover{transform:translateY(-2px);}
+.orientation-btn:hover,
+.theme-toggle-btn:hover{transform:translateY(-2px);}
 .modal{
     display:none;
     position:fixed;
@@ -258,7 +314,8 @@ header p{
     justify-content:center;
 }
 .modal-box{
-    background:white;
+    background:var(--modal-bg);
+    color:var(--text);
     width:min(900px,90vw);
     max-height:85vh;
     overflow-y:auto;
@@ -266,6 +323,7 @@ header p{
     border-radius:20px;
     position:relative;
     line-height:1.7;
+    transition:background .3s, color .3s;
 }
 .modal-box h2{margin-bottom:22px;}
 .modal-box h3{margin-top:28px;margin-bottom:12px;}
@@ -278,9 +336,11 @@ header p{
     right:15px;
     width:40px;
     height:40px;
-    border:none;
+    border:2px solid var(--line);
     border-radius:50%;
     cursor:pointer;
+    background:var(--btn-bg);
+    color:var(--text);
 }
 
 </style>
@@ -304,17 +364,24 @@ header p{
         Clases y materiales
     </p>
 
-    <button class="orientation-btn" onclick="openOrientation()">
-        🎓 Conocé la orientación
-    </button>
+    <div class="header-actions">
+        <button class="orientation-btn" onclick="openOrientation()">
+            🎓 Conocé la orientación
+        </button>
+
+        <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()" aria-pressed="false">
+            🌙 Modo oscuro
+        </button>
+    </div>
 
 </header>
 
+<div class="timeline-scroll">
 <section class="timeline">
 
     <article class="lesson">
 
-        <div class="circle" onclick="window.location.href='cv.html'">
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='cv.html'" onkeydown="if(event.key==='Enter'){window.location.href='cv.html'}">
 
             <div class="icon">📄</div>
 
@@ -338,7 +405,7 @@ header p{
 
     <article class="lesson">
 
-        <div class="circle" onclick="window.location.href='canva2.html'">
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='canva2.html'" onkeydown="if(event.key==='Enter'){window.location.href='canva2.html'}">
 
             <div class="icon">🖥️</div>
 
@@ -360,7 +427,7 @@ header p{
 
     <article class="lesson">
 
-        <div class="circle" onclick="window.location.href='29-04.html'">
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='29-04.html'" onkeydown="if(event.key==='Enter'){window.location.href='29-04.html'}">
 
             <div class="icon">✏️</div>
 
@@ -382,7 +449,7 @@ header p{
 
     <article class="lesson">
 
-        <div class="circle" onclick="window.location.href='foto.html'">
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='foto.html'" onkeydown="if(event.key==='Enter'){window.location.href='foto.html'}">
 
             <div class="icon">📷</div>
 
@@ -405,7 +472,7 @@ header p{
 
     <article class="lesson">
 
-        <div class="circle" onclick="window.location.href='intro.html'">
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='intro.html'" onkeydown="if(event.key==='Enter'){window.location.href='intro.html'}">
 
             <div class="icon">👤</div>
 
@@ -425,10 +492,9 @@ header p{
 
     </article>
 
-    <article class="class">
+    <article class="lesson">
 
-
-        <div class="circle" onclick="window.location.href='notebook.html'">
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='notebook.html'" onkeydown="if(event.key==='Enter'){window.location.href='notebook.html'}">
 
             <div class="icon">📚</div>
 
@@ -449,13 +515,9 @@ header p{
 
     </article>
 
-  <article class="lesson current">
+    <article class="lesson">
 
-        <div class="current-tag">
-            CLASE ACTUAL
-        </div>
-
-        <div class="circle" onclick="window.location.href='cierre.html'">
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='cierre.html'" onkeydown="if(event.key==='Enter'){window.location.href='cierre.html'}">
 
             <div class="icon">📚</div>
 
@@ -475,9 +537,34 @@ header p{
 
     </article>
 
+    <article class="lesson current">
 
-    
+        <div class="current-tag">
+            CLASE ACTUAL
+        </div>
+
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='hemerotecas.html'" onkeydown="if(event.key==='Enter'){window.location.href='hemerotecas.html'}">
+
+            <div class="icon">🗞️</div>
+
+            <div class="date">02/09</div>
+
+            <div class="separator"></div>
+
+            <div class="title">
+                IA y fuentes históricas
+            </div>
+
+        </div>
+
+        <div class="resources">
+            <a href="hemerotecas.html">Investigar con IA</a>
+        </div>
+
+    </article>
+
 </section>
+</div>
 
 <div class="footer-note">
     Hacé clic en cada clase para ver los materiales
@@ -516,7 +603,7 @@ header p{
 
         <h3>💻 Herramientas trabajadas en este espacio</h3>
 
-        <p>CV · Canva · LinkedIn · Inteligencia Artificial · NotebookLM · Fake News · Ciudadanía Digital.</p>
+        <p>CV · Canva · LinkedIn · Inteligencia Artificial · NotebookLM · Fake News · Análisis de Fuentes Históricas · Ciudadanía Digital.</p>
     </div>
 </div>
 
@@ -531,6 +618,27 @@ window.onclick=function(e){
  const modal=document.getElementById('orientationModal');
  if(e.target===modal){modal.style.display='none';}
 }
+
+function updateThemeButton(){
+    const btn=document.getElementById('themeToggle');
+    const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+    btn.textContent=isDark ? '☀️ Modo claro' : '🌙 Modo oscuro';
+    btn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+}
+
+function toggleTheme(){
+    const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+    if(isDark){
+        document.documentElement.removeAttribute('data-theme');
+        try{ localStorage.setItem('geniso-theme','light'); }catch(e){}
+    } else {
+        document.documentElement.setAttribute('data-theme','dark');
+        try{ localStorage.setItem('geniso-theme','dark'); }catch(e){}
+    }
+    updateThemeButton();
+}
+
+updateThemeButton();
 </script>
 
 </body>
