@@ -107,16 +107,6 @@ header p{
     color:var(--muted);
 }
 
-.timeline-scroll{
-    overflow-x:auto;
-    overflow-y:hidden;
-    padding:10px 4px 20px;
-}
-
-.timeline-scroll::-webkit-scrollbar{ height:8px; }
-.timeline-scroll::-webkit-scrollbar-track{ background:transparent; }
-.timeline-scroll::-webkit-scrollbar-thumb{ background:var(--line); border-radius:10px; }
-
 .timeline{
 
     position:relative;
@@ -126,10 +116,7 @@ header p{
     align-items:flex-start;
     gap:40px;
 
-    flex-wrap:nowrap;
-    width:max-content;
-    min-width:100%;
-    margin:0 auto;
+    flex-wrap:wrap;
 }
 
 .timeline::before{
@@ -153,6 +140,14 @@ header p{
     text-align:center;
     position:relative;
     z-index:2;
+}
+
+@media(max-width:1200px){
+
+    .timeline::before{
+        display:none;
+    }
+
 }
 
 .circle{
@@ -265,6 +260,12 @@ header p{
 
 .current-tag{
 
+    position:absolute;
+    top:-42px;
+    left:50%;
+    transform:translateX(-50%);
+    white-space:nowrap;
+
     display:inline-block;
 
     background:var(--current);
@@ -276,8 +277,6 @@ header p{
 
     font-size:.8rem;
     font-weight:700;
-
-    margin-bottom:12px;
 }
 
 .footer-note{
@@ -376,7 +375,6 @@ header p{
 
 </header>
 
-<div class="timeline-scroll">
 <section class="timeline">
 
     <article class="lesson">
@@ -564,7 +562,6 @@ header p{
     </article>
 
 </section>
-</div>
 
 <div class="footer-note">
     Hacé clic en cada clase para ver los materiales
