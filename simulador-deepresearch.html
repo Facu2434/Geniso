@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Deep Research</title>
+    <style>
+        :root {
+            --bg-body: #e2e8f0;
+            --card-bg: #ffffff;
+            --dark-bg: #1e293b;
+            --text-main: #334155;
+            --text-light: #64748b;
+            --line: #e2e8f0;
+            --soft: #f8fafc;
+            --accent-blue: #1d4ed8;
+            --accent-blue-light: #eff6ff;
+            --accent-hover: #1e40af;
+            --accent-green: #059669;
+            --accent-green-light: #ecfdf5;
+            --accent-red: #dc2626;
+            --accent-red-light: #fef2f2;
+            --accent-amber: #b45309;
+            --accent-amber-light: #fffbeb;
+            --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 24px 16px 60px;
+        }
+
+        .wrap { max-width: 960px; margin: 0 auto; }
+
+        /* === ENCABEZADO === */
+        .head {
+            background: var(--card-bg);
+            border-radius: 20px;
+            border-top: 6px solid var(--accent-blue);
+            padding: 30px 34px;
+            position: relative;
+            box-shadow: 0 20px 40px -10px rgba(30, 41, 59, 0.1);
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: var(--accent-blue-light);
+            color: var(--accent-blue);
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 4.5vw, 2.8rem);
+            font-weight: 800;
+            color: var(--dark-bg);
+            line-height: 1.1;
+            letter-spacing: -1px;
+            padding-right: 50px;
+        }
+
+        .head p { color: var(--text-light); font-size: 1.1rem; margin-top: 8px; }
+
+        .sim-note {
+            margin-top: 18px;
+            background: var(--accent-amber-light);
+            border-left: 5px solid var(--accent-amber);
+            color: #78350f;
+            padding: 12px 16px;
+            border-radius: 0 12px 12px 0;
+            font-size: 0.98rem;
+            font-weight: 600;
+        }
+
+        .btn-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--soft);
+            border: 2px solid var(--line);
+            color: var(--text-light);
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-close:hover {
+            background: var(--accent-red-light);
+            color: var(--accent-red);
+            border-color: #fca5a5;
+            transform: rotate(90deg);
+        }
+
+        /* === BARRA DE ETAPAS === */
+        .stages {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 22px 0;
+        }
+
+        .stage {
+            background: var(--card-bg);
+            border: 2px solid var(--line);
+            border-radius: 14px;
+            padding: 12px 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        .stage .num {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .stage.active { border-color: var(--accent-blue); color: var(--dark-bg); }
+        .stage.active .num { background: var(--accent-blue); color: white; }
+        .stage.done { color: var(--accent-green); }
+        .stage.done .num { background: var(--accent-green); color: white; }
+
+        /* === PANELES === */
+        .panel {
+            display: none;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px 34px;
+            box-shadow: 0 20px 40px -10px rgba(30, 41, 59, 0.1);
+            animation: up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .panel.active { display: block; }
+
+        @keyframes up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-size: clamp(1.5rem, 3vw, 1.9rem);
+            color: var(--dark-bg);
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .lead { color: var(--text-light); font-size: 1.08rem; margin-bottom: 20px; }
+
+        /* Preguntas */
+        .q-list { display: flex; flex-direction: column; gap: 12px; }
+
+        .q-card {
+            text-align: left;
+            background: var(--soft);
+            border: 2px solid var(--line);
+            border-radius: 16px;
+            padding: 18px 20px;
+            font-size: 1.12rem;
+            font-weight: 600;
+            color: var(--dark-bg);
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .q-card:hover { border-color: var(--accent-blue); transform: translateX(4px); }
+
+        .q-card .icon-box {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--accent-blue-light);
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .msg {
+            display: none;
+            margin-top: 16px;
+            padding: 16px 20px;
+            border-radius: 0 14px 14px 0;
+            border-left: 6px solid var(--accent-blue);
+            background: var(--accent-blue-light);
+            color: #1e3a8a;
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+
+        /* Plan */
+        .chosen-q {
+            background: var(--dark-bg);
+            color: #e2e8f0;
+            border-radius: 14px;
+            padding: 16px 20px;
+            font-style: italic;
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+            border-left: 6px solid var(--accent-blue);
+        }
+
+        .plan-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+        .plan-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--soft);
+            border: 2px solid var(--line);
+            border-radius: 14px;
+            padding: 14px 16px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            transition: all 0.2s;
+        }
+
+        .plan-item input { width: 22px; height: 22px; accent-color: var(--accent-blue); flex-shrink: 0; cursor: pointer; }
+        .plan-item.off { opacity: 0.5; text-decoration: line-through; }
+        .plan-item.custom { border-style: dashed; border-color: var(--accent-blue); }
+
+        .add-row { display: flex; gap: 10px; margin-top: 12px; }
+
+        .add-row input {
+            flex: 1;
+            border: 2px solid var(--line);
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 1rem;
+            font-family: inherit;
+            min-width: 0;
+        }
+
+        .add-row input:focus { outline: none; border-color: var(--accent-blue); }
+
+        .section-label {
+            font-weight: 800;
+            color: var(--dark-bg);
+            margin: 24px 0 10px;
+            font-size: 1.1rem;
+        }
+
+        .radio-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .radio-card {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            background: var(--soft);
+            border: 2px solid var(--line);
+            border-radius: 14px;
+            padding: 14px 16px;
+            cursor: pointer;
+        }
+
+        .radio-card input { margin-top: 4px; width: 20px; height: 20px; accent-color: var(--accent-blue); flex-shrink: 0; }
+        .radio-card strong { display: block; color: var(--dark-bg); }
+        .radio-card span { font-size: 0.95rem; color: var(--text-light); }
+        .radio-card:has(input:checked) { border-color: var(--accent-blue); background: var(--accent-blue-light); }
+
+        /* Botones */
+        .actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+
+        .btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 13px 24px;
+            border-radius: 12px;
+            font-size: 1.08rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+        .btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
+
+        .btn-ghost { background: transparent; color: var(--text-light); border: 2px solid var(--line); }
+        .btn-ghost:hover { background: var(--soft); color: var(--text-main); transform: none; }
+        .btn-dark { background: var(--dark-bg); }
+        .btn-dark:hover { background: #0f172a; }
+
+        /* Progreso */
+        .bar { height: 12px; background: #f1f5f9; border-radius: 10px; overflow: hidden; margin: 6px 0 18px; }
+        .bar div { height: 100%; width: 0; background: var(--accent-blue); border-radius: 10px; transition: width 0.5s; }
+
+        .log {
+            list-style: none;
+            background: var(--soft);
+            border: 2px solid var(--line);
+            border-radius: 14px;
+            padding: 14px 16px;
+            min-height: 220px;
+            max-height: 340px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .log li {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            font-size: 1rem;
+            animation: up 0.3s ease;
+        }
+
+        .log li svg { flex-shrink: 0; margin-top: 2px; }
+        .log .t-search svg { color: var(--accent-blue); }
+        .log .t-read svg { color: var(--dark-bg); }
+        .log .t-user { color: var(--accent-amber); font-weight: 700; }
+        .log .t-done { color: var(--accent-green); font-weight: 700; }
+
+        .intervene {
+            display: none;
+            margin-top: 16px;
+            background: var(--accent-amber-light);
+            border: 2px solid #fcd34d;
+            border-radius: 14px;
+            padding: 16px 18px;
+        }
+
+        .intervene p { font-weight: 700; color: #78350f; margin-bottom: 10px; }
+        .intervene .opts { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .chip-btn {
+            background: white;
+            border: 2px solid #fcd34d;
+            color: #78350f;
+            border-radius: 20px;
+            padding: 8px 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.98rem;
+        }
+
+        .chip-btn:hover { background: #fef3c7; }
+
+        /* Informe */
+        .report {
+            border: 2px solid var(--line);
+            border-radius: 16px;
+            padding: 26px 28px;
+            background: #fff;
+        }
+
+        .report h3 { font-size: 1.5rem; color: var(--dark-bg); margin-bottom: 4px; line-height: 1.2; }
+        .report .meta { color: var(--text-light); font-size: 0.95rem; margin-bottom: 16px; }
+
+        .report .summary {
+            background: var(--accent-blue-light);
+            border-left: 5px solid var(--accent-blue);
+            border-radius: 0 12px 12px 0;
+            padding: 14px 16px;
+            color: #1e3a8a;
+            font-weight: 600;
+            margin-bottom: 18px;
+        }
+
+        .report h4 { font-size: 1.15rem; color: var(--dark-bg); margin: 18px 0 6px; }
+        .report p { font-size: 1.05rem; }
+        .report .gap { color: var(--accent-amber); font-style: italic; }
+
+        .adjust {
+            margin-top: 18px;
+            background: var(--accent-amber-light);
+            border-left: 5px solid var(--accent-amber);
+            border-radius: 0 12px 12px 0;
+            padding: 12px 16px;
+            color: #78350f;
+            font-weight: 600;
+        }
+
+        .cite {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 26px;
+            height: 22px;
+            padding: 0 6px;
+            margin: 0 2px;
+            border-radius: 6px;
+            background: var(--accent-blue-light);
+            color: var(--accent-blue);
+            border: 1px solid #bfdbfe;
+            font-size: 0.85rem;
+            font-weight: 800;
+            cursor: pointer;
+            vertical-align: 2px;
+            font-family: inherit;
+        }
+
+        .cite:hover, .cite.on { background: var(--accent-blue); color: white; }
+
+        .src-list { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+
+        .src-list li {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            font-size: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .tag-oficial { background: var(--accent-green-light); color: var(--accent-green); }
+        .tag-prensa { background: var(--accent-blue-light); color: var(--accent-blue); }
+        .tag-otro { background: #f1f5f9; color: var(--text-light); }
+
+        .src-detail {
+            display: none;
+            margin-top: 16px;
+            background: var(--dark-bg);
+            color: #e2e8f0;
+            border-radius: 16px;
+            padding: 20px 22px;
+        }
+
+        .src-detail h5 { font-size: 1.15rem; color: white; margin-bottom: 4px; }
+        .src-detail .what { color: #cbd5e1; margin-bottom: 12px; }
+        .src-detail ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+        .src-detail li { display: flex; gap: 8px; align-items: flex-start; }
+        .src-detail li svg { color: #93c5fd; flex-shrink: 0; margin-top: 3px; }
+
+        .verify {
+            margin-top: 22px;
+            background: var(--soft);
+            border: 2px solid var(--line);
+            border-radius: 16px;
+            padding: 20px 22px;
+        }
+
+        .verify h4 { font-size: 1.15rem; color: var(--dark-bg); margin-bottom: 10px; }
+
+        .verify label {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 8px 0;
+            cursor: pointer;
+            font-size: 1.05rem;
+        }
+
+        .verify input { width: 22px; height: 22px; accent-color: var(--accent-green); flex-shrink: 0; }
+
+        .verify-ok {
+            display: none;
+            margin-top: 10px;
+            color: var(--accent-green);
+            font-weight: 800;
+        }
+
+        @media (max-width: 700px) {
+            .head, .panel { padding: 24px 20px; }
+            .stages { grid-template-columns: repeat(2, 1fr); }
+            .radio-row { grid-template-columns: 1fr; }
+            .report { padding: 20px 18px; }
+            .add-row { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <header class="head">
+        <button class="btn-close" onclick="closeModule()" title="Cerrar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        <span class="eyebrow">Simulador</span>
+        <h1>Así trabaja Deep Research</h1>
+        <p>Recorré las cuatro etapas: pregunta, plan, investigación e informe.</p>
+        <div class="sim-note">
+            Es una simulación para entender el proceso: no se conecta a ChatGPT y las fuentes son ejemplos sin enlace real.
+        </div>
+    </header>
+
+    <div class="stages">
+        <div class="stage" id="st-1"><span class="num">1</span>Pregunta</div>
+        <div class="stage" id="st-2"><span class="num">2</span>Plan</div>
+        <div class="stage" id="st-3"><span class="num">3</span>Investigación</div>
+        <div class="stage" id="st-4"><span class="num">4</span>Informe</div>
+    </div>
+
+    <!-- ETAPA 1: PREGUNTA -->
+    <section class="panel active" id="p-1">
+        <h2>Elegí una pregunta</h2>
+        <p class="lead">Una de estas no necesita Deep Research. ¿Cuál?</p>
+        <div class="q-list" id="q-list"></div>
+        <div class="msg" id="simple-msg">
+            Para esta pregunta no hace falta Deep Research: el chat común responde al instante.
+            Deep Research conviene cuando hay que buscar, comparar fuentes y armar un informe.
+        </div>
+    </section>
+
+    <!-- ETAPA 2: PLAN -->
+    <section class="panel" id="p-2">
+        <h2>Revisá el plan</h2>
+        <p class="lead">Antes de empezar, Deep Research propone un plan. Sacá lo que no te sirva y agregá lo que falte.</p>
+
+        <div class="chosen-q" id="chosen-q-2"></div>
+
+        <ul class="plan-list" id="plan-list"></ul>
+
+        <div class="add-row">
+            <input type="text" id="new-item" maxlength="120" placeholder="Agregar un punto al plan (por ejemplo: incluir datos de Argentina)">
+            <button class="btn btn-dark" onclick="addItem()">Agregar</button>
+        </div>
+
+        <div class="section-label">¿Dónde buscar?</div>
+        <div class="radio-row">
+            <label class="radio-card">
+                <input type="radio" name="scope" value="all" checked>
+                <div><strong>Toda la web</strong><span>Más variedad de fuentes.</span></div>
+            </label>
+            <label class="radio-card">
+                <input type="radio" name="scope" value="official">
+                <div><strong>Solo sitios oficiales</strong><span>Gobiernos y universidades (.gob.ar, .edu.ar). Más confiable, menos variado.</span></div>
+            </label>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-ghost" onclick="goTo(1)">Cambiar pregunta</button>
+            <button class="btn" id="btn-start" onclick="startResearch()">Empezar la investigación</button>
+        </div>
+    </section>
+
+    <!-- ETAPA 3: INVESTIGACIÓN -->
+    <section class="panel" id="p-3">
+        <h2 id="run-title">Investigando…</h2>
+        <p class="lead">Mientras trabaja, podés ver qué hace y cambiar el enfoque.</p>
+
+        <div class="bar"><div id="bar"></div></div>
+        <ul class="log" id="log"></ul>
+
+        <div class="actions">
+            <button class="btn btn-ghost" id="btn-intervene" onclick="openIntervene()">Intervenir: cambiar el enfoque</button>
+            <button class="btn" id="btn-report" onclick="showReport()" style="display: none;">Ver el informe</button>
+        </div>
+
+        <div class="intervene" id="intervene">
+            <p>La investigación está en pausa. ¿Qué querés ajustar?</p>
+            <div class="opts" id="intervene-opts"></div>
+        </div>
+    </section>
+
+    <!-- ETAPA 4: INFORME -->
+    <section class="panel" id="p-4">
+        <h2>El informe</h2>
+        <p class="lead">Tocá los números entre corchetes para ver de dónde salió cada dato.</p>
+
+        <article class="report" id="report"></article>
+
+        <div class="src-detail" id="src-detail"></div>
+
+        <div class="verify">
+            <h4>Antes de usar el informe</h4>
+            <label><input type="checkbox" class="vcheck"> Abrí al menos 2 citas.</label>
+            <label><input type="checkbox" class="vcheck"> La fuente dice lo mismo que el informe.</label>
+            <label><input type="checkbox" class="vcheck"> Sé si es una fuente oficial, un medio o una opinión.</label>
+            <label><input type="checkbox" class="vcheck"> Revisé que la información esté actualizada.</label>
+            <div class="verify-ok" id="verify-ok">Informe revisado. Ahora sí se puede usar.</div>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-ghost" onclick="goTo(2)">Volver al plan</button>
+            <button class="btn" onclick="resetAll()">Probar con otra pregunta</button>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    /* === ÍCONOS === */
+    const ICONS = {
+        search: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+        file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+        columns: '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/>',
+        edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>',
+        check: '<polyline points="20 6 9 17 4 12"/>',
+        user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+        message: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+        grad: '<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1 4 3 6 3s6-2 6-3v-5"/>',
+        phone: '<rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>',
+        alert: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+        calc: '<rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="14" x2="8.01" y2="14"/><line x1="12" y1="14" x2="12.01" y2="14"/><line x1="16" y1="14" x2="16.01" y2="14"/><line x1="8" y1="18" x2="8.01" y2="18"/><line x1="12" y1="18" x2="12.01" y2="18"/><line x1="16" y1="18" x2="16.01" y2="18"/>'
+    };
+
+    function icon(name, size = 20) {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] || ''}</svg>`;
+    }
+
+    /* === DATOS DE LA SIMULACIÓN ===
+       Cada punto del plan genera una sección del informe.
+       {n} marca una cita a la fuente n.
+       "alt" es el texto que se usa si se eligió "Solo sitios oficiales" y se pierden fuentes. */
+    const QUESTIONS = [
+        {
+            icon: 'grad',
+            q: '¿Qué salidas laborales tiene un egresado de un bachillerato en Comunicación Social y qué estudios puede seguir?',
+            title: 'Salidas laborales y estudios después de un bachillerato en Comunicación Social',
+            summary: 'Un egresado puede seguir carreras de comunicación, periodismo o publicidad, y trabajar en medios, organizaciones o producción de contenidos digitales. Las fuentes coinciden en lo general y cambian en el enfoque.',
+            plan: [
+                { t: 'Identificar carreras universitarias y terciarias relacionadas con la comunicación', h: 'Estudios posibles',
+                  p: 'Las fuentes mencionan carreras como Ciencias de la Comunicación, Periodismo, Publicidad y Relaciones Públicas {1}{2}. Algunas son universitarias y otras terciarias, y la duración cambia según la institución {2}.' },
+                { t: 'Relevar en qué ámbitos trabajan las personas que se dedican a la comunicación', h: 'Ámbitos de trabajo',
+                  p: 'Medios (radio, televisión, prensa digital), áreas de comunicación de empresas y organismos públicos, agencias de publicidad y producción de contenidos para redes {3}{4}.' },
+                { t: 'Buscar qué habilidades piden los avisos de empleo', h: 'Habilidades que se piden',
+                  p: 'En los avisos revisados se repiten la redacción clara, el manejo de herramientas digitales y de edición, y el trabajo en equipo {4}.' },
+                { t: 'Comparar qué dice cada tipo de fuente', h: 'Diferencias entre fuentes',
+                  p: 'Los sitios de las universidades describen perfiles amplios {1}; las notas periodísticas ponen el foco en la competencia por los puestos y en los trabajos digitales {3}.',
+                  alt: 'Los sitios de las universidades describen perfiles amplios {1}. Sin fuentes de prensa, falta la mirada sobre cómo está hoy el mercado de trabajo.' }
+            ],
+            sources: {
+                1: { name: 'Sitio oficial de una universidad pública', kind: 'oficial', what: 'Plan de estudios y perfil del egresado de Ciencias de la Comunicación.' },
+                2: { name: 'Portal oficial de oferta educativa', kind: 'oficial', what: 'Listado de carreras terciarias y universitarias, con su duración.' },
+                3: { name: 'Nota de un diario nacional', kind: 'prensa', what: 'Nota sobre el trabajo en comunicación y el crecimiento de los empleos digitales.' },
+                4: { name: 'Portal de búsqueda laboral', kind: 'otro', what: 'Avisos de empleo para puestos de comunicación y redes.' }
+            },
+            adjust: ['Priorizar universidades públicas del AMBA', 'Agregar ejemplos de puestos concretos']
+        },
+        {
+            icon: 'phone',
+            q: '¿Cómo influye el uso del celular en la atención durante las clases? Compará estudios y opiniones.',
+            title: 'El celular y la atención en clase',
+            summary: 'Los estudios coinciden en que las interrupciones del celular afectan la concentración. Qué conviene hacer en la escuela sigue en debate.',
+            plan: [
+                { t: 'Buscar estudios sobre celulares y atención', h: 'Qué dicen los estudios',
+                  p: 'Varios estudios asocian las notificaciones y el uso del celular durante la clase con más distracciones {1}{2}. Los resultados cambian según la edad y el tipo de uso {2}.' },
+                { t: 'Relevar qué medidas tomaron escuelas y gobiernos', h: 'Medidas tomadas',
+                  p: 'Distintos países y jurisdicciones regularon el uso del celular en las aulas, con reglas que van de la prohibición a usos guiados por el docente {3}{4}.' },
+                { t: 'Reunir opiniones de docentes y estudiantes', h: 'Opiniones',
+                  p: 'Hay docentes que ven el celular como una distracción y otros que lo usan como herramienta de clase. Entre estudiantes también hay posturas distintas {4}{5}.' },
+                { t: 'Separar lo comprobado de lo que es opinión', h: 'Comprobado y opinión',
+                  p: 'Lo más respaldado es el efecto de las interrupciones en la concentración {1}{2}. Si conviene prohibirlo o enseñar a usarlo sigue en debate {4}.',
+                  alt: 'Lo más respaldado es el efecto de las interrupciones en la concentración {1}{2}. Sin fuentes de prensa, el informe no muestra el debate sobre qué conviene hacer.' }
+            ],
+            sources: {
+                1: { name: 'Artículo de una revista científica universitaria', kind: 'oficial', what: 'Estudio con estudiantes sobre notificaciones y concentración.' },
+                2: { name: 'Informe de un organismo educativo público', kind: 'oficial', what: 'Revisión de varios estudios sobre tecnología en el aula.' },
+                3: { name: 'Normativa de un ministerio de educación', kind: 'oficial', what: 'Reglas sobre el uso de celulares en las escuelas.' },
+                4: { name: 'Nota de un diario nacional', kind: 'prensa', what: 'Nota con opiniones de docentes, familias y especialistas.' },
+                5: { name: 'Blog de un docente', kind: 'otro', what: 'Experiencia personal usando el celular en clase.' }
+            },
+            adjust: ['Priorizar datos de Argentina', 'Separar mejor por nivel: primaria y secundaria']
+        },
+        {
+            icon: 'alert',
+            q: '¿Cómo se detecta una noticia falsa? Compará las recomendaciones de distintos sitios de verificación.',
+            title: 'Cómo detectar una noticia falsa',
+            summary: 'Las recomendaciones se repiten: mirar quién publica y cuándo, buscar el dato en otros medios y desconfiar de lo que busca generar enojo o miedo.',
+            plan: [
+                { t: 'Reunir las recomendaciones de sitios de verificación', h: 'Pasos que se repiten',
+                  p: 'Revisar quién publica y la fecha, buscar el dato en otros medios y desconfiar de los títulos alarmistas {1}{2}.' },
+                { t: 'Buscar herramientas para verificar imágenes y videos', h: 'Herramientas',
+                  p: 'La búsqueda inversa de imágenes permite saber si una foto ya circulaba antes y en qué contexto {1}{3}.',
+                  alt: 'Sin sitios de verificación ni guías de buscadores, el informe no encontró herramientas prácticas en fuentes oficiales.' },
+                { t: 'Comparar las recomendaciones entre sí', h: 'Diferencias',
+                  p: 'Los sitios de verificación ponen más peso en las herramientas {1}; las guías educativas, en el pensamiento crítico y en las emociones que busca provocar una noticia falsa {2}.',
+                  alt: 'Las guías oficiales ponen el peso en el pensamiento crítico y en las emociones que busca provocar una noticia falsa {2}. Sin los sitios de verificación, faltan las herramientas prácticas.' },
+                { t: 'Armar una lista breve para usar antes de compartir', h: 'Antes de compartir',
+                  p: '¿Quién lo publica? ¿De qué fecha es? ¿Lo dicen otros medios? ¿La imagen corresponde a ese hecho? {1}{2}' }
+            ],
+            sources: {
+                1: { name: 'Sitio de verificación de datos', kind: 'prensa', what: 'Guía con pasos y herramientas para chequear noticias.' },
+                2: { name: 'Guía de alfabetización mediática de un organismo público', kind: 'oficial', what: 'Material educativo sobre desinformación.' },
+                3: { name: 'Página de ayuda de un buscador', kind: 'otro', what: 'Explica cómo buscar una imagen para encontrar su origen.' }
+            },
+            adjust: ['Agregar ejemplos de casos reales', 'Priorizar sitios de verificación argentinos']
+        },
+        {
+            icon: 'calc',
+            q: '¿Cuánto es el 15 % de 2.000?',
+            simple: true
+        }
+    ];
+
+    const KIND_LABEL = { oficial: 'Oficial', prensa: 'Medio', otro: 'Otro' };
+
+    let current = null;      // pregunta elegida
+    let planState = [];      // [{t, h, p, alt, on, custom}]
+    let scope = 'all';
+    let adjustment = null;
+    let timer = null;
+    let logQueue = [];
+    let logTotal = 0;
+    let paused = false;
+
+    /* === NAVEGACIÓN ENTRE ETAPAS === */
+    function goTo(n) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('p-' + n).classList.add('active');
+        for (let i = 1; i <= 4; i++) {
+            const st = document.getElementById('st-' + i);
+            st.classList.toggle('active', i === n);
+            st.classList.toggle('done', i < n);
+        }
+        if (n !== 3) stopTimer();
+        window.scrollTo({ top: document.querySelector('.stages').offsetTop - 10, behavior: 'smooth' });
+    }
+
+    /* === ETAPA 1 === */
+    function renderQuestions() {
+        const list = document.getElementById('q-list');
+        list.innerHTML = '';
+        QUESTIONS.forEach((q, i) => {
+            const b = document.createElement('button');
+            b.className = 'q-card';
+            b.innerHTML = `<span class="icon-box">${icon(q.icon, 22)}</span><span></span>`;
+            b.lastChild.textContent = q.q;
+            b.onclick = () => chooseQuestion(i);
+            list.appendChild(b);
+        });
+    }
+
+    function chooseQuestion(i) {
+        const q = QUESTIONS[i];
+        const msg = document.getElementById('simple-msg');
+        if (q.simple) {
+            msg.style.display = 'block';
+            return;
+        }
+        msg.style.display = 'none';
+        current = q;
+        planState = q.plan.map(item => ({ ...item, on: true, custom: false }));
+        adjustment = null;
+        document.querySelector('input[name="scope"][value="all"]').checked = true;
+        document.getElementById('chosen-q-2').textContent = '"' + q.q + '"';
+        renderPlan();
+        goTo(2);
+    }
+
+    /* === ETAPA 2 === */
+    function renderPlan() {
+        const list = document.getElementById('plan-list');
+        list.innerHTML = '';
+        planState.forEach((item, i) => {
+            const li = document.createElement('li');
+            li.className = 'plan-item' + (item.on ? '' : ' off') + (item.custom ? ' custom' : '');
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.checked = item.on;
+            cb.onchange = () => { item.on = cb.checked; renderPlan(); };
+            const span = document.createElement('span');
+            span.textContent = item.t + (item.custom ? ' (agregado por vos)' : '');
+            li.appendChild(cb);
+            li.appendChild(span);
+            li.onclick = (e) => { if (e.target !== cb) { cb.checked = !cb.checked; cb.onchange(); } };
+            list.appendChild(li);
+        });
+        document.getElementById('btn-start').disabled = !planState.some(p => p.on);
+    }
+
+    function addItem() {
+        const input = document.getElementById('new-item');
+        const text = input.value.trim();
+        if (!text) { input.focus(); return; }
+        planState.push({
+            t: text,
+            h: text.charAt(0).toUpperCase() + text.slice(1),
+            p: null,
+            on: true,
+            custom: true
+        });
+        input.value = '';
+        renderPlan();
+    }
+
+    document.getElementById('new-item').addEventListener('keydown', e => {
+        if (e.key === 'Enter') addItem();
+    });
+
+    /* === ETAPA 3 === */
+    function citesOf(text) {
+        return [...text.matchAll(/\{(\d+)\}/g)].map(m => Number(m[1]));
+    }
+
+    function allowed(n) {
+        return scope === 'all' || current.sources[n].kind === 'oficial';
+    }
+
+    function startResearch() {
+        scope = document.querySelector('input[name="scope"]:checked').value;
+        adjustment = null;
+        paused = false;
+
+        const active = planState.filter(p => p.on);
+        logQueue = [];
+        logQueue.push({ cls: 't-search', ic: 'search', text: scope === 'all' ? 'Buscando en toda la web pública.' : 'Buscando solo en sitios oficiales (.gob.ar, .edu.ar).' });
+
+        active.forEach(item => {
+            logQueue.push({ cls: 't-search', ic: 'search', text: 'Buscando: ' + item.t.toLowerCase() + '.' });
+            if (item.custom) {
+                logQueue.push({ cls: 't-read', ic: 'file', text: 'Leyendo fuentes sobre el punto que agregaste.' });
+                return;
+            }
+            const ids = [...new Set(citesOf(item.p))];
+            ids.forEach(n => {
+                const s = current.sources[n];
+                if (allowed(n)) {
+                    logQueue.push({ cls: 't-read', ic: 'file', text: 'Leyendo: ' + s.name.toLowerCase() + '.' });
+                } else {
+                    logQueue.push({ cls: 't-read', ic: 'alert', text: 'Descartada por el filtro: ' + s.name.toLowerCase() + '.' });
+                }
+            });
+        });
+
+        logQueue.push({ cls: 't-read', ic: 'columns', text: 'Comparando lo que dice cada fuente.' });
+        logQueue.push({ cls: 't-read', ic: 'edit', text: 'Redactando el informe con citas.' });
+        logQueue.push({ cls: 't-done', ic: 'check', text: 'Informe listo.' });
+
+        logTotal = logQueue.length;
+        document.getElementById('log').innerHTML = '';
+        document.getElementById('bar').style.width = '0';
+        document.getElementById('run-title').textContent = 'Investigando…';
+        document.getElementById('btn-report').style.display = 'none';
+        document.getElementById('btn-intervene').style.display = 'inline-flex';
+        document.getElementById('intervene').style.display = 'none';
+
+        goTo(3);
+        runTimer();
+    }
+
+    function addLog(entry) {
+        const li = document.createElement('li');
+        li.className = entry.cls;
+        li.innerHTML = icon(entry.ic, 18) + '<span></span>';
+        li.lastChild.textContent = entry.text;
+        const log = document.getElementById('log');
+        log.appendChild(li);
+        log.scrollTop = log.scrollHeight;
+    }
+
+    function runTimer() {
+        stopTimer();
+        timer = setInterval(() => {
+            if (paused) return;
+            const entry = logQueue.shift();
+            if (!entry) { finishRun(); return; }
+            addLog(entry);
+            const done = logTotal - logQueue.length;
+            document.getElementById('bar').style.width = Math.round(done / logTotal * 100) + '%';
+            if (!logQueue.length) finishRun();
+        }, 850);
+    }
+
+    function stopTimer() {
+        if (timer) { clearInterval(timer); timer = null; }
+    }
+
+    function finishRun() {
+        stopTimer();
+        document.getElementById('run-title').textContent = 'Investigación terminada';
+        document.getElementById('btn-intervene').style.display = 'none';
+        document.getElementById('intervene').style.display = 'none';
+        document.getElementById('btn-report').style.display = 'inline-flex';
+    }
+
+    function openIntervene() {
+        paused = true;
+        const box = document.getElementById('intervene');
+        const opts = document.getElementById('intervene-opts');
+        opts.innerHTML = '';
+        current.adjust.forEach(a => {
+            const b = document.createElement('button');
+            b.className = 'chip-btn';
+            b.textContent = a;
+            b.onclick = () => applyAdjust(a);
+            opts.appendChild(b);
+        });
+        const cancel = document.createElement('button');
+        cancel.className = 'chip-btn';
+        cancel.textContent = 'Seguir sin cambios';
+        cancel.onclick = () => { box.style.display = 'none'; paused = false; };
+        opts.appendChild(cancel);
+        box.style.display = 'block';
+    }
+
+    function applyAdjust(a) {
+        adjustment = a;
+        addLog({ cls: 't-user', ic: 'user', text: 'Cambio pedido: ' + a + '. Se ajusta la búsqueda.' });
+        document.getElementById('intervene').style.display = 'none';
+        document.getElementById('btn-intervene').style.display = 'none';
+        paused = false;
+    }
+
+    /* === ETAPA 4 === */
+    function showReport() {
+        const used = new Set();
+        const r = document.getElementById('report');
+        r.innerHTML = '';
+
+        const h = document.createElement('h3');
+        h.textContent = current.title;
+        r.appendChild(h);
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.textContent = 'Informe de ejemplo · ' + (scope === 'all' ? 'Fuentes: toda la web' : 'Fuentes: solo sitios oficiales');
+        r.appendChild(meta);
+
+        const sum = document.createElement('div');
+        sum.className = 'summary';
+        sum.textContent = current.summary;
+        r.appendChild(sum);
+
+        planState.filter(p => p.on).forEach(item => {
+            const h4 = document.createElement('h4');
+            h4.textContent = item.h;
+            r.appendChild(h4);
+
+            const p = document.createElement('p');
+
+            if (item.custom) {
+                p.className = 'gap';
+                p.textContent = 'Punto agregado por vos. En una investigación real, Deep Research sumaría esta sección con sus propias fuentes.';
+                r.appendChild(p);
+                return;
+            }
+
+            // Si el filtro "Solo sitios oficiales" dejó afuera alguna fuente,
+            // se usa el texto alternativo (si hay) y se quitan las citas descartadas.
+            const keepAllowed = t => t.replace(/\{(\d+)\}/g, (m, n) => allowed(Number(n)) ? m : '');
+            let text = item.p;
+            const lost = citesOf(text).some(n => !allowed(n));
+
+            if (lost) {
+                if (item.alt) {
+                    text = keepAllowed(item.alt);
+                    if (!citesOf(text).length) p.className = 'gap';
+                } else {
+                    text = keepAllowed(item.p);
+                    if (!citesOf(text).length) {
+                        p.className = 'gap';
+                        p.textContent = 'Con solo sitios oficiales no se encontraron fuentes para este punto. Habría que ampliar la búsqueda.';
+                        r.appendChild(p);
+                        return;
+                    }
+                }
+            }
+
+            // Arma el párrafo con las citas como botones
+            text.split(/(\{\d+\})/).forEach(part => {
+                const m = part.match(/^\{(\d+)\}$/);
+                if (m) {
+                    const n = Number(m[1]);
+                    used.add(n);
+                    const b = document.createElement('button');
+                    b.className = 'cite';
+                    b.textContent = n;
+                    b.title = current.sources[n].name;
+                    b.onclick = () => showSource(n, b);
+                    p.appendChild(b);
+                } else if (part) {
+                    p.appendChild(document.createTextNode(part));
+                }
+            });
+            r.appendChild(p);
+        });
+
+        if (adjustment) {
+            const adj = document.createElement('div');
+            adj.className = 'adjust';
+            adj.textContent = 'Cambio que pediste durante la investigación: ' + adjustment + '. En una investigación real, el informe incluiría ese ajuste.';
+            r.appendChild(adj);
+        }
+
+        if (used.size) {
+            const h4 = document.createElement('h4');
+            h4.textContent = 'Fuentes';
+            r.appendChild(h4);
+            const ul = document.createElement('ul');
+            ul.className = 'src-list';
+            [...used].sort((a, b) => a - b).forEach(n => {
+                const s = current.sources[n];
+                const li = document.createElement('li');
+                li.innerHTML = `<button class="cite">${n}</button><span class="tag tag-${s.kind}">${KIND_LABEL[s.kind]}</span><span></span>`;
+                li.lastChild.textContent = s.name;
+                li.firstChild.onclick = () => showSource(n, li.firstChild);
+                ul.appendChild(li);
+            });
+            r.appendChild(ul);
+        }
+
+        document.getElementById('src-detail').style.display = 'none';
+        document.querySelectorAll('.vcheck').forEach(c => c.checked = false);
+        document.getElementById('verify-ok').style.display = 'none';
+        goTo(4);
+    }
+
+    function showSource(n, btn) {
+        const s = current.sources[n];
+        document.querySelectorAll('.cite').forEach(c => c.classList.toggle('on', c.textContent === String(n)));
+        const box = document.getElementById('src-detail');
+        box.innerHTML = `
+            <h5></h5>
+            <div class="what"></div>
+            <ul>
+                <li>${icon('check', 16)}<span>Abrí el enlace original de la fuente.</span></li>
+                <li>${icon('check', 16)}<span>Buscá el dato: ¿la fuente dice lo mismo que el informe?</span></li>
+                <li>${icon('check', 16)}<span>Fijate la fecha de publicación.</span></li>
+                <li>${icon('check', 16)}<span>Tipo de fuente: ${KIND_LABEL[s.kind].toLowerCase()}. ${s.kind === 'otro' ? 'Puede ser una opinión: conviene contrastarla.' : ''}</span></li>
+            </ul>`;
+        box.querySelector('h5').textContent = '[' + n + '] ' + s.name;
+        box.querySelector('.what').textContent = s.what + ' (Fuente de ejemplo, sin enlace.)';
+        box.style.display = 'block';
+        box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    document.querySelectorAll('.vcheck').forEach(c => c.addEventListener('change', () => {
+        const all = [...document.querySelectorAll('.vcheck')].every(x => x.checked);
+        document.getElementById('verify-ok').style.display = all ? 'block' : 'none';
+    }));
+
+    function resetAll() {
+        current = null;
+        document.getElementById('simple-msg').style.display = 'none';
+        goTo(1);
+    }
+
+    function closeModule() {
+        if (document.referrer) {
+            history.back();
+        } else {
+            window.close();
+        }
+    }
+
+    renderQuestions();
+    goTo(1);
+    window.scrollTo(0, 0);
+</script>
+</body>
+</html>
