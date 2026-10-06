@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Deep Research</title>
+    <style>
+        :root {
+            --bg-body: #e2e8f0;
+            --card-bg: #ffffff;
+            --dark-bg: #1e293b;
+            --text-main: #334155;
+            --text-light: #64748b;
+            --line: #e2e8f0;
+            --soft: #f8fafc;
+            --accent-blue: #1d4ed8;
+            --accent-blue-light: #eff6ff;
+            --accent-hover: #1e40af;
+            --accent-green: #059669;
+            --accent-green-light: #ecfdf5;
+            --accent-red: #dc2626;
+            --accent-red-light: #fef2f2;
+            --accent-amber: #b45309;
+            --accent-amber-light: #fffbeb;
+            --pin: #f59e0b;
+            --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 24px 16px 60px;
+        }
+
+        .wrap { max-width: 1100px; margin: 0 auto; }
+
+        /* === ENCABEZADO === */
+        .head {
+            background: var(--card-bg);
+            border-radius: 20px;
+            border-top: 6px solid var(--accent-blue);
+            padding: 28px 34px;
+            position: relative;
+            box-shadow: 0 20px 40px -10px rgba(30, 41, 59, 0.1);
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: var(--accent-blue-light);
+            color: var(--accent-blue);
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 4.5vw, 2.8rem);
+            font-weight: 800;
+            color: var(--dark-bg);
+            line-height: 1.1;
+            letter-spacing: -1px;
+            padding-right: 50px;
+        }
+
+        .head p { color: var(--text-light); font-size: 1.1rem; margin-top: 8px; }
+
+        .sim-note {
+            margin-top: 16px;
+            background: var(--accent-amber-light);
+            border-left: 5px solid var(--accent-amber);
+            color: #78350f;
+            padding: 12px 16px;
+            border-radius: 0 12px 12px 0;
+            font-size: 0.98rem;
+            font-weight: 600;
+        }
+
+        .btn-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--soft);
+            border: 2px solid var(--line);
+            color: var(--text-light);
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-close:hover {
+            background: var(--accent-red-light);
+            color: var(--accent-red);
+            border-color: #fca5a5;
+            transform: rotate(90deg);
+        }
+
+        /* === BARRA DE ETAPAS === */
+        .stages {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        .stage {
+            background: var(--card-bg);
+            border: 2px solid var(--line);
+            border-radius: 14px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            color: #94a3b8;
+            font-size: 0.98rem;
+        }
+
+        .stage .num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .stage.active { border-color: var(--accent-blue); color: var(--dark-bg); }
+        .stage.active .num { background: var(--accent-blue); color: white; }
+        .stage.done { color: var(--accent-green); }
+        .stage.done .num { background: var(--accent-green); color: white; }
+
+        /* === PANELES === */
+        .panel {
+            display: none;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 28px 30px;
+            box-shadow: 0 20px 40px -10px rgba(30, 41, 59, 0.1);
+            animation: up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .panel.active { display: block; }
+
+        @keyframes up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stage-grid {
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        h2 {
+            font-size: clamp(1.45rem, 3vw, 1.85rem);
+            color: var(--dark-bg);
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .lead { color: var(--text-light); font-size: 1.06rem; margin-bottom: 18px; }
+
+        /* Captura real de referencia */
+        .real {
+            background: var(--soft);
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 14px;
+            position: sticky;
+            top: 16px;
+        }
+
+        .real-title {
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .real img {
+            display: block;
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            cursor: zoom-in;
+            margin-bottom: 8px;
+        }
+
+        .real p { font-size: 0.92rem; color: var(--text-light); line-height: 1.4; margin-bottom: 8px; }
+        .real p:last-child { margin-bottom: 0; }
+
+        /* === ETAPA 1: COMPOSITOR === */
+        .composer {
+            border: 2px solid var(--line);
+            border-radius: 22px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            position: relative;
+        }
+
+        .plus {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 2px solid var(--line);
+            background: var(--soft);
+            color: var(--dark-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .plus:hover, .plus.open { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+        .plus.pulse { animation: pulse 1.6s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(29, 78, 216, 0.35); }
+            50% { box-shadow: 0 0 0 10px rgba(29, 78, 216, 0); }
+        }
+
+        .composer .placeholder { color: #94a3b8; font-size: 1.05rem; flex: 1; }
+
+        .chip-mode {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent-blue);
+            font-weight: 700;
+            background: var(--accent-blue-light);
+            border-radius: 10px;
+            padding: 4px 10px;
+            white-space: nowrap;
+        }
+
+        .chip-mode.on { display: inline-flex; }
+
+        .tool-menu {
+            display: none;
+            list-style: none;
+            margin-top: 10px;
+            border: 2px solid var(--line);
+            border-radius: 16px;
+            padding: 6px;
+            background: white;
+            box-shadow: 0 16px 30px -16px rgba(15, 23, 42, 0.3);
+        }
+
+        .tool-menu.open { display: block; animation: up 0.25s ease; }
+
+        .tool-menu button {
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--dark-bg);
+            cursor: pointer;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .tool-menu button:hover { background: var(--soft); }
+        .tool-menu button svg { flex-shrink: 0; color: var(--text-light); }
+        .tool-menu button small { color: var(--text-light); font-size: 0.9rem; }
+        .tool-menu button.right { background: var(--accent-green-light); }
+
+        .msg {
+            display: none;
+            margin-top: 14px;
+            padding: 14px 18px;
+            border-radius: 0 14px 14px 0;
+            border-left: 6px solid var(--accent-blue);
+            background: var(--accent-blue-light);
+            color: #1e3a8a;
+            font-size: 1.02rem;
+            font-weight: 600;
+        }
+
+        .msg.warn {
+            border-left-color: var(--accent-amber);
+            background: var(--accent-amber-light);
+            color: #78350f;
+        }
+
+        .msg.show { display: block; }
+
+        /* === ETAPA 2: PREGUNTAS === */
+        .q-list { display: flex; flex-direction: column; gap: 10px; }
+
+        .q-card {
+            text-align: left;
+            background: var(--soft);
+            border: 2px solid var(--line);
+            border-radius: 16px;
+            padding: 14px 16px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--dark-bg);
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .q-card:hover { border-color: var(--accent-blue); transform: translateX(4px); }
+
+        .q-card .icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--accent-blue-light);
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* === ETAPA 3: PLAN === */
+        .bubble {
+            background: var(--dark-bg);
+            color: #e2e8f0;
+            border-radius: 16px;
+            padding: 14px 18px;
+            font-size: 1.02rem;
+            margin-bottom: 16px;
+        }
+
+        .bubble .chip-mode { display: inline-flex; margin-right: 6px; background: rgba(255,255,255,0.12); color: #bfdbfe; }
+
+        .plan-card {
+            border: 2px solid var(--line);
+            border-radius: 18px;
+            padding: 18px 20px;
+            background: white;
+        }
+
+        .plan-card .ptitle {
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--dark-bg);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .plan-card .ptitle small {
+            display: block;
+            font-size: 0.82rem;
+            color: var(--accent-amber);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .plan-items { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+
+        .plan-items li {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            font-size: 1.02rem;
+        }
+
+        .plan-items li .dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px dashed #94a3b8;
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        .plan-items li.new { color: var(--accent-blue); font-weight: 600; }
+        .plan-items li.new .dot { border-color: var(--accent-blue); }
+
+        .plan-items .remove {
+            margin-left: auto;
+            background: var(--accent-red-light);
+            color: var(--accent-red);
+            border: none;
+            border-radius: 8px;
+            padding: 2px 9px;
+            font-weight: 800;
+            cursor: pointer;
+            font-family: inherit;
+            flex-shrink: 0;
+        }
+
+        .plan-btns { display: flex; flex-direction: column; gap: 8px; }
+
+        .plan-btns button {
+            border-radius: 22px;
+            padding: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            border: 2px solid var(--line);
+            background: white;
+            color: var(--dark-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .plan-btns button:hover { border-color: #94a3b8; }
+
+        .plan-btns .start { background: var(--dark-bg); color: white; border-color: var(--dark-bg); }
+        .plan-btns .start:hover { background: #0f172a; }
+
+        .countdown {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.6);
+            font-size: 0.78rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .edit-box {
+            display: none;
+            margin-top: 14px;
+            border: 2px solid var(--accent-blue);
+            border-radius: 18px;
+            padding: 14px;
+            background: var(--accent-blue-light);
+        }
+
+        .edit-box.open { display: block; animation: up 0.25s ease; }
+
+        .quote {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .quick { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+
+        .quick button {
+            background: white;
+            border: 2px solid #bfdbfe;
+            color: var(--accent-blue);
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .quick button:hover { background: #dbeafe; }
+
+        .send-row { display: flex; gap: 8px; }
+
+        .send-row input {
+            flex: 1;
+            min-width: 0;
+            border: 2px solid #bfdbfe;
+            border-radius: 22px;
+            padding: 10px 16px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .send-row input:focus { outline: none; border-color: var(--accent-blue); }
+
+        .send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .pending-list { list-style: none; margin: 4px 0 10px; display: flex; flex-direction: column; gap: 4px; }
+        .pending-list li { font-size: 0.95rem; color: #1e3a8a; font-weight: 600; }
+
+        /* === BOTONES GENERALES === */
+        .actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+
+        .btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 12px;
+            font-size: 1.04rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+        .btn-ghost { background: transparent; color: var(--text-light); border: 2px solid var(--line); }
+        .btn-ghost:hover { background: var(--soft); color: var(--text-main); transform: none; }
+
+        /* === ETAPA 4: PROGRESO === */
+        .run-card {
+            border: 2px solid var(--line);
+            border-radius: 18px;
+            padding: 18px 20px;
+        }
+
+        .run-status { font-size: 1rem; color: var(--text-main); min-height: 1.5em; margin-bottom: 10px; }
+
+        .run-row { display: flex; align-items: center; gap: 14px; }
+
+        .bar { flex: 1; height: 10px; background: #f1f5f9; border-radius: 10px; overflow: hidden; }
+        .bar div { height: 100%; width: 0; background: var(--accent-blue); border-radius: 10px; transition: width 0.5s; }
+
+        .stop-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid var(--line);
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .stop-btn span { width: 12px; height: 12px; background: var(--dark-bg); border-radius: 2px; }
+        .stop-btn:hover { border-color: var(--accent-red); }
+
+        .log-title { font-weight: 800; color: var(--dark-bg); margin: 16px 0 8px; font-size: 1rem; }
+
+        .log {
+            list-style: none;
+            background: var(--soft);
+            border: 2px solid var(--line);
+            border-radius: 14px;
+            padding: 12px 14px;
+            min-height: 160px;
+            max-height: 280px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .log li { display: flex; gap: 10px; align-items: flex-start; font-size: 0.98rem; animation: up 0.3s ease; }
+        .log li svg { flex-shrink: 0; margin-top: 2px; }
+        .log .t-search svg { color: var(--accent-blue); }
+        .log .t-user { color: var(--accent-amber); font-weight: 700; }
+        .log .t-done { color: var(--accent-green); font-weight: 700; }
+
+        .stopped {
+            display: none;
+            margin-top: 14px;
+            background: var(--accent-amber-light);
+            border: 2px solid #fcd34d;
+            border-radius: 14px;
+            padding: 14px 16px;
+        }
+
+        .stopped.open { display: block; }
+        .stopped p { font-weight: 700; color: #78350f; margin-bottom: 10px; }
+
+        .chip-btn {
+            background: white;
+            border: 2px solid #fcd34d;
+            color: #78350f;
+            border-radius: 20px;
+            padding: 7px 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.95rem;
+            margin: 0 6px 6px 0;
+        }
+
+        .chip-btn:hover { background: #fef3c7; }
+
+        /* === ETAPA 5: INFORME === */
+        .report-card {
+            border: 2px solid var(--line);
+            border-radius: 18px;
+            background: white;
+            position: relative;
+        }
+
+        .report-card.full {
+            position: fixed;
+            inset: 12px;
+            z-index: 300;
+            overflow-y: auto;
+            box-shadow: 0 0 0 100vmax rgba(15, 23, 42, 0.6);
+        }
+
+        .report-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            border-bottom: 2px solid var(--line);
+            position: sticky;
+            top: 0;
+            background: white;
+            border-radius: 18px 18px 0 0;
+            z-index: 2;
+        }
+
+        .report-head .rtitle { font-weight: 800; color: var(--dark-bg); flex: 1; display: flex; align-items: center; gap: 8px; }
+
+        .rtitle .ico {
+            width: 26px;
+            height: 26px;
+            border-radius: 7px;
+            background: var(--accent-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-bg);
+        }
+
+        .icon-btn:hover { background: var(--soft); border-color: var(--line); }
+
+        .dl-menu {
+            display: none;
+            position: absolute;
+            right: 54px;
+            top: 54px;
+            background: white;
+            border: 2px solid var(--line);
+            border-radius: 14px;
+            padding: 6px;
+            box-shadow: 0 16px 30px -16px rgba(15, 23, 42, 0.35);
+            z-index: 5;
+            min-width: 210px;
+        }
+
+        .dl-menu.open { display: block; }
+
+        .dl-menu button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            border: none;
+            border-radius: 9px;
+            padding: 9px 12px;
+            font-family: inherit;
+            font-size: 0.98rem;
+            cursor: pointer;
+            color: var(--dark-bg);
+        }
+
+        .dl-menu button:hover { background: var(--soft); }
+
+        .report { padding: 20px 22px; }
+
+        .report h3 { font-size: 1.4rem; color: var(--dark-bg); margin-bottom: 4px; line-height: 1.2; }
+        .report .meta { color: var(--text-light); font-size: 0.92rem; margin-bottom: 14px; }
+
+        .report .summary {
+            background: var(--accent-blue-light);
+            border-left: 5px solid var(--accent-blue);
+            border-radius: 0 12px 12px 0;
+            padding: 12px 16px;
+            color: #1e3a8a;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .report h4 { font-size: 1.1rem; color: var(--dark-bg); margin: 16px 0 6px; }
+        .report p { font-size: 1.02rem; }
+        .report .gap { color: var(--accent-amber); font-style: italic; }
+
+        .adjust {
+            margin-top: 16px;
+            background: var(--accent-amber-light);
+            border-left: 5px solid var(--accent-amber);
+            border-radius: 0 12px 12px 0;
+            padding: 10px 14px;
+            color: #78350f;
+            font-weight: 600;
+        }
+
+        .cite {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 26px;
+            height: 22px;
+            padding: 0 6px;
+            margin: 0 2px;
+            border-radius: 6px;
+            background: var(--accent-blue-light);
+            color: var(--accent-blue);
+            border: 1px solid #bfdbfe;
+            font-size: 0.85rem;
+            font-weight: 800;
+            cursor: pointer;
+            vertical-align: 2px;
+            font-family: inherit;
+        }
+
+        .cite:hover, .cite.on { background: var(--accent-blue); color: white; }
+
+        .src-list { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .src-list li { display: flex; gap: 10px; align-items: center; font-size: 0.98rem; flex-wrap: wrap; }
+
+        .tag { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; padding: 3px 8px; border-radius: 6px; }
+        .tag-oficial { background: var(--accent-green-light); color: var(--accent-green); }
+        .tag-prensa { background: var(--accent-blue-light); color: var(--accent-blue); }
+        .tag-otro { background: #f1f5f9; color: var(--text-light); }
+
+        .src-detail {
+            display: none;
+            margin: 0 22px 20px;
+            background: var(--dark-bg);
+            color: #e2e8f0;
+            border-radius: 16px;
+            padding: 18px 20px;
+        }
+
+        .src-detail h5 { font-size: 1.1rem; color: white; margin-bottom: 4px; }
+        .src-detail .what { color: #cbd5e1; margin-bottom: 10px; }
+        .src-detail ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+        .src-detail li { display: flex; gap: 8px; align-items: flex-start; }
+        .src-detail li svg { color: #93c5fd; flex-shrink: 0; margin-top: 3px; }
+
+        .verify {
+            margin-top: 18px;
+            background: var(--soft);
+            border: 2px solid var(--line);
+            border-radius: 16px;
+            padding: 18px 20px;
+        }
+
+        .verify h4 { font-size: 1.1rem; color: var(--dark-bg); margin-bottom: 8px; }
+        .verify label { display: flex; gap: 12px; align-items: center; padding: 6px 0; cursor: pointer; font-size: 1.02rem; }
+        .verify input { width: 22px; height: 22px; accent-color: var(--accent-green); flex-shrink: 0; }
+        .verify-ok { display: none; margin-top: 8px; color: var(--accent-green); font-weight: 800; }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%) translateY(120px);
+            background: var(--dark-bg);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-weight: 600;
+            z-index: 400;
+            transition: transform 0.3s;
+            max-width: calc(100% - 32px);
+        }
+
+        .toast:not(.show) { visibility: hidden; }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* Imagen ampliada */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.88);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            cursor: zoom-out;
+        }
+
+        .lightbox.open { display: flex; }
+        .lightbox img { max-width: 96vw; max-height: 90vh; border-radius: 10px; }
+
+        @media (max-width: 860px) {
+            .stage-grid { grid-template-columns: 1fr; }
+            .real { position: static; }
+        }
+
+        @media (max-width: 700px) {
+            .head, .panel { padding: 22px 18px; }
+            .stages { grid-template-columns: repeat(3, 1fr); }
+            .stage { font-size: 0.85rem; padding: 8px; }
+            .report { padding: 16px; }
+            .src-detail { margin: 0 16px 16px; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <header class="head">
+        <button class="btn-close" onclick="closeModule()" title="Cerrar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        <span class="eyebrow">Simulador</span>
+        <h1>Así trabaja Deep Research</h1>
+        <p>Los mismos pasos que en ChatGPT, con la captura real de cada uno al costado.</p>
+        <div class="sim-note">
+            Es una simulación para practicar: no se conecta a ChatGPT y las fuentes del informe son ejemplos sin enlace real.
+        </div>
+    </header>
+
+    <div class="stages">
+        <div class="stage" id="st-1"><span class="num">1</span>Activar</div>
+        <div class="stage" id="st-2"><span class="num">2</span>Pregunta</div>
+        <div class="stage" id="st-3"><span class="num">3</span>Plan</div>
+        <div class="stage" id="st-4"><span class="num">4</span>Investiga</div>
+        <div class="stage" id="st-5"><span class="num">5</span>Informe</div>
+    </div>
+
+    <!-- ETAPA 1: ACTIVAR -->
+    <section class="panel active" id="p-1">
+        <div class="stage-grid">
+            <div>
+                <h2>Activá la Investigación profunda</h2>
+                <p class="lead">Tocá el botón <strong>+</strong> y elegí la opción correcta.</p>
+
+                <div class="composer">
+                    <button class="plus pulse" id="plus" onclick="toggleMenu()" title="Agregar">
+                        <span data-i="plus" data-s="22"></span>
+                    </button>
+                    <span class="chip-mode" id="chip-1"><span data-i="mega" data-s="18"></span>Investigación profunda</span>
+                    <span class="placeholder" id="ph-1">Pregunta lo que quieras</span>
+                </div>
+
+                <ul class="tool-menu" id="tool-menu"></ul>
+
+                <div class="msg" id="msg-1"></div>
+            </div>
+
+            <aside class="real">
+                <div class="real-title"><span data-i="image" data-s="16"></span>Así se ve en ChatGPT</div>
+                <img src="img/dr-menu-mas.jpg" alt="Menú + de ChatGPT con la opción Investigación profunda">
+                <p>Menú <strong>+</strong>: la opción es <strong>Investigación profunda</strong> ("Obtén un informe detallado").</p>
+            </aside>
+        </div>
+    </section>
+
+    <!-- ETAPA 2: PREGUNTA -->
+    <section class="panel" id="p-2">
+        <div class="stage-grid">
+            <div>
+                <h2>Elegí una pregunta</h2>
+                <p class="lead">Una de estas no necesita Deep Research. ¿Cuál?</p>
+                <div class="q-list" id="q-list"></div>
+                <div class="msg" id="simple-msg">
+                    Para esta pregunta no hace falta Investigación profunda: el chat común responde al instante.
+                    Conviene cuando hay que buscar, comparar fuentes y armar un informe.
+                </div>
+            </div>
+
+            <aside class="real">
+                <div class="real-title"><span data-i="image" data-s="16"></span>Así se ve en ChatGPT</div>
+                <img src="img/dr-pregunta.jpg" alt="Pregunta escrita con Investigación profunda activada">
+                <p>La función queda marcada antes del texto. Después se envía con la flecha.</p>
+            </aside>
+        </div>
+    </section>
+
+    <!-- ETAPA 3: PLAN -->
+    <section class="panel" id="p-3">
+        <div class="stage-grid">
+            <div>
+                <h2>Revisá el plan</h2>
+                <p class="lead">Antes de investigar, propone un plan. Si no tocás nada, cuando termina la cuenta regresiva empieza solo.</p>
+
+                <div class="bubble" id="bubble"></div>
+
+                <div class="plan-card">
+                    <div class="ptitle" id="plan-title"></div>
+                    <ul class="plan-items" id="plan-items"></ul>
+                    <div class="plan-btns" id="plan-btns">
+                        <button onclick="openEdit()">Editar</button>
+                        <button onclick="cancelPlan()">Cancelar</button>
+                        <button class="start" onclick="startResearch()">Comenzar <span class="countdown" id="countdown">30</span></button>
+                    </div>
+                </div>
+
+                <div class="edit-box" id="edit-box">
+                    <div class="quote"><span data-i="corner" data-s="16"></span><span id="quote-title"></span></div>
+                    <div class="quick" id="quick"></div>
+                    <ul class="pending-list" id="pending"></ul>
+                    <div class="send-row">
+                        <input type="text" id="adjust-input" maxlength="120" placeholder="Continúa con preguntas o ajustes">
+                        <button class="send-btn" onclick="sendAdjust()" title="Enviar"><span data-i="up" data-s="20"></span></button>
+                    </div>
+                </div>
+
+                <div class="msg warn" id="cancel-msg"></div>
+            </div>
+
+            <aside class="real">
+                <div class="real-title"><span data-i="image" data-s="16"></span>Así se ve en ChatGPT</div>
+                <img src="img/dr-plan-botones.jpg" alt="Plan con los botones Editar, Cancelar y Comenzar">
+                <p><strong>Comenzar</strong> muestra una cuenta regresiva.</p>
+                <img src="img/dr-editar.jpg" alt="Al tocar Editar, el plan queda citado en la caja de texto">
+                <p>Con <strong>Editar</strong>, el plan queda citado y se escribe el cambio en "Continúa con preguntas o ajustes".</p>
+            </aside>
+        </div>
+    </section>
+
+    <!-- ETAPA 4: INVESTIGACIÓN -->
+    <section class="panel" id="p-4">
+        <div class="stage-grid">
+            <div>
+                <h2 id="run-title">Investigando…</h2>
+                <p class="lead">Mientras trabaja, muestra qué está haciendo. El botón cuadrado la detiene.</p>
+
+                <div class="run-card">
+                    <div class="run-status" id="run-status"></div>
+                    <div class="run-row">
+                        <div class="bar"><div id="bar"></div></div>
+                        <button class="stop-btn" id="stop-btn" onclick="stopRun()" title="Detener"><span></span></button>
+                    </div>
+                </div>
+
+                <div class="log-title">Actividad</div>
+                <ul class="log" id="log"></ul>
+
+                <div class="stopped" id="stopped">
+                    <p>Investigación detenida. ¿Qué querés hacer?</p>
+                    <div id="stopped-opts"></div>
+                </div>
+
+                <div class="actions">
+                    <span></span>
+                    <button class="btn" id="btn-report" onclick="showReport()" style="display: none;">Ver el informe</button>
+                </div>
+            </div>
+
+            <aside class="real">
+                <div class="real-title"><span data-i="image" data-s="16"></span>Así se ve en ChatGPT</div>
+                <img src="img/dr-progreso.jpg" alt="Barra de avance de la investigación con botón para detener">
+                <p>Texto de estado, barra de avance y botón para detener.</p>
+            </aside>
+        </div>
+    </section>
+
+    <!-- ETAPA 5: INFORME -->
+    <section class="panel" id="p-5">
+        <div class="stage-grid">
+            <div>
+                <h2>El informe</h2>
+                <p class="lead">Tocá los números entre corchetes para ver de dónde salió cada dato. Arriba a la derecha: descargar y pantalla completa.</p>
+
+                <div class="report-card" id="report-card">
+                    <div class="report-head">
+                        <div class="rtitle"><span class="ico" data-i="file" data-s="15"></span>Informe de investigación a fondo</div>
+                        <button class="icon-btn" onclick="toggleDl(event)" title="Descargar"><span data-i="download" data-s="20"></span></button>
+                        <button class="icon-btn" onclick="toggleFull()" title="Pantalla completa"><span data-i="expand" data-s="20" id="full-ico"></span></button>
+                        <div class="dl-menu" id="dl-menu">
+                            <button onclick="copyReport()">Copiar contenido</button>
+                            <button onclick="exportMd()">Exportar a Markdown</button>
+                            <button onclick="exportOther('Word')">Exportar a Word</button>
+                            <button onclick="exportOther('PDF')">Exportar a PDF</button>
+                        </div>
+                    </div>
+                    <article class="report" id="report"></article>
+                    <div class="src-detail" id="src-detail"></div>
+                </div>
+
+                <div class="verify">
+                    <h4>Antes de usar el informe</h4>
+                    <label><input type="checkbox" class="vcheck"> Abrí al menos 2 citas.</label>
+                    <label><input type="checkbox" class="vcheck"> La fuente dice lo mismo que el informe.</label>
+                    <label><input type="checkbox" class="vcheck"> Sé si es una fuente oficial, un medio o una opinión.</label>
+                    <label><input type="checkbox" class="vcheck"> Revisé que la información esté actualizada.</label>
+                    <div class="verify-ok" id="verify-ok">Informe revisado. Ahora sí se puede usar.</div>
+                </div>
+
+                <div class="actions">
+                    <span></span>
+                    <button class="btn" onclick="resetAll()">Empezar de nuevo</button>
+                </div>
+            </div>
+
+            <aside class="real">
+                <div class="real-title"><span data-i="image" data-s="16"></span>Así se ve en ChatGPT</div>
+                <img src="img/dr-exportar.jpg" alt="Tarjeta Informe de investigación a fondo con el menú para exportar">
+                <p>El ícono de descarga ofrece <strong>Copiar contenido</strong> y exportar a <strong>Markdown, Word o PDF</strong>. El otro ícono abre la pantalla completa.</p>
+            </aside>
+        </div>
+    </section>
+
+</div>
+
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('open')"><img alt=""></div>
+<div class="toast" id="toast"></div>
+
+<script>
+    /* === ÍCONOS === */
+    const ICONS = {
+        plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+        mega: '<path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M16 9a3 3 0 0 1 0 6"/>',
+        image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>',
+        clip: '<path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>',
+        library: '<path d="M4 19V5"/><path d="M8 19V5"/><rect x="12" y="5" width="8" height="14" rx="1"/>',
+        pen: '<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>',
+        globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+        search: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+        file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+        columns: '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/>',
+        edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>',
+        check: '<polyline points="20 6 9 17 4 12"/>',
+        user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+        grad: '<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1 4 3 6 3s6-2 6-3v-5"/>',
+        phone: '<rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>',
+        alert: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+        calc: '<rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="14" x2="8.01" y2="14"/><line x1="12" y1="14" x2="12.01" y2="14"/><line x1="16" y1="14" x2="16.01" y2="14"/><line x1="8" y1="18" x2="8.01" y2="18"/><line x1="12" y1="18" x2="12.01" y2="18"/><line x1="16" y1="18" x2="16.01" y2="18"/>',
+        corner: '<polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/>',
+        up: '<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>',
+        download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+        expand: '<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>',
+        shrink: '<polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/>'
+    };
+
+    function icon(name, size = 20) {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] || ''}</svg>`;
+    }
+
+    function fillIcons(root = document) {
+        root.querySelectorAll('[data-i]').forEach(el => { el.innerHTML = icon(el.dataset.i, el.dataset.s || 20); });
+    }
+
+    function toast(text) {
+        const t = document.getElementById('toast');
+        t.textContent = text;
+        t.classList.add('show');
+        clearTimeout(t._h);
+        t._h = setTimeout(() => t.classList.remove('show'), 3200);
+    }
+
+    /* === DATOS DE LA SIMULACIÓN ===
+       Cada punto del plan genera una sección del informe.
+       {n} marca una cita a la fuente n.
+       "alt" es el texto que se usa si se pidió "solo sitios oficiales" y se pierden fuentes. */
+    const QUESTIONS = [
+        {
+            icon: 'grad',
+            q: '¿Qué salidas laborales tiene un egresado de un bachillerato en Comunicación Social y qué estudios puede seguir?',
+            planTitle: 'Salidas laborales y estudios en Comunicación Social',
+            title: 'Salidas laborales y estudios después de un bachillerato en Comunicación Social',
+            summary: 'Un egresado puede seguir carreras de comunicación, periodismo o publicidad, y trabajar en medios, organizaciones o producción de contenidos digitales. Las fuentes coinciden en lo general y cambian en el enfoque.',
+            plan: [
+                { t: 'Identificar carreras universitarias y terciarias relacionadas con la comunicación', h: 'Estudios posibles',
+                  p: 'Las fuentes mencionan carreras como Ciencias de la Comunicación, Periodismo, Publicidad y Relaciones Públicas {1}{2}. Algunas son universitarias y otras terciarias, y la duración cambia según la institución {2}.' },
+                { t: 'Relevar en qué ámbitos trabajan las personas que se dedican a la comunicación', h: 'Ámbitos de trabajo',
+                  p: 'Medios (radio, televisión, prensa digital), áreas de comunicación de empresas y organismos públicos, agencias de publicidad y producción de contenidos para redes {3}{4}.' },
+                { t: 'Buscar qué habilidades piden los avisos de empleo', h: 'Habilidades que se piden',
+                  p: 'En los avisos revisados se repiten la redacción clara, el manejo de herramientas digitales y de edición, y el trabajo en equipo {4}.' },
+                { t: 'Comparar qué dice cada tipo de fuente', h: 'Diferencias entre fuentes',
+                  p: 'Los sitios de las universidades describen perfiles amplios {1}; las notas periodísticas ponen el foco en la competencia por los puestos y en los trabajos digitales {3}.',
+                  alt: 'Los sitios de las universidades describen perfiles amplios {1}. Sin fuentes de prensa, falta la mirada sobre cómo está hoy el mercado de trabajo.' }
+            ],
+            sources: {
+                1: { name: 'Sitio oficial de una universidad pública', kind: 'oficial', what: 'Plan de estudios y perfil del egresado de Ciencias de la Comunicación.' },
+                2: { name: 'Portal oficial de oferta educativa', kind: 'oficial', what: 'Listado de carreras terciarias y universitarias, con su duración.' },
+                3: { name: 'Nota de un diario nacional', kind: 'prensa', what: 'Nota sobre el trabajo en comunicación y el crecimiento de los empleos digitales.' },
+                4: { name: 'Portal de búsqueda laboral', kind: 'otro', what: 'Avisos de empleo para puestos de comunicación y redes.' }
+            }
+        },
+        {
+            icon: 'phone',
+            q: '¿Cómo influye el uso del celular en la atención durante las clases? Compará estudios y opiniones.',
+            planTitle: 'Impacto del celular en la atención escolar',
+            title: 'El celular y la atención en clase',
+            summary: 'Los estudios coinciden en que las interrupciones del celular afectan la concentración. Qué conviene hacer en la escuela sigue en debate.',
+            plan: [
+                { t: 'Buscar estudios sobre celulares y atención', h: 'Qué dicen los estudios',
+                  p: 'Varios estudios asocian las notificaciones y el uso del celular durante la clase con más distracciones {1}{2}. Los resultados cambian según la edad y el tipo de uso {2}.' },
+                { t: 'Relevar qué medidas tomaron escuelas y gobiernos', h: 'Medidas tomadas',
+                  p: 'Distintos países y jurisdicciones regularon el uso del celular en las aulas, con reglas que van de la prohibición a usos guiados por el docente {3}{4}.' },
+                { t: 'Reunir opiniones de docentes y estudiantes', h: 'Opiniones',
+                  p: 'Hay docentes que ven el celular como una distracción y otros que lo usan como herramienta de clase. Entre estudiantes también hay posturas distintas {4}{5}.' },
+                { t: 'Separar lo comprobado de lo que es opinión', h: 'Comprobado y opinión',
+                  p: 'Lo más respaldado es el efecto de las interrupciones en la concentración {1}{2}. Si conviene prohibirlo o enseñar a usarlo sigue en debate {4}.',
+                  alt: 'Lo más respaldado es el efecto de las interrupciones en la concentración {1}{2}. Sin fuentes de prensa, el informe no muestra el debate sobre qué conviene hacer.' }
+            ],
+            sources: {
+                1: { name: 'Artículo de una revista científica universitaria', kind: 'oficial', what: 'Estudio con estudiantes sobre notificaciones y concentración.' },
+                2: { name: 'Informe de un organismo educativo público', kind: 'oficial', what: 'Revisión de varios estudios sobre tecnología en el aula.' },
+                3: { name: 'Normativa de un ministerio de educación', kind: 'oficial', what: 'Reglas sobre el uso de celulares en las escuelas.' },
+                4: { name: 'Nota de un diario nacional', kind: 'prensa', what: 'Nota con opiniones de docentes, familias y especialistas.' },
+                5: { name: 'Blog de un docente', kind: 'otro', what: 'Experiencia personal usando el celular en clase.' }
+            }
+        },
+        {
+            icon: 'alert',
+            q: '¿Cómo se detecta una noticia falsa? Compará las recomendaciones de distintos sitios de verificación.',
+            planTitle: 'Cómo detectar noticias falsas',
+            title: 'Cómo detectar una noticia falsa',
+            summary: 'Las recomendaciones se repiten: mirar quién publica y cuándo, buscar el dato en otros medios y desconfiar de lo que busca generar enojo o miedo.',
+            plan: [
+                { t: 'Reunir las recomendaciones de sitios de verificación', h: 'Pasos que se repiten',
+                  p: 'Revisar quién publica y la fecha, buscar el dato en otros medios y desconfiar de los títulos alarmistas {1}{2}.' },
+                { t: 'Buscar herramientas para verificar imágenes y videos', h: 'Herramientas',
+                  p: 'La búsqueda inversa de imágenes permite saber si una foto ya circulaba antes y en qué contexto {1}{3}.',
+                  alt: 'Sin sitios de verificación ni guías de buscadores, el informe no encontró herramientas prácticas en fuentes oficiales.' },
+                { t: 'Comparar las recomendaciones entre sí', h: 'Diferencias',
+                  p: 'Los sitios de verificación ponen más peso en las herramientas {1}; las guías educativas, en el pensamiento crítico y en las emociones que busca provocar una noticia falsa {2}.',
+                  alt: 'Las guías oficiales ponen el peso en el pensamiento crítico y en las emociones que busca provocar una noticia falsa {2}. Sin los sitios de verificación, faltan las herramientas prácticas.' },
+                { t: 'Armar una lista breve para usar antes de compartir', h: 'Antes de compartir',
+                  p: '¿Quién lo publica? ¿De qué fecha es? ¿Lo dicen otros medios? ¿La imagen corresponde a ese hecho? {1}{2}' }
+            ],
+            sources: {
+                1: { name: 'Sitio de verificación de datos', kind: 'prensa', what: 'Guía con pasos y herramientas para chequear noticias.' },
+                2: { name: 'Guía de alfabetización mediática de un organismo público', kind: 'oficial', what: 'Material educativo sobre desinformación.' },
+                3: { name: 'Página de ayuda de un buscador', kind: 'otro', what: 'Explica cómo buscar una imagen para encontrar su origen.' }
+            }
+        },
+        { icon: 'calc', q: '¿Cuánto es el 15 % de 2.000?', simple: true }
+    ];
+
+    // Cambios rápidos que se pueden pedir al editar el plan o al detener la investigación
+    const ADJUSTMENTS = [
+        { label: 'Priorizar datos de Argentina', item: 'Priorizar fuentes y datos de Argentina' },
+        { label: 'Usar solo sitios oficiales (.gob.ar, .edu.ar)', item: 'Usar solo sitios oficiales (.gob.ar, .edu.ar)', official: true },
+        { label: 'Agregar ejemplos concretos', item: 'Sumar ejemplos concretos en cada parte' }
+    ];
+
+    const KIND_LABEL = { oficial: 'Oficial', prensa: 'Medio', otro: 'Otro' };
+
+    let current = null;      // pregunta elegida
+    let planState = [];      // [{t, h, p, alt, custom, isNew}]
+    let pendingAdjust = [];  // cambios escritos antes de enviar
+    let scope = 'all';
+    let edited = false;
+    let adjustDuring = null;
+    let countdownTimer = null;
+    let runTimer = null;
+    let logQueue = [];
+    let logTotal = 0;
+    let paused = false;
+
+    /* === NAVEGACIÓN ENTRE ETAPAS === */
+    function goTo(n) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('p-' + n).classList.add('active');
+        for (let i = 1; i <= 5; i++) {
+            const st = document.getElementById('st-' + i);
+            st.classList.toggle('active', i === n);
+            st.classList.toggle('done', i < n);
+        }
+        if (n !== 3) stopCountdown();
+        if (n !== 4) stopRunTimer();
+        window.scrollTo({ top: document.querySelector('.stages').offsetTop - 10, behavior: 'smooth' });
+    }
+
+    /* === ETAPA 1: ACTIVAR === */
+    const MENU = [
+        { ic: 'clip', t: 'Agregar fotos y archivos', s: 'Subir desde la computadora' },
+        { ic: 'library', t: 'Agregar desde la biblioteca', s: 'Explora y busca tus archivos' },
+        { ic: 'image', t: 'Crea una imagen', s: 'Crea cualquier imagen' },
+        { ic: 'pen', t: 'Dibujar', s: 'Dibuja y adjunta una imagen' },
+        { ic: 'globe', t: 'Busca en la web', s: 'Noticias e información en tiempo real' },
+        { ic: 'mega', t: 'Investigación profunda', s: 'Obtén un informe detallado', right: true }
+    ];
+
+    function renderMenu() {
+        const ul = document.getElementById('tool-menu');
+        ul.innerHTML = '';
+        MENU.forEach(m => {
+            const li = document.createElement('li');
+            const b = document.createElement('button');
+            b.innerHTML = `${icon(m.ic, 18)}<span><strong></strong> <small></small></span>`;
+            b.querySelector('strong').textContent = m.t;
+            b.querySelector('small').textContent = m.s;
+            b.onclick = () => pickTool(m, b);
+            li.appendChild(b);
+            ul.appendChild(li);
+        });
+    }
+
+    function toggleMenu() {
+        const menu = document.getElementById('tool-menu');
+        const plus = document.getElementById('plus');
+        menu.classList.toggle('open');
+        plus.classList.toggle('open', menu.classList.contains('open'));
+        plus.classList.remove('pulse');
+    }
+
+    function pickTool(m, btn) {
+        const msg = document.getElementById('msg-1');
+        if (!m.right) {
+            msg.className = 'msg warn show';
+            msg.textContent = `"${m.t}" sirve para otra cosa. Buscá la opción que dice "Obtén un informe detallado".`;
+            return;
+        }
+        btn.classList.add('right');
+        document.getElementById('chip-1').classList.add('on');
+        document.getElementById('ph-1').textContent = 'Obtén un informe detallado';
+        document.getElementById('tool-menu').classList.remove('open');
+        msg.className = 'msg show';
+        msg.textContent = 'Bien: Investigación profunda quedó activada. Ahora, la pregunta.';
+        setTimeout(() => goTo(2), 1100);
+    }
+
+    /* === ETAPA 2: PREGUNTA === */
+    function renderQuestions() {
+        const list = document.getElementById('q-list');
+        list.innerHTML = '';
+        QUESTIONS.forEach((q, i) => {
+            const b = document.createElement('button');
+            b.className = 'q-card';
+            b.innerHTML = `<span class="icon-box">${icon(q.icon, 22)}</span><span></span>`;
+            b.lastChild.textContent = q.q;
+            b.onclick = () => chooseQuestion(i);
+            list.appendChild(b);
+        });
+    }
+
+    function chooseQuestion(i) {
+        const q = QUESTIONS[i];
+        const msg = document.getElementById('simple-msg');
+        if (q.simple) {
+            msg.classList.add('show');
+            return;
+        }
+        msg.classList.remove('show');
+        current = q;
+        planState = q.plan.map(item => ({ ...item, custom: false, isNew: false }));
+        scope = 'all';
+        edited = false;
+        pendingAdjust = [];
+        document.getElementById('bubble').innerHTML = `<span class="chip-mode">${icon('mega', 16)}Investigación profunda</span><span></span>`;
+        document.getElementById('bubble').lastChild.textContent = q.q;
+        document.getElementById('cancel-msg').classList.remove('show');
+        closeEdit();
+        renderPlan();
+        goTo(3);
+        startCountdown();
+    }
+
+    /* === ETAPA 3: PLAN === */
+    function renderPlan(editing = false) {
+        const title = document.getElementById('plan-title');
+        title.innerHTML = (edited ? '<small>Plan editado</small>' : '') + '<span></span>';
+        title.lastChild.textContent = current.planTitle + (scope === 'official' ? ' (solo sitios oficiales)' : '');
+
+        const ul = document.getElementById('plan-items');
+        ul.innerHTML = '';
+        planState.forEach((item, i) => {
+            const li = document.createElement('li');
+            if (item.isNew) li.className = 'new';
+            li.innerHTML = '<span class="dot"></span><span></span>';
+            li.children[1].textContent = item.t;
+            if (editing && planState.length > 1) {
+                const rm = document.createElement('button');
+                rm.className = 'remove';
+                rm.textContent = 'Sacar';
+                rm.onclick = () => {
+                    pendingAdjust.push({ type: 'remove', index: i, label: 'Sacar: ' + item.t });
+                    renderPending();
+                    rm.disabled = true;
+                    rm.textContent = 'Se saca';
+                };
+                li.appendChild(rm);
+            }
+            ul.appendChild(li);
+        });
+    }
+
+    function startCountdown() {
+        stopCountdown();
+        let n = 30;
+        const el = document.getElementById('countdown');
+        el.textContent = n;
+        el.style.display = 'inline-flex';
+        countdownTimer = setInterval(() => {
+            n--;
+            el.textContent = n;
+            if (n <= 0) {
+                stopCountdown();
+                startResearch();
+            }
+        }, 1000);
+    }
+
+    function stopCountdown() {
+        if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+    }
+
+    function openEdit() {
+        stopCountdown();
+        document.getElementById('countdown').style.display = 'none';
+        document.getElementById('quote-title').textContent = '"' + current.planTitle + '"';
+        const quick = document.getElementById('quick');
+        quick.innerHTML = '';
+        ADJUSTMENTS.forEach(a => {
+            const b = document.createElement('button');
+            b.textContent = a.label;
+            b.onclick = () => {
+                if (pendingAdjust.some(p => p.adj === a)) return;
+                pendingAdjust.push({ type: 'add', adj: a, label: a.label });
+                renderPending();
+            };
+            quick.appendChild(b);
+        });
+        pendingAdjust = [];
+        renderPending();
+        renderPlan(true);
+        document.getElementById('edit-box').classList.add('open');
+        document.getElementById('adjust-input').focus();
+    }
+
+    function closeEdit() {
+        document.getElementById('edit-box').classList.remove('open');
+    }
+
+    function renderPending() {
+        const ul = document.getElementById('pending');
+        ul.innerHTML = '';
+        pendingAdjust.forEach(p => {
+            const li = document.createElement('li');
+            li.textContent = '• ' + p.label;
+            ul.appendChild(li);
+        });
+    }
+
+    function sendAdjust() {
+        const input = document.getElementById('adjust-input');
+        const text = input.value.trim();
+        if (text) pendingAdjust.push({ type: 'text', label: text });
+        if (!pendingAdjust.length) {
+            input.focus();
+            toast('Escribí un cambio o elegí uno de los botones.');
+            return;
+        }
+        input.value = '';
+
+        // Aplicar los cambios al plan
+        planState.forEach(p => p.isNew = false);
+        const removeIdx = pendingAdjust.filter(p => p.type === 'remove').map(p => p.index);
+        planState = planState.filter((p, i) => !removeIdx.includes(i));
+        pendingAdjust.forEach(p => {
+            if (p.type === 'add') {
+                if (p.adj.official) scope = 'official';
+                planState.unshift({ t: p.adj.item, h: p.adj.item, p: null, custom: true, isNew: true, note: true });
+            } else if (p.type === 'text') {
+                const h = p.label.charAt(0).toUpperCase() + p.label.slice(1);
+                planState.push({ t: h, h, p: null, custom: true, isNew: true });
+            }
+        });
+        if (!planState.length) planState = current.plan.map(item => ({ ...item, custom: false, isNew: false }));
+        edited = true;
+        pendingAdjust = [];
+        closeEdit();
+        renderPlan();
+        toast('ChatGPT rehízo el plan con tu pedido.');
+        startCountdown();
+    }
+
+    document.getElementById('adjust-input').addEventListener('keydown', e => {
+        if (e.key === 'Enter') sendAdjust();
+    });
+
+    function cancelPlan() {
+        stopCountdown();
+        const m = document.getElementById('cancel-msg');
+        m.textContent = 'Investigación cancelada. En ChatGPT no se hace la búsqueda. Podés elegir otra pregunta.';
+        m.classList.add('show');
+        setTimeout(() => goTo(2), 1600);
+    }
+
+    /* === ETAPA 4: INVESTIGACIÓN === */
+    function citesOf(text) {
+        return [...(text || '').matchAll(/\{(\d+)\}/g)].map(m => Number(m[1]));
+    }
+
+    function allowed(n) {
+        return scope === 'all' || current.sources[n].kind === 'oficial';
+    }
+
+    function startResearch() {
+        stopCountdown();
+        closeEdit();
+        adjustDuring = null;
+        paused = false;
+
+        logQueue = [];
+        logQueue.push({ cls: 't-search', ic: 'search', text: scope === 'all' ? 'Buscando en la web pública.' : 'Buscando solo en sitios oficiales (.gob.ar, .edu.ar).' });
+
+        planState.forEach(item => {
+            if (item.custom) {
+                logQueue.push({ cls: 't-search', ic: 'search', text: 'Teniendo en cuenta: ' + item.t.toLowerCase() + '.' });
+                return;
+            }
+            logQueue.push({ cls: 't-search', ic: 'search', text: 'Buscando: ' + item.t.toLowerCase() + '.' });
+            [...new Set(citesOf(item.p))].forEach(n => {
+                const s = current.sources[n];
+                logQueue.push(allowed(n)
+                    ? { cls: 't-read', ic: 'file', text: 'Leyendo: ' + s.name.toLowerCase() + '.' }
+                    : { cls: 't-read', ic: 'alert', text: 'Descartada por no ser oficial: ' + s.name.toLowerCase() + '.' });
+            });
+        });
+
+        logQueue.push({ cls: 't-read', ic: 'columns', text: 'Comparando lo que dice cada fuente.' });
+        logQueue.push({ cls: 't-read', ic: 'edit', text: 'Redactando el informe con citas.' });
+        logQueue.push({ cls: 't-done', ic: 'check', text: 'Informe listo.' });
+
+        logTotal = logQueue.length;
+        document.getElementById('log').innerHTML = '';
+        document.getElementById('bar').style.width = '0';
+        document.getElementById('run-status').textContent = 'Preparando la investigación…';
+        document.getElementById('run-title').textContent = 'Investigando…';
+        document.getElementById('btn-report').style.display = 'none';
+        document.getElementById('stop-btn').style.display = 'flex';
+        document.getElementById('stopped').classList.remove('open');
+
+        goTo(4);
+        startRunTimer();
+    }
+
+    function addLog(entry) {
+        const li = document.createElement('li');
+        li.className = entry.cls;
+        li.innerHTML = icon(entry.ic, 18) + '<span></span>';
+        li.lastChild.textContent = entry.text;
+        const log = document.getElementById('log');
+        log.appendChild(li);
+        log.scrollTop = log.scrollHeight;
+        document.getElementById('run-status').textContent = entry.text;
+    }
+
+    function startRunTimer() {
+        stopRunTimer();
+        runTimer = setInterval(() => {
+            if (paused) return;
+            const entry = logQueue.shift();
+            if (!entry) { finishRun(); return; }
+            addLog(entry);
+            document.getElementById('bar').style.width = Math.round((logTotal - logQueue.length) / logTotal * 100) + '%';
+            if (!logQueue.length) finishRun();
+        }, 850);
+    }
+
+    function stopRunTimer() {
+        if (runTimer) { clearInterval(runTimer); runTimer = null; }
+    }
+
+    function finishRun() {
+        stopRunTimer();
+        document.getElementById('run-title').textContent = 'Investigación terminada';
+        document.getElementById('stop-btn').style.display = 'none';
+        document.getElementById('stopped').classList.remove('open');
+        document.getElementById('btn-report').style.display = 'inline-flex';
+    }
+
+    function stopRun() {
+        paused = true;
+        const opts = document.getElementById('stopped-opts');
+        opts.innerHTML = '';
+        ADJUSTMENTS.filter(a => !a.official).forEach(a => {
+            const b = document.createElement('button');
+            b.className = 'chip-btn';
+            b.textContent = 'Ajustar: ' + a.label.toLowerCase();
+            b.onclick = () => {
+                adjustDuring = a.label;
+                addLog({ cls: 't-user', ic: 'user', text: 'Cambio pedido: ' + a.label.toLowerCase() + '.' });
+                resumeRun();
+            };
+            opts.appendChild(b);
+        });
+        const keep = document.createElement('button');
+        keep.className = 'chip-btn';
+        keep.textContent = 'Seguir sin cambios';
+        keep.onclick = resumeRun;
+        opts.appendChild(keep);
+        const cancel = document.createElement('button');
+        cancel.className = 'chip-btn';
+        cancel.textContent = 'Cancelar la investigación';
+        cancel.onclick = () => { stopRunTimer(); goTo(2); };
+        opts.appendChild(cancel);
+        document.getElementById('stopped').classList.add('open');
+        document.getElementById('run-status').textContent = 'Detenida.';
+    }
+
+    function resumeRun() {
+        document.getElementById('stopped').classList.remove('open');
+        paused = false;
+    }
+
+    /* === ETAPA 5: INFORME === */
+    function showReport() {
+        const used = new Set();
+        const r = document.getElementById('report');
+        r.innerHTML = '';
+
+        const add = (tag, cls, text) => {
+            const el = document.createElement(tag);
+            if (cls) el.className = cls;
+            if (text !== undefined) el.textContent = text;
+            r.appendChild(el);
+            return el;
+        };
+
+        add('h3', '', current.title);
+        add('div', 'meta', 'Informe de ejemplo · ' + (scope === 'all' ? 'Fuentes: web pública' : 'Fuentes: solo sitios oficiales'));
+        add('div', 'summary', current.summary);
+
+        planState.forEach(item => {
+            if (item.note) return; // los pedidos generales no son secciones
+            add('h4', '', item.h);
+            const p = document.createElement('p');
+
+            if (item.custom) {
+                p.className = 'gap';
+                p.textContent = 'Punto agregado por vos. En una investigación real, Deep Research sumaría esta sección con sus propias fuentes.';
+                r.appendChild(p);
+                return;
+            }
+
+            // Si se pidió "solo sitios oficiales", se usa el texto alternativo y se quitan las citas descartadas
+            const keepAllowed = t => t.replace(/\{(\d+)\}/g, (m, n) => allowed(Number(n)) ? m : '');
+            let text = item.p;
+            if (citesOf(text).some(n => !allowed(n))) {
+                if (item.alt) {
+                    text = keepAllowed(item.alt);
+                    if (!citesOf(text).length) p.className = 'gap';
+                } else {
+                    text = keepAllowed(item.p);
+                    if (!citesOf(text).length) {
+                        p.className = 'gap';
+                        p.textContent = 'Con solo sitios oficiales no se encontraron fuentes para este punto. Habría que ampliar la búsqueda.';
+                        r.appendChild(p);
+                        return;
+                    }
+                }
+            }
+
+            text.split(/(\{\d+\})/).forEach(part => {
+                const m = part.match(/^\{(\d+)\}$/);
+                if (m) {
+                    const n = Number(m[1]);
+                    used.add(n);
+                    const b = document.createElement('button');
+                    b.className = 'cite';
+                    b.textContent = n;
+                    b.title = current.sources[n].name;
+                    b.onclick = () => showSource(n);
+                    p.appendChild(b);
+                } else if (part) {
+                    p.appendChild(document.createTextNode(part));
+                }
+            });
+            r.appendChild(p);
+        });
+
+        const notes = planState.filter(p => p.note && !p.t.startsWith('Usar solo')).map(p => p.t.toLowerCase());
+        if (adjustDuring) notes.push(adjustDuring.toLowerCase());
+        if (notes.length) {
+            add('div', 'adjust', 'Pedidos que hiciste: ' + notes.join('; ') + '. En una investigación real, el informe los tendría en cuenta.');
+        }
+
+        if (used.size) {
+            add('h4', '', 'Fuentes');
+            const ul = add('ul', 'src-list');
+            [...used].sort((a, b) => a - b).forEach(n => {
+                const s = current.sources[n];
+                const li = document.createElement('li');
+                li.innerHTML = `<button class="cite">${n}</button><span class="tag tag-${s.kind}">${KIND_LABEL[s.kind]}</span><span></span>`;
+                li.lastChild.textContent = s.name;
+                li.firstChild.onclick = () => showSource(n);
+                ul.appendChild(li);
+            });
+        }
+
+        document.getElementById('src-detail').style.display = 'none';
+        document.querySelectorAll('.vcheck').forEach(c => c.checked = false);
+        document.getElementById('verify-ok').style.display = 'none';
+        goTo(5);
+    }
+
+    function showSource(n) {
+        const s = current.sources[n];
+        document.querySelectorAll('.cite').forEach(c => c.classList.toggle('on', c.textContent === String(n)));
+        const box = document.getElementById('src-detail');
+        box.innerHTML = `
+            <h5></h5>
+            <div class="what"></div>
+            <ul>
+                <li>${icon('check', 16)}<span>Abrí el enlace original de la fuente.</span></li>
+                <li>${icon('check', 16)}<span>Buscá el dato: ¿la fuente dice lo mismo que el informe?</span></li>
+                <li>${icon('check', 16)}<span>Fijate la fecha de publicación.</span></li>
+                <li>${icon('check', 16)}<span>Tipo de fuente: ${KIND_LABEL[s.kind].toLowerCase()}. ${s.kind === 'otro' ? 'Puede ser una opinión: conviene contrastarla.' : ''}</span></li>
+            </ul>`;
+        box.querySelector('h5').textContent = '[' + n + '] ' + s.name;
+        box.querySelector('.what').textContent = s.what + ' (Fuente de ejemplo, sin enlace.)';
+        box.style.display = 'block';
+        box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function reportText() {
+        return document.getElementById('report').innerText;
+    }
+
+    function toggleDl(e) {
+        e.stopPropagation();
+        document.getElementById('dl-menu').classList.toggle('open');
+    }
+
+    document.addEventListener('click', e => {
+        const menu = document.getElementById('dl-menu');
+        if (!menu.contains(e.target)) menu.classList.remove('open');
+    });
+
+    async function copyReport() {
+        document.getElementById('dl-menu').classList.remove('open');
+        try {
+            await navigator.clipboard.writeText(reportText());
+            toast('Contenido copiado.');
+        } catch (err) {
+            toast('No se pudo copiar desde este navegador.');
+        }
+    }
+
+    function exportMd() {
+        document.getElementById('dl-menu').classList.remove('open');
+        let md = '';
+        document.querySelectorAll('#report > *').forEach(el => {
+            if (el.tagName === 'H3') md += '# ' + el.innerText + '\n\n';
+            else if (el.tagName === 'H4') md += '## ' + el.innerText + '\n\n';
+            else if (el.tagName === 'UL') el.querySelectorAll('li').forEach(li => md += '- ' + li.innerText.replace(/\n/g, ' ') + '\n');
+            else md += el.innerText + '\n\n';
+        });
+        const blob = new Blob([md], { type: 'text/markdown' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'informe-de-ejemplo.md';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        toast('Se descargó el informe de ejemplo en Markdown (.md).');
+    }
+
+    function exportOther(kind) {
+        document.getElementById('dl-menu').classList.remove('open');
+        toast(`En ChatGPT, esta opción descarga el informe en ${kind}. En el simulador solo funciona Markdown.`);
+    }
+
+    function toggleFull() {
+        const card = document.getElementById('report-card');
+        card.classList.toggle('full');
+        const ico = document.getElementById('full-ico');
+        ico.innerHTML = icon(card.classList.contains('full') ? 'shrink' : 'expand', 20);
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            document.getElementById('lightbox').classList.remove('open');
+            const card = document.getElementById('report-card');
+            if (card.classList.contains('full')) toggleFull();
+        }
+    });
+
+    document.querySelectorAll('.vcheck').forEach(c => c.addEventListener('change', () => {
+        const all = [...document.querySelectorAll('.vcheck')].every(x => x.checked);
+        document.getElementById('verify-ok').style.display = all ? 'block' : 'none';
+    }));
+
+    /* Ampliar las capturas reales */
+    document.querySelectorAll('.real img').forEach(img => img.addEventListener('click', () => {
+        const box = document.getElementById('lightbox');
+        box.querySelector('img').src = img.src;
+        box.querySelector('img').alt = img.alt;
+        box.classList.add('open');
+    }));
+
+    function resetAll() {
+        current = null;
+        const card = document.getElementById('report-card');
+        if (card.classList.contains('full')) toggleFull();
+        document.getElementById('simple-msg').classList.remove('show');
+        document.getElementById('msg-1').className = 'msg';
+        document.getElementById('chip-1').classList.remove('on');
+        document.getElementById('ph-1').textContent = 'Pregunta lo que quieras';
+        document.getElementById('plus').classList.add('pulse');
+        renderMenu();
+        goTo(1);
+    }
+
+    function closeModule() {
+        if (document.referrer) {
+            history.back();
+        } else {
+            window.close();
+        }
+    }
+
+    fillIcons();
+    renderMenu();
+    renderQuestions();
+    goTo(1);
+    window.scrollTo(0, 0);
+</script>
+</body>
+</html>

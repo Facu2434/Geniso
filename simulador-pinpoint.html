@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Pinpoint</title>
+    <style>
+        :root {
+            --bg-body: #e2e8f0;
+            --card-bg: #ffffff;
+            --dark-bg: #1e293b;
+            --text-main: #334155;
+            --text-light: #64748b;
+            --line: #e2e8f0;
+            --soft: #f8fafc;
+            --accent-blue: #1d4ed8;
+            --accent-blue-light: #eff6ff;
+            --accent-hover: #1e40af;
+            --accent-green: #059669;
+            --accent-green-light: #ecfdf5;
+            --accent-red: #dc2626;
+            --accent-red-light: #fef2f2;
+            --accent-amber: #b45309;
+            --accent-amber-light: #fffbeb;
+            --accent-violet: #6d28d9;
+            --accent-violet-light: #f5f3ff;
+            --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 24px 16px 60px;
+        }
+
+        .wrap { max-width: 1180px; margin: 0 auto; }
+
+        /* === ENCABEZADO === */
+        .head {
+            background: var(--card-bg);
+            border-radius: 20px;
+            border-top: 6px solid var(--accent-blue);
+            padding: 28px 34px;
+            position: relative;
+            box-shadow: 0 20px 40px -10px rgba(30, 41, 59, 0.1);
+        }
+
+        .eyebrow {
+            display: inline-block;
+            background: var(--accent-blue-light);
+            color: var(--accent-blue);
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 4.5vw, 2.8rem);
+            font-weight: 800;
+            color: var(--dark-bg);
+            line-height: 1.1;
+            letter-spacing: -1px;
+            padding-right: 50px;
+        }
+
+        .head p { color: var(--text-light); font-size: 1.08rem; margin-top: 8px; }
+
+        .sim-note {
+            margin-top: 16px;
+            background: var(--accent-amber-light);
+            border-left: 5px solid var(--accent-amber);
+            color: #78350f;
+            padding: 12px 16px;
+            border-radius: 0 12px 12px 0;
+            font-size: 0.98rem;
+            font-weight: 600;
+        }
+
+        .btn-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--soft);
+            border: 2px solid var(--line);
+            color: var(--text-light);
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-close:hover {
+            background: var(--accent-red-light);
+            color: var(--accent-red);
+            border-color: #fca5a5;
+            transform: rotate(90deg);
+        }
+
+        /* === PESTAÑAS === */
+        .tabs { display: flex; gap: 8px; margin: 20px 0 14px; flex-wrap: wrap; }
+
+        .tab {
+            background: var(--card-bg);
+            border: 2px solid var(--line);
+            border-radius: 14px;
+            padding: 10px 16px;
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--text-light);
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .tab:hover { color: var(--dark-bg); border-color: #cbd5e1; }
+        .tab.active { background: var(--dark-bg); border-color: var(--dark-bg); color: white; }
+
+        .view { display: none; animation: up 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+        .view.active { display: block; }
+
+        @keyframes up {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 22px 24px;
+            box-shadow: 0 20px 40px -10px rgba(30, 41, 59, 0.1);
+        }
+
+        h2 { font-size: 1.4rem; color: var(--dark-bg); margin-bottom: 4px; letter-spacing: -0.3px; }
+        .lead { color: var(--text-light); font-size: 1rem; margin-bottom: 14px; }
+
+        /* Captura real de referencia */
+        .with-real { display: grid; grid-template-columns: 1fr 330px; gap: 18px; align-items: start; }
+
+        .real {
+            background: var(--card-bg);
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 14px;
+            position: sticky;
+            top: 16px;
+        }
+
+        .real-title {
+            font-weight: 800;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .real img {
+            display: block;
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            cursor: zoom-in;
+            margin-bottom: 8px;
+        }
+
+        .real p { font-size: 0.9rem; color: var(--text-light); line-height: 1.4; margin-bottom: 10px; }
+        .real p:last-child { margin-bottom: 0; }
+
+        /* === DOCUMENTOS === */
+        .docs-layout { display: grid; grid-template-columns: 1fr 290px; gap: 16px; align-items: start; }
+
+        .search-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+        .search-box {
+            flex: 1;
+            min-width: 220px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 2px solid transparent;
+            border-radius: 26px;
+            padding: 10px 16px;
+            background: #f1f5f9;
+        }
+
+        .search-box:focus-within { border-color: var(--accent-blue); background: white; }
+        .search-box svg { color: var(--text-light); flex-shrink: 0; }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 1.04rem;
+            font-family: inherit;
+            width: 100%;
+            min-width: 0;
+            color: var(--dark-bg);
+        }
+
+        .add-btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 22px;
+            padding: 10px 16px;
+            font-weight: 700;
+            font-family: inherit;
+            font-size: 0.98rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .search-help { font-size: 0.9rem; color: var(--text-light); margin: 10px 0 4px; line-height: 1.7; }
+
+        .example {
+            display: inline-block;
+            background: var(--soft);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 0 7px;
+            font-family: ui-monospace, Consolas, monospace;
+            font-size: 0.86rem;
+            color: var(--dark-bg);
+            cursor: pointer;
+        }
+
+        .example:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+        .results-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 12px 0 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .results-count { font-weight: 800; color: var(--dark-bg); }
+        .results-count span { font-weight: 500; color: var(--text-light); margin-left: 6px; }
+
+        .clear-btn {
+            background: transparent;
+            border: 2px solid var(--line);
+            color: var(--text-light);
+            border-radius: 10px;
+            padding: 5px 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .doc-list { display: flex; flex-direction: column; }
+
+        .doc-card {
+            display: flex;
+            gap: 14px;
+            text-align: left;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--line);
+            padding: 12px 6px;
+            cursor: pointer;
+            font-family: inherit;
+            color: inherit;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .doc-card:hover { background: var(--soft); }
+
+        .type-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: var(--dark-bg);
+            color: white;
+        }
+
+        .type-audio { background: var(--accent-violet); }
+        .type-image { background: var(--accent-amber); }
+        .type-table { background: var(--accent-green); }
+
+        .doc-card .t { font-weight: 800; color: var(--dark-bg); font-size: 1.02rem; }
+        .doc-card .m { font-size: 0.86rem; color: var(--text-light); }
+        .doc-card .s { font-size: 0.95rem; margin-top: 3px; color: var(--text-light); }
+
+        .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+
+        .chip {
+            font-size: 0.78rem;
+            font-weight: 700;
+            border-radius: 20px;
+            padding: 2px 9px;
+            background: white;
+            border: 1px solid var(--line);
+            color: var(--text-light);
+        }
+
+        .chip-p { color: var(--accent-blue); border-color: #bfdbfe; }
+        .chip-o { color: var(--accent-violet); border-color: #ddd6fe; }
+        .chip-l { color: var(--accent-green); border-color: #a7f3d0; }
+
+        mark { background: #bbf7d0; color: inherit; border-radius: 3px; padding: 0 1px; }
+        mark.cur { background: #fde047; outline: 2px solid #eab308; }
+
+        .empty { text-align: center; padding: 26px 10px; color: var(--text-light); }
+
+        /* Panel lateral: Filtrar colección */
+        .filter-panel { padding: 18px 18px; }
+
+        .filter-panel .ftitle { font-weight: 800; color: var(--dark-bg); font-size: 1.05rem; }
+        .filter-panel .fsub { font-size: 0.85rem; color: var(--text-light); margin-bottom: 8px; }
+
+        .ent-group { margin-top: 14px; }
+
+        .ent-group h3 {
+            font-size: 0.92rem;
+            color: var(--dark-bg);
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .ent-group h3 span { font-weight: 500; color: var(--text-light); font-size: 0.82rem; }
+
+        .ent-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            background: transparent;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 5px 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            color: var(--text-main);
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .ent-btn svg { color: var(--text-light); flex-shrink: 0; }
+        .ent-btn .name { flex: 1; }
+        .ent-btn:hover { background: var(--soft); }
+        .ent-btn.active { background: var(--accent-blue-light); border-color: var(--accent-blue); color: var(--accent-blue); font-weight: 700; }
+        .ent-btn .count { color: var(--text-light); font-size: 0.88rem; font-weight: 700; }
+
+        /* === VISOR DE DOCUMENTO === */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal.open { display: flex; }
+
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            width: min(780px, 100%);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: up 0.3s ease;
+        }
+
+        .viewer-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .viewer-bar .back {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: none;
+            background: var(--soft);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .viewer-bar h3 { font-size: 1.1rem; color: var(--dark-bg); line-height: 1.2; flex: 1; }
+        .viewer-bar .m { font-size: 0.85rem; color: var(--text-light); font-weight: 500; display: block; }
+
+        .mentions {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-bottom: 1px solid var(--line);
+            justify-content: flex-end;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            background: var(--soft);
+        }
+
+        .mentions.on { display: flex; }
+
+        .mentions button {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid var(--line);
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .viewer-body { padding: 20px 22px; overflow-y: auto; }
+
+        .doc-body p { font-size: 1.04rem; margin-bottom: 10px; padding: 4px 8px; border-radius: 8px; }
+
+        .doc-body .evidence {
+            background: var(--accent-violet-light);
+            border-left: 4px solid var(--accent-violet);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .paper {
+            background: #fdfbf5;
+            border: 1px solid #e7e2d3;
+            border-radius: 6px;
+            padding: 22px 24px;
+            box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.25);
+            transform: rotate(-0.4deg);
+        }
+
+        .scan-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--accent-amber);
+            background: var(--accent-amber-light);
+            border-radius: 8px;
+            padding: 3px 10px;
+            margin-bottom: 12px;
+        }
+
+        .headline { font-weight: 900; letter-spacing: 0.5px; font-size: 1.2rem !important; color: var(--dark-bg); }
+
+        .player { background: var(--dark-bg); color: white; border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
+        .player-row { display: flex; align-items: center; gap: 12px; }
+        .player .track { flex: 1; height: 8px; background: #475569; border-radius: 10px; overflow: hidden; }
+        .player .track div { height: 100%; width: 0; background: #a78bfa; transition: width 0.4s; }
+        .player .time { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 0.95rem; }
+        .player .status { font-size: 0.9rem; color: #cbd5e1; margin-top: 8px; }
+
+        .line {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 8px 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1.02rem;
+            color: inherit;
+            margin-bottom: 4px;
+        }
+
+        .line:hover { background: var(--soft); border-color: var(--line); }
+        .line.playing { border-color: var(--accent-violet); background: var(--accent-violet-light); }
+        .line.evidence { background: var(--accent-violet-light); border-left: 4px solid var(--accent-violet); }
+
+        .line .ts {
+            font-variant-numeric: tabular-nums;
+            font-weight: 800;
+            color: var(--accent-violet);
+            background: var(--accent-violet-light);
+            border-radius: 6px;
+            padding: 0 6px;
+            flex-shrink: 0;
+        }
+
+        .line .sp { font-weight: 800; color: var(--dark-bg); }
+
+        /* Tablas */
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 2px solid var(--line);
+            border-radius: 14px;
+            overflow: hidden;
+            font-size: 0.98rem;
+        }
+
+        .data-table th, .data-table td { padding: 9px 13px; border-bottom: 1px solid var(--line); text-align: left; }
+        .data-table thead th { background: var(--dark-bg); color: white; white-space: nowrap; }
+        .data-table th.sortable { cursor: pointer; user-select: none; }
+        .data-table td.num, .data-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+        .data-table tfoot td { font-weight: 800; background: var(--soft); border-bottom: none; color: var(--dark-bg); }
+        .data-table tbody tr:hover { background: var(--soft); }
+
+        .table-scroll { overflow-x: auto; }
+
+        .intro-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border: 2px solid var(--line);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .intro-card .txt { padding: 22px; }
+        .intro-card h3 { font-size: 1.35rem; color: var(--dark-bg); line-height: 1.25; margin-bottom: 10px; }
+        .intro-card .beta { font-size: 0.7rem; background: var(--accent-green-light); color: var(--accent-green); border-radius: 6px; padding: 2px 6px; vertical-align: middle; font-weight: 800; }
+        .intro-card .ill { background: var(--accent-blue-light); display: flex; align-items: center; justify-content: center; color: var(--accent-blue); padding: 20px; }
+
+        .tool-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+
+        .btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+
+        .filter-input {
+            border: 2px solid var(--line);
+            border-radius: 12px;
+            padding: 9px 13px;
+            font-size: 1rem;
+            font-family: inherit;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .filter-input:focus { outline: none; border-color: var(--accent-blue); }
+
+        .detect { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+
+        .detect span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--accent-green-light);
+            color: var(--accent-green);
+            font-weight: 700;
+            border-radius: 10px;
+            padding: 5px 11px;
+            font-size: 0.92rem;
+        }
+
+        /* Gemini */
+        .gem-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+        .gem-head svg { color: var(--accent-violet); }
+
+        .gem-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0 16px; }
+
+        .gem-opt {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            text-align: left;
+            background: #f1f5f9;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--dark-bg);
+            cursor: pointer;
+        }
+
+        .gem-opt:hover { border-color: #c4b5fd; }
+        .gem-opt.active { border-color: var(--accent-violet); background: var(--accent-violet-light); }
+        .gem-opt svg { color: var(--accent-violet); flex-shrink: 0; }
+
+        .ask-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+
+        .ask-btn {
+            text-align: left;
+            background: white;
+            border: 2px solid var(--line);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dark-bg);
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .ask-btn:hover { border-color: var(--accent-violet); }
+
+        .ask-input {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            border: 2px solid var(--line);
+            border-radius: 26px;
+            padding: 6px 6px 6px 16px;
+        }
+
+        .ask-input:focus-within { border-color: var(--accent-violet); }
+
+        .ask-input input { flex: 1; border: none; outline: none; font-size: 1rem; font-family: inherit; min-width: 0; }
+
+        .ask-input button {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: none;
+            background: var(--accent-violet);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scope-note { font-size: 0.85rem; color: var(--text-light); margin: 6px 0 0 4px; display: flex; gap: 6px; align-items: center; }
+
+        .answer {
+            display: none;
+            margin-top: 16px;
+            border: 2px solid #ddd6fe;
+            border-radius: 16px;
+            padding: 18px 20px;
+            background: white;
+        }
+
+        .answer-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+
+        .answer .q {
+            background: var(--soft);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-weight: 600;
+            color: var(--dark-bg);
+            flex: 1;
+        }
+
+        .save-btn {
+            background: white;
+            border: 2px solid #c4b5fd;
+            color: var(--accent-violet);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .save-btn:disabled { opacity: 0.6; cursor: default; }
+
+        .answer .text { font-size: 1.06rem; color: var(--dark-bg); min-height: 1.5em; line-height: 1.6; }
+
+        .ref {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 20px;
+            margin: 0 2px;
+            border-radius: 5px;
+            background: var(--accent-violet-light);
+            color: var(--accent-violet);
+            border: 1px solid #c4b5fd;
+            cursor: pointer;
+            vertical-align: 1px;
+        }
+
+        .ref:hover { background: var(--accent-violet); color: white; }
+
+        .timeline { list-style: none; border-left: 3px solid #c4b5fd; margin-left: 6px; padding-left: 16px; display: flex; flex-direction: column; gap: 10px; }
+        .timeline li { position: relative; font-size: 1rem; }
+        .timeline li::before { content: ""; position: absolute; left: -24px; top: 6px; width: 13px; height: 13px; border-radius: 50%; background: var(--accent-violet); border: 2px solid white; }
+        .timeline strong { color: var(--accent-violet); }
+
+        .warn-note { margin-top: 12px; font-size: 0.85rem; color: var(--text-light); }
+
+        .sessions { margin-top: 14px; }
+        .sessions h3 { font-size: 1rem; color: var(--dark-bg); margin-bottom: 6px; }
+        .sessions li { font-size: 0.95rem; margin-left: 18px; }
+
+        /* Misión */
+        .mission-q { background: var(--soft); border: 2px solid var(--line); border-radius: 16px; padding: 16px 18px; margin-bottom: 10px; }
+        .mission-q.ok { border-color: var(--accent-green); background: var(--accent-green-light); }
+        .mission-q.bad { border-color: var(--accent-red); background: var(--accent-red-light); }
+        .mission-q h3 { font-size: 1.05rem; color: var(--dark-bg); margin-bottom: 8px; }
+        .mission-q .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .mission-q label {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            background: white;
+            border: 2px solid var(--line);
+            border-radius: 10px;
+            padding: 6px 11px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .mission-q label:has(input:checked) { border-color: var(--accent-blue); color: var(--accent-blue); }
+        .mission-q input { accent-color: var(--accent-blue); }
+        .mission-q .hint { display: none; margin-top: 8px; font-size: 0.95rem; font-weight: 600; }
+        .mission-q.ok .hint { display: block; color: #065f46; }
+        .mission-q.bad .hint { display: block; color: #991b1b; }
+
+        .mission-score { display: none; margin-top: 6px; font-size: 1.15rem; font-weight: 800; color: var(--dark-bg); }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%) translateY(120px);
+            background: var(--dark-bg);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-weight: 600;
+            z-index: 400;
+            transition: transform 0.3s;
+            max-width: calc(100% - 32px);
+        }
+
+        .toast:not(.show) { visibility: hidden; }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.88);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            cursor: zoom-out;
+        }
+
+        .lightbox.open { display: flex; }
+        .lightbox img { max-width: 96vw; max-height: 90vh; border-radius: 10px; }
+
+        @media (max-width: 1000px) {
+            .with-real { grid-template-columns: 1fr; }
+            .real { position: static; }
+        }
+
+        @media (max-width: 760px) {
+            .docs-layout { grid-template-columns: 1fr; }
+            .gem-options { grid-template-columns: repeat(2, 1fr); }
+            .intro-card { grid-template-columns: 1fr; }
+            .intro-card .ill { display: none; }
+            .head, .card { padding: 20px 16px; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <header class="head">
+        <button class="btn-close" onclick="closeModule()" title="Cerrar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        <span class="eyebrow">Simulador</span>
+        <h1>Así trabaja Pinpoint</h1>
+        <p>Colección de ejemplo: archivo del Centro de Estudiantes de una escuela ficticia, con actas, una grabación, notas escaneadas y presupuestos. Las opciones tienen los mismos nombres que en Pinpoint.</p>
+        <div class="sim-note">
+            Es una simulación para practicar: no se conecta a Google y las personas, lugares y documentos son inventados.
+        </div>
+    </header>
+
+    <nav class="tabs">
+        <button class="tab active" data-tab="docs" onclick="showTab('docs')"><span data-i="folder"></span>Documentos</button>
+        <button class="tab" data-tab="tables" onclick="showTab('tables')"><span data-i="table"></span>Datos estructurados</button>
+        <button class="tab" data-tab="ask" onclick="showTab('ask')"><span data-i="spark"></span>Gemini</button>
+        <button class="tab" data-tab="mission" onclick="showTab('mission')"><span data-i="target"></span>Misión</button>
+    </nav>
+
+    <!-- === DOCUMENTOS === -->
+    <section class="view active" id="view-docs">
+        <div class="with-real">
+            <div class="docs-layout">
+                <div class="card">
+                    <div class="search-row">
+                        <div class="search-box">
+                            <span data-i="search"></span>
+                            <input type="text" id="search" placeholder="Buscar documentos" autocomplete="off">
+                        </div>
+                        <button class="add-btn" onclick="toast('En Pinpoint, Agregar documentos permite subir desde Drive, la computadora o una URL.')"><span data-i="plus" data-s="18"></span>Agregar documentos</button>
+                    </div>
+                    <div class="search-help">
+                        Probá:
+                        <span class="example">feria</span>
+                        <span class="example">"viaje de egresados"</span>
+                        <span class="example">buffet -viaje</span>
+                        <span class="example">club O biblioteca</span>
+                        <br>Comillas: frase exacta · Guion: excluir · <strong>O</strong> o <strong>|</strong>: combinar.
+                    </div>
+
+                    <div class="results-head">
+                        <span class="results-count" id="results-count"></span>
+                        <button class="clear-btn" id="clear-btn" onclick="clearFilters()" style="display: none;">Limpiar filtros</button>
+                    </div>
+                    <div class="doc-list" id="doc-list"></div>
+                </div>
+
+                <aside class="card filter-panel">
+                    <div class="ftitle">Filtrar colección</div>
+                    <div class="fsub">Las entidades que Pinpoint detecta en los documentos.</div>
+                    <div class="ent-group">
+                        <h3>Por personas <span>Documentos</span></h3>
+                        <div id="ent-p"></div>
+                    </div>
+                    <div class="ent-group">
+                        <h3>Por organizaciones <span>Documentos</span></h3>
+                        <div id="ent-o"></div>
+                    </div>
+                    <div class="ent-group">
+                        <h3>Por ubicaciones <span>Documentos</span></h3>
+                        <div id="ent-l"></div>
+                    </div>
+                </aside>
+            </div>
+
+            <aside class="real">
+                <div class="real-title"><span data-i="image" data-s="16"></span>Así se ve en Pinpoint</div>
+                <img src="img/pp-busqueda.jpg" alt="Búsqueda en Pinpoint con resultados resaltados">
+                <p>Búsqueda en una colección pública de Página|12: los resultados muestran la palabra resaltada.</p>
+                <img src="img/pp-filtros.jpg" alt="Panel Filtrar colección de Pinpoint">
+                <p>Panel <strong>Filtrar colección</strong>: por fechas, personas, organizaciones y ubicaciones.</p>
+                <img src="img/pp-documento.jpg" alt="Documento abierto en Pinpoint con el contador de menciones">
+                <p>Dentro del documento: "1 de 18 menciones" y flechas para saltar.</p>
+            </aside>
+        </div>
+    </section>
+
+    <!-- === DATOS ESTRUCTURADOS === -->
+    <section class="view" id="view-tables">
+        <div class="with-real">
+            <div class="card">
+                <div id="table-start">
+                    <div class="intro-card">
+                        <div class="txt">
+                            <h3>Presentación de la extracción de datos estructurados <span class="beta">BETA</span></h3>
+                            <p class="lead">Convierte documentos con una <strong>estructura similar</strong> en una hoja de cálculo.</p>
+                            <button class="btn" onclick="extractTables()">Comenzar</button>
+                        </div>
+                        <div class="ill"><span data-i="table" data-s="90"></span></div>
+                    </div>
+                </div>
+
+                <div id="table-result" style="display: none;">
+                    <h2>Hoja de cálculo generada</h2>
+                    <p class="lead">Detectó dos documentos con la misma estructura (ítem, proveedor, monto).</p>
+                    <div class="detect" id="detect"></div>
+                    <div class="tool-row">
+                        <input type="text" class="filter-input" id="table-filter" placeholder="Filtrar por ítem o proveedor">
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" onclick="sortTable('doc')">Documento ↕</th>
+                                    <th class="sortable" onclick="sortTable('item')">Ítem ↕</th>
+                                    <th class="sortable" onclick="sortTable('prov')">Proveedor ↕</th>
+                                    <th class="sortable num" onclick="sortTable('monto')">Monto ↕</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body"></tbody>
+                            <tfoot>
+                                <tr><td colspan="3">Total de las filas visibles</td><td class="num" id="table-total"></td></tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <p class="lead" style="margin: 10px 0 0;">Tocá los encabezados para ordenar.</p>
+                </div>
+            </div>
+
+            <aside class="real">
+                <div class="real-title"><span data-i="image" data-s="16"></span>Así se ve en Pinpoint</div>
+                <img src="img/pp-datos-estructurados.jpg" alt="Presentación de la extracción de datos estructurados en Pinpoint">
+                <p>Botón <strong>Datos estructurados</strong>, arriba de la colección. La función está en BETA.</p>
+            </aside>
+        </div>
+    </section>
+
+    <!-- === GEMINI === -->
+    <section class="view" id="view-ask">
+        <div class="with-real">
+            <div class="card">
+                <div class="gem-head"><span data-i="spark" data-s="22"></span><h2>Gemini</h2></div>
+                <p class="lead">Hacé clic en cada opción para analizar los documentos. Responde solo con lo que hay en la colección.</p>
+
+                <div class="gem-options" id="gem-options"></div>
+
+                <div class="ask-list" id="ask-list"></div>
+
+                <div class="ask-input">
+                    <input type="text" id="ask-text" placeholder="Haz una pregunta sobre los documentos">
+                    <button onclick="askFree()" title="Enviar"><span data-i="up" data-s="18"></span></button>
+                </div>
+                <div class="scope-note"><span data-i="folder" data-s="14"></span>Colección completa</div>
+
+                <div class="answer" id="answer">
+                    <div class="answer-top">
+                        <div class="q" id="answer-q"></div>
+                        <button class="save-btn" id="save-btn" onclick="saveSession()">Guardar en sesiones</button>
+                    </div>
+                    <div class="text" id="answer-text"></div>
+                    <div class="warn-note">La IA generativa puede cometer errores. Verificá siempre la información.</div>
+                </div>
+
+                <div class="sessions" id="sessions" style="display: none;">
+                    <h3>Sesiones guardadas</h3>
+                    <ul id="sessions-list"></ul>
+                </div>
+            </div>
+
+            <aside class="real">
+                <div class="real-title"><span data-i="image" data-s="16"></span>Así se ve en Pinpoint</div>
+                <img src="img/pp-gemini-panel.jpg" alt="Panel de Gemini en Pinpoint con sus opciones">
+                <p>Panel de Gemini: opciones y la caja "Haz una pregunta sobre los documentos".</p>
+                <img src="img/pp-gemini-respuesta.jpg" alt="Respuesta de Gemini en Pinpoint con marcadores al documento">
+                <p>Cada dato de la respuesta trae un marcador que abre el documento. Botón <strong>Guardar en sesiones</strong>.</p>
+            </aside>
+        </div>
+    </section>
+
+    <!-- === MISIÓN === -->
+    <section class="view" id="view-mission">
+        <div class="card">
+            <h2>Misión: investigá la colección</h2>
+            <p class="lead">Usá las herramientas de las otras pestañas para responder.</p>
+
+            <div id="mission-list"></div>
+
+            <div class="tool-row" style="margin-top: 14px;">
+                <button class="btn" onclick="checkMission()"><span data-i="check"></span>Comprobar respuestas</button>
+            </div>
+            <div class="mission-score" id="mission-score"></div>
+        </div>
+    </section>
+
+</div>
+
+<!-- VISOR -->
+<div class="modal" id="modal" onclick="if(event.target===this) closeDoc()">
+    <div class="modal-box">
+        <div class="viewer-bar" id="viewer-bar"></div>
+        <div class="mentions" id="mentions">
+            <span id="mentions-text"></span>
+            <button onclick="moveMention(-1)" title="Anterior"><span data-i="chevup" data-s="16"></span></button>
+            <button onclick="moveMention(1)" title="Siguiente"><span data-i="chevdown" data-s="16"></span></button>
+        </div>
+        <div class="viewer-body" id="viewer"></div>
+    </div>
+</div>
+
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('open')"><img alt=""></div>
+<div class="toast" id="toast"></div>
+
+<script>
+    /* === ÍCONOS === */
+    const ICONS = {
+        search: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+        table: '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/>',
+        spark: '<path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/>',
+        target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+        user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+        briefcase: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+        pin: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+        file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+        folder: '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
+        mic: '<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>',
+        image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>',
+        check: '<polyline points="20 6 9 17 4 12"/>',
+        play: '<polygon points="6 3 20 12 6 21 6 3"/>',
+        plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+        up: '<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>',
+        back: '<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
+        chevup: '<polyline points="18 15 12 9 6 15"/>',
+        chevdown: '<polyline points="6 9 12 15 18 9"/>',
+        help: '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+        summary: '<line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="16" y2="12"/><line x1="4" y1="18" x2="12" y2="18"/>',
+        compare: '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/>',
+        extract: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+        tag: '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
+        clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+        scan: '<path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/>'
+    };
+
+    function icon(name, size = 20) {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] || ''}</svg>`;
+    }
+
+    function fillIcons(root = document) {
+        root.querySelectorAll('[data-i]').forEach(el => { el.innerHTML = icon(el.dataset.i, el.dataset.s || 20); });
+    }
+
+    function toast(text) {
+        const t = document.getElementById('toast');
+        t.textContent = text;
+        t.classList.add('show');
+        clearTimeout(t._h);
+        t._h = setTimeout(() => t.classList.remove('show'), 3400);
+    }
+
+    /* === COLECCIÓN DE EJEMPLO (todo es inventado) === */
+    const DOCS = [
+        {
+            id: 'acta', type: 'pdf', label: 'PDF', title: 'Acta de reunión del Centro de Estudiantes', date: '12/03',
+            paras: [
+                'Reunión realizada en la Biblioteca de la escuela.',
+                'Presentes: Martina Ruiz (presidenta), Tomás Benítez (tesorero), Sofía Ledesma y Lucas Ferreyra.',
+                'Se acordó organizar la Feria de Ciencias el viernes 25 de abril.',
+                'Tomás Benítez se encarga de pedir presupuestos para los materiales.',
+                'Sofía Ledesma propone sumar un buffet para juntar fondos para el viaje de egresados.',
+                'La Cooperadora ofreció prestar mesas.'
+            ],
+            ent: { p: ['Martina Ruiz', 'Tomás Benítez', 'Sofía Ledesma', 'Lucas Ferreyra'], o: ['Centro de Estudiantes', 'Cooperadora'], l: ['Biblioteca'] }
+        },
+        {
+            id: 'asamblea', type: 'audio', label: 'Audio', title: 'Asamblea de estudiantes (grabación)', date: '20/03', duration: 250,
+            lines: [
+                { t: 5, s: 'Martina Ruiz', x: 'Arrancamos. El tema principal es dónde hacer la feria.' },
+                { t: 42, s: 'Lucas Ferreyra', x: 'El Patio central queda chico si vienen las familias.' },
+                { t: 78, s: 'Sofía Ledesma', x: 'El Club Social Villa Sol presta el salón los viernes.' },
+                { t: 123, s: 'Tomás Benítez', x: 'El club pide que dejemos todo limpio. No cobra alquiler.' },
+                { t: 167, s: 'Martina Ruiz', x: 'Entonces votamos: la feria se hace en el Club Social Villa Sol. Aprobado.' },
+                { t: 210, s: 'Sofía Ledesma', x: 'Lo del buffet lo vemos con la Cooperadora.' }
+            ],
+            ent: { p: ['Martina Ruiz', 'Lucas Ferreyra', 'Sofía Ledesma', 'Tomás Benítez'], o: ['Cooperadora'], l: ['Patio central', 'Club Social Villa Sol'] }
+        },
+        {
+            id: 'nota', type: 'image', label: 'Nota manuscrita escaneada', title: 'Nota escrita a mano', date: '22/03',
+            paras: [
+                'Tomás: para la feria faltan 6 mesas, 2 alargues y cartulinas.',
+                'Las mesas se las pedimos a la Cooperadora.',
+                'Las cartulinas, en Librería El Lápiz.',
+                'Sofía'
+            ],
+            ent: { p: ['Tomás Benítez', 'Sofía Ledesma'], o: ['Cooperadora', 'Librería El Lápiz'], l: [] }
+        },
+        {
+            id: 'pres-feria', type: 'table', label: 'PDF con tabla', title: 'Presupuesto de la feria', date: '28/03',
+            intro: 'Preparó: Tomás Benítez',
+            rows: [
+                ['Cartulinas y afiches', 'Librería El Lápiz', 18500],
+                ['Alargues (2)', 'Ferretería San Martín', 12000],
+                ['Impresiones', 'Copias Centro', 9500]
+            ],
+            ent: { p: ['Tomás Benítez'], o: ['Librería El Lápiz', 'Ferretería San Martín', 'Copias Centro'], l: [] }
+        },
+        {
+            id: 'pres-buffet', type: 'table', label: 'PDF con tabla', title: 'Presupuesto del buffet', date: '02/04',
+            intro: 'Preparó: Tomás Benítez',
+            rows: [
+                ['Pan y fiambre', 'Almacén Don Pepe', 32000],
+                ['Bebidas', 'Distribuidora Norte', 27000],
+                ['Vasos y servilletas', 'Almacén Don Pepe', 6500]
+            ],
+            ent: { p: ['Tomás Benítez'], o: ['Almacén Don Pepe', 'Distribuidora Norte'], l: [] }
+        },
+        {
+            id: 'recorte', type: 'image', label: 'Recorte de diario escaneado', title: 'Recorte: La Voz de Villa Sol', date: '15/04',
+            headline: true,
+            paras: [
+                'FERIA DE CIENCIAS EN EL BARRIO',
+                'Estudiantes de la Escuela N.° 12 presentarán la Feria de Ciencias el viernes 25 de abril en el Club Social Villa Sol.',
+                'La presidenta del Centro de Estudiantes, Martina Ruiz, invitó a los vecinos a participar.',
+                'Habrá un buffet a beneficio del viaje de egresados.'
+            ],
+            ent: { p: ['Martina Ruiz'], o: ['La Voz de Villa Sol', 'Escuela N.° 12', 'Centro de Estudiantes'], l: ['Club Social Villa Sol'] }
+        },
+        {
+            id: 'comunicado', type: 'doc', label: 'Documento', title: 'Comunicado a las familias', date: '16/04',
+            paras: [
+                'La Feria de Ciencias se hará el viernes 25 de abril en el Club Social Villa Sol, de 14 a 18 h.',
+                'Pedimos a las familias que colaboren con la Cooperadora en el armado.',
+                'Centro de Estudiantes'
+            ],
+            ent: { p: [], o: ['Centro de Estudiantes', 'Cooperadora'], l: ['Club Social Villa Sol'] }
+        }
+    ];
+
+    const TYPE_ICON = { pdf: 'file', doc: 'file', audio: 'mic', image: 'image', table: 'table' };
+    const ENT_KIND = { p: 'chip-p', o: 'chip-o', l: 'chip-l' };
+    const ENT_ICON = { p: 'user', o: 'briefcase', l: 'pin' };
+
+    /* === UTILIDADES DE TEXTO === */
+    // Normaliza letra por letra (sin tildes, minúsculas) para que las posiciones coincidan con el original
+    function norm(str) {
+        return str.split('').map(c => {
+            const n = c.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+            return n.length === 1 ? n : c;
+        }).join('');
+    }
+
+    function esc(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function fmtTime(sec) {
+        const m = Math.floor(sec / 60), s = sec % 60;
+        return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    }
+
+    function fmtMoney(n) { return '$ ' + n.toLocaleString('es-AR'); }
+
+    function docTexts(d) {
+        if (d.type === 'audio') return d.lines.map(l => l.s + ': ' + l.x);
+        if (d.type === 'table') return [d.intro, ...d.rows.map(r => r[0] + ' ' + r[1] + ' ' + fmtMoney(r[2]))];
+        return d.paras;
+    }
+
+    function fullText(d) { return norm(d.title + ' \n ' + docTexts(d).join(' \n ')); }
+
+    /* === BÚSQUEDA ===
+       Como en Pinpoint: "frase" exacta, -palabra para excluir, O o | para combinar. */
+    function parseQuery(q) {
+        const tokens = [];
+        const re = /(-?)"([^"]+)"|(\S+)/g;
+        let m;
+        while ((m = re.exec(q))) {
+            if (m[2] !== undefined) tokens.push({ neg: !!m[1], term: norm(m[2].trim()) });
+            else {
+                const raw = m[3];
+                if (raw === 'O' || raw === '|') { tokens.push({ or: true }); continue; }
+                const neg = raw.startsWith('-') && raw.length > 1;
+                const term = norm((neg ? raw.slice(1) : raw).replace(/"/g, ''));
+                if (term && term !== '-') tokens.push({ neg, term });
+            }
+        }
+        const groups = [], exclude = [];
+        let joinNext = false;
+        tokens.forEach(t => {
+            if (t.or) { joinNext = groups.length > 0; return; }
+            if (t.neg) { exclude.push(t.term); joinNext = false; return; }
+            if (joinNext) groups[groups.length - 1].push(t.term);
+            else groups.push([t.term]);
+            joinNext = false;
+        });
+        return { groups, exclude, terms: groups.flat() };
+    }
+
+    function highlight(text, terms) {
+        if (!terms.length) return esc(text);
+        const n = norm(text);
+        const ranges = [];
+        terms.forEach(t => {
+            let i = n.indexOf(t);
+            while (i !== -1 && t.length) {
+                ranges.push([i, i + t.length]);
+                i = n.indexOf(t, i + t.length);
+            }
+        });
+        if (!ranges.length) return esc(text);
+        ranges.sort((a, b) => a[0] - b[0]);
+        const merged = [ranges[0]];
+        ranges.slice(1).forEach(r => {
+            const last = merged[merged.length - 1];
+            if (r[0] <= last[1]) last[1] = Math.max(last[1], r[1]);
+            else merged.push(r);
+        });
+        let out = '', pos = 0;
+        merged.forEach(([a, b]) => {
+            out += esc(text.slice(pos, a)) + '<mark>' + esc(text.slice(a, b)) + '</mark>';
+            pos = b;
+        });
+        return out + esc(text.slice(pos));
+    }
+
+    let query = { groups: [], exclude: [], terms: [] };
+    let entFilter = null; // {k:'p', v:'Martina Ruiz'}
+
+    function matches(d) {
+        const txt = fullText(d);
+        if (query.groups.some(g => !g.some(t => txt.includes(t)))) return false;
+        if (query.exclude.some(t => txt.includes(t))) return false;
+        if (entFilter && !d.ent[entFilter.k].includes(entFilter.v)) return false;
+        return true;
+    }
+
+    /* === FILTRAR COLECCIÓN === */
+    function renderEntities() {
+        ['p', 'o', 'l'].forEach(k => {
+            const counts = {};
+            DOCS.forEach(d => d.ent[k].forEach(v => counts[v] = (counts[v] || 0) + 1));
+            const box = document.getElementById('ent-' + k);
+            box.innerHTML = '';
+            Object.entries(counts)
+                .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+                .forEach(([v, c]) => {
+                    const b = document.createElement('button');
+                    b.className = 'ent-btn' + (entFilter && entFilter.k === k && entFilter.v === v ? ' active' : '');
+                    b.innerHTML = `${icon(ENT_ICON[k], 15)}<span class="name"></span><span class="count">${c}</span>`;
+                    b.querySelector('.name').textContent = v;
+                    b.title = `Aparece en ${c} documento${c > 1 ? 's' : ''}`;
+                    b.onclick = () => {
+                        entFilter = (entFilter && entFilter.k === k && entFilter.v === v) ? null : { k, v };
+                        renderAll();
+                    };
+                    box.appendChild(b);
+                });
+        });
+    }
+
+    /* === LISTA DE DOCUMENTOS === */
+    function snippet(d) {
+        const texts = docTexts(d);
+        let t = texts[0];
+        if (query.terms.length) {
+            const hit = texts.find(x => query.terms.some(term => norm(x).includes(term)));
+            if (hit) t = hit;
+        }
+        return highlight(t, query.terms);
+    }
+
+    function renderList() {
+        const list = document.getElementById('doc-list');
+        const found = DOCS.filter(matches);
+        list.innerHTML = '';
+
+        const filtered = query.terms.length || query.exclude.length || entFilter;
+        document.getElementById('results-count').innerHTML =
+            `Documentos <span>${found.length ? '1 - ' + found.length : '0'} de ${filtered ? found.length : DOCS.length}${entFilter ? ' · ' + esc(entFilter.v) : ''}</span>`;
+        document.getElementById('clear-btn').style.display = filtered ? 'inline-block' : 'none';
+
+        if (!found.length) {
+            list.innerHTML = '<div class="empty">No hay documentos que coincidan con la búsqueda.</div>';
+            return;
+        }
+
+        found.forEach(d => {
+            const b = document.createElement('button');
+            b.className = 'doc-card';
+            const chips = ['p', 'o', 'l'].flatMap(k => d.ent[k].map(v => `<span class="chip ${ENT_KIND[k]}">${esc(v)}</span>`)).join('');
+            b.innerHTML = `
+                <span class="type-icon type-${d.type}">${icon(TYPE_ICON[d.type], 20)}</span>
+                <span style="min-width:0">
+                    <span class="t">${highlight(d.title, query.terms)}</span>
+                    <span class="m"> · ${esc(d.label)} · ${d.date}</span>
+                    <div class="s">${snippet(d)}</div>
+                    <div class="chips">${chips}</div>
+                </span>`;
+            b.onclick = () => openDoc(d.id);
+            list.appendChild(b);
+        });
+    }
+
+    function renderAll() { renderEntities(); renderList(); }
+
+    function clearFilters() {
+        document.getElementById('search').value = '';
+        query = parseQuery('');
+        entFilter = null;
+        renderAll();
+    }
+
+    document.getElementById('search').addEventListener('input', e => {
+        query = parseQuery(e.target.value);
+        renderList();
+    });
+
+    document.querySelectorAll('.example').forEach(ex => ex.addEventListener('click', () => {
+        const input = document.getElementById('search');
+        input.value = ex.textContent;
+        query = parseQuery(input.value);
+        renderList();
+        input.focus();
+    }));
+
+    /* === VISOR === */
+    let playTimer = null;
+    let mentionIdx = 0;
+
+    function openDoc(id, evidence = null) {
+        const d = DOCS.find(x => x.id === id);
+        const terms = query.terms;
+        const isEv = t => evidence && norm(t).includes(norm(evidence));
+        let body = '';
+
+        if (d.type === 'audio') {
+            body += `
+                <div class="player">
+                    <div class="player-row">
+                        ${icon('play', 18)}
+                        <div class="track"><div id="track"></div></div>
+                        <span class="time" id="time">00:00 / ${fmtTime(d.duration)}</span>
+                    </div>
+                    <div class="status" id="play-status">Transcripción automática. Tocá una línea para saltar a ese momento de la grabación.</div>
+                </div>`;
+            d.lines.forEach((l, i) => {
+                body += `<button class="line${isEv(l.x) ? ' evidence' : ''}" data-line="${i}">
+                    <span class="ts">${fmtTime(l.t)}</span>
+                    <span><span class="sp">${highlight(l.s, terms)}:</span> ${highlight(l.x, terms)}</span>
+                </button>`;
+            });
+        } else if (d.type === 'table') {
+            body += `<p class="${isEv(d.intro) ? 'evidence' : ''}">${highlight(d.intro, terms)}</p>`;
+            body += `<div class="table-scroll"><table class="data-table"><thead><tr><th>Ítem</th><th>Proveedor</th><th class="num">Monto</th></tr></thead><tbody>`;
+            d.rows.forEach(r => {
+                body += `<tr><td>${highlight(r[0], terms)}</td><td>${highlight(r[1], terms)}</td><td class="num">${fmtMoney(r[2])}</td></tr>`;
+            });
+            body += `</tbody></table></div>`;
+        } else {
+            const paras = d.paras.map((p, i) => {
+                const cls = [isEv(p) ? 'evidence' : '', d.headline && i === 0 ? 'headline' : ''].join(' ').trim();
+                return `<p class="${cls}">${highlight(p, terms)}</p>`;
+            }).join('');
+            body += d.type === 'image'
+                ? `<div class="scan-label">${icon('scan', 16)} Imagen escaneada · texto reconocido</div><div class="paper">${paras}</div>`
+                : paras;
+        }
+
+        const chips = ['p', 'o', 'l'].flatMap(k => d.ent[k].map(v => `<span class="chip ${ENT_KIND[k]}">${esc(v)}</span>`)).join('');
+
+        document.getElementById('viewer-bar').innerHTML = `
+            <button class="back" onclick="closeDoc()" title="Volver">${icon('back', 18)}</button>
+            <span class="type-icon type-${d.type}" style="width:34px;height:34px;border-radius:9px">${icon(TYPE_ICON[d.type], 17)}</span>
+            <h3>${esc(d.title)}<span class="m">${esc(d.label)} · ${d.date}</span></h3>`;
+        document.getElementById('viewer').innerHTML = `<div class="doc-body">${body}</div><div class="chips" style="margin-top: 14px;">${chips}</div>`;
+
+        if (d.type === 'audio') {
+            document.querySelectorAll('.line').forEach(btn => btn.onclick = () => jumpTo(d, Number(btn.dataset.line)));
+        }
+
+        // Contador de menciones, como en Pinpoint
+        const marks = document.querySelectorAll('#viewer mark');
+        const bar = document.getElementById('mentions');
+        if (marks.length) {
+            bar.classList.add('on');
+            mentionIdx = 0;
+            showMention();
+        } else {
+            bar.classList.remove('on');
+        }
+
+        document.getElementById('modal').classList.add('open');
+        const ev = document.querySelector('.doc-body .evidence');
+        if (ev) setTimeout(() => ev.scrollIntoView({ behavior: 'smooth', block: 'center' }), 150);
+    }
+
+    function showMention() {
+        const marks = document.querySelectorAll('#viewer mark');
+        if (!marks.length) return;
+        marks.forEach((m, i) => m.classList.toggle('cur', i === mentionIdx));
+        document.getElementById('mentions-text').textContent = `${mentionIdx + 1} de ${marks.length} menciones`;
+        marks[mentionIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function moveMention(dir) {
+        const total = document.querySelectorAll('#viewer mark').length;
+        if (!total) return;
+        mentionIdx = (mentionIdx + dir + total) % total;
+        showMention();
+    }
+
+    function jumpTo(d, i) {
+        if (playTimer) clearInterval(playTimer);
+        const line = d.lines[i];
+        let pos = line.t;
+        document.querySelectorAll('.line').forEach((b, j) => b.classList.toggle('playing', j === i));
+        const update = () => {
+            document.getElementById('track').style.width = (pos / d.duration * 100) + '%';
+            document.getElementById('time').textContent = fmtTime(pos) + ' / ' + fmtTime(d.duration);
+        };
+        update();
+        document.getElementById('play-status').textContent =
+            `Saltó a ${fmtTime(line.t)}: ${line.s}. En la simulación no hay sonido, pero así se llega directo al momento de la grabación.`;
+        playTimer = setInterval(() => {
+            pos++;
+            const next = d.lines[i + 1];
+            if (pos >= d.duration || (next && pos >= next.t)) { clearInterval(playTimer); return; }
+            update();
+        }, 1000);
+    }
+
+    function closeDoc() {
+        if (playTimer) clearInterval(playTimer);
+        document.getElementById('modal').classList.remove('open');
+    }
+
+    /* === DATOS ESTRUCTURADOS === */
+    let tableRows = [];
+    let sortKey = null, sortAsc = true;
+
+    function extractTables() {
+        const tableDocs = DOCS.filter(d => d.type === 'table');
+        tableRows = tableDocs.flatMap(d => d.rows.map(r => ({ doc: d.title, item: r[0], prov: r[1], monto: r[2] })));
+        document.getElementById('detect').innerHTML = tableDocs.map(d => `<span>${icon('check', 16)} ${esc(d.title)}</span>`).join('');
+        document.getElementById('table-start').style.display = 'none';
+        document.getElementById('table-result').style.display = 'block';
+        renderTable();
+    }
+
+    function sortTable(key) {
+        if (sortKey === key) sortAsc = !sortAsc;
+        else { sortKey = key; sortAsc = true; }
+        renderTable();
+    }
+
+    function renderTable() {
+        const f = norm(document.getElementById('table-filter').value.trim());
+        let rows = tableRows.filter(r => !f || norm(r.item + ' ' + r.prov + ' ' + r.doc).includes(f));
+        if (sortKey) {
+            rows = [...rows].sort((a, b) => {
+                const x = a[sortKey], y = b[sortKey];
+                const c = typeof x === 'number' ? x - y : String(x).localeCompare(String(y), 'es');
+                return sortAsc ? c : -c;
+            });
+        }
+        document.getElementById('table-body').innerHTML = rows.map(r =>
+            `<tr><td>${esc(r.doc)}</td><td>${esc(r.item)}</td><td>${esc(r.prov)}</td><td class="num">${fmtMoney(r.monto)}</td></tr>`
+        ).join('') || '<tr><td colspan="4" class="empty">Ninguna fila coincide.</td></tr>';
+        document.getElementById('table-total').textContent = fmtMoney(rows.reduce((s, r) => s + r.monto, 0));
+    }
+
+    document.getElementById('table-filter').addEventListener('input', renderTable);
+
+    /* === GEMINI ===
+       En el texto de cada respuesta, [[doc|frase]] es un marcador que abre el documento en esa frase. */
+    const QUESTIONS = [
+        {
+            q: '¿Dónde y cuándo se hace la feria?',
+            keys: ['donde', 'cuando', 'lugar', 'fecha', 'feria'],
+            a: 'El viernes 25 de abril, en el Club Social Villa Sol [[comunicado|el viernes 25 de abril en el Club Social Villa Sol]]. El lugar se votó en la asamblea del 20/03 [[asamblea|la feria se hace en el Club Social Villa Sol]].'
+        },
+        {
+            q: '¿Quién se encarga de los presupuestos?',
+            keys: ['quien', 'presupuesto', 'encarga', 'tesorero'],
+            a: 'Tomás Benítez, el tesorero [[acta|Tomás Benítez se encarga de pedir presupuestos]]. Además preparó los dos presupuestos [[pres-feria|Preparó: Tomás Benítez]] [[pres-buffet|Preparó: Tomás Benítez]].'
+        },
+        {
+            q: '¿Para qué es el buffet?',
+            keys: ['buffet', 'fondos', 'para que'],
+            a: 'Para juntar fondos para el viaje de egresados [[acta|sumar un buffet para juntar fondos para el viaje de egresados]] [[recorte|buffet a beneficio del viaje de egresados]].'
+        },
+        {
+            q: '¿Cuántas personas fueron a la feria?',
+            keys: ['cuantas personas', 'asistieron', 'fueron', 'publico'],
+            a: 'Los documentos de la colección no dicen cuántas personas fueron. Pinpoint responde solo con lo que está en los documentos.'
+        }
+    ];
+
+    const GEM_OPTIONS = [
+        { ic: 'help', t: 'Encontrar respuestas' },
+        { ic: 'summary', t: 'Resume' },
+        { ic: 'compare', t: 'Comparar' },
+        { ic: 'extract', t: 'Extraer datos' },
+        { ic: 'tag', t: 'Etiquetar documentos' },
+        { ic: 'clock', t: 'Crear línea de tiempo' }
+    ];
+
+    let typing = null;
+    let lastAnswer = null;
+    const sessions = [];
+
+    function renderGemini() {
+        const box = document.getElementById('gem-options');
+        GEM_OPTIONS.forEach(o => {
+            const b = document.createElement('button');
+            b.className = 'gem-opt';
+            b.innerHTML = icon(o.ic, 18) + '<span></span>';
+            b.lastChild.textContent = o.t;
+            b.onclick = () => gemOption(o.t, b);
+            box.appendChild(b);
+        });
+    }
+
+    function gemOption(name, btn) {
+        document.querySelectorAll('.gem-opt').forEach(b => b.classList.toggle('active', b === btn));
+        const list = document.getElementById('ask-list');
+        list.innerHTML = '';
+        if (name === 'Encontrar respuestas') {
+            QUESTIONS.forEach(item => {
+                const b = document.createElement('button');
+                b.className = 'ask-btn';
+                b.textContent = item.q;
+                b.onclick = () => answer(item.q, item.a);
+                list.appendChild(b);
+            });
+            return;
+        }
+        if (name === 'Resume') {
+            answer('Resumí la colección.',
+                'La colección reúne los documentos del Centro de Estudiantes para organizar la Feria de Ciencias del 25 de abril [[acta|Se acordó organizar la Feria de Ciencias]]. ' +
+                'La feria se hará en el Club Social Villa Sol [[asamblea|la feria se hace en el Club Social Villa Sol]], con un buffet para el viaje de egresados [[recorte|buffet a beneficio del viaje de egresados]]. ' +
+                'Hay dos presupuestos preparados por el tesorero [[pres-feria|Preparó: Tomás Benítez]].');
+            return;
+        }
+        if (name === 'Crear línea de tiempo') {
+            answer('Creá una línea de tiempo.', null, [
+                ['12/03', 'Reunión: se decide hacer la feria.', 'acta', 'Se acordó organizar la Feria de Ciencias'],
+                ['20/03', 'Asamblea: se vota el Club Social Villa Sol.', 'asamblea', 'Aprobado'],
+                ['28/03', 'Presupuesto de la feria.', 'pres-feria', 'Preparó: Tomás Benítez'],
+                ['02/04', 'Presupuesto del buffet.', 'pres-buffet', 'Preparó: Tomás Benítez'],
+                ['15/04', 'Nota en el diario del barrio.', 'recorte', 'FERIA DE CIENCIAS EN EL BARRIO'],
+                ['16/04', 'Comunicado a las familias.', 'comunicado', 'Pedimos a las familias'],
+                ['25/04', 'Día de la Feria de Ciencias.', 'comunicado', 'el viernes 25 de abril']
+            ]);
+            return;
+        }
+        const desc = {
+            'Comparar': 'compara lo que dicen distintos documentos sobre un mismo tema.',
+            'Extraer datos': 'saca datos puntuales (nombres, fechas, montos) de los documentos.',
+            'Etiquetar documentos': 'agrupa los documentos con etiquetas para filtrarlos después.'
+        };
+        toast(`En Pinpoint, "${name}" ${desc[name]} En el simulador, probá Encontrar respuestas, Resume o Crear línea de tiempo.`);
+    }
+
+    function askFree() {
+        const input = document.getElementById('ask-text');
+        const q = input.value.trim();
+        if (!q) { input.focus(); return; }
+        input.value = '';
+        const nq = norm(q);
+        const hit = QUESTIONS.find(item => item.keys.some(k => nq.includes(k)));
+        answer(q, hit ? hit.a : 'No encontré esa información en los documentos de la colección. Probá con otra pregunta o con las opciones de arriba.');
+    }
+
+    document.getElementById('ask-text').addEventListener('keydown', e => { if (e.key === 'Enter') askFree(); });
+
+    function answer(q, text, timeline = null) {
+        const box = document.getElementById('answer');
+        const textEl = document.getElementById('answer-text');
+        document.getElementById('answer-q').textContent = q;
+        const save = document.getElementById('save-btn');
+        save.disabled = false;
+        save.textContent = 'Guardar en sesiones';
+        box.style.display = 'block';
+        textEl.innerHTML = '';
+        if (typing) clearInterval(typing);
+        lastAnswer = q;
+
+        if (timeline) {
+            const ul = document.createElement('ul');
+            ul.className = 'timeline';
+            timeline.forEach(([date, what, doc, quote]) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${date}</strong> · <span></span>`;
+                li.querySelector('span').textContent = what;
+                li.appendChild(refButton(doc, quote));
+                ul.appendChild(li);
+            });
+            textEl.appendChild(ul);
+            box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            return;
+        }
+
+        // Escribe la respuesta de a poco y después agrega los marcadores
+        const parts = text.split(/(\[\[[^\]]+\]\])/).filter(Boolean);
+        const plain = parts.map(p => p.startsWith('[[') ? '' : p).join('');
+        let k = 0;
+        typing = setInterval(() => {
+            k += 3;
+            textEl.textContent = plain.slice(0, k);
+            if (k >= plain.length) {
+                clearInterval(typing);
+                textEl.innerHTML = '';
+                parts.forEach(p => {
+                    const m = p.match(/^\[\[([^|]+)\|(.+)\]\]$/);
+                    if (m) textEl.appendChild(refButton(m[1], m[2]));
+                    else textEl.appendChild(document.createTextNode(p));
+                });
+            }
+        }, 22);
+        box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function refButton(docId, quote) {
+        const d = DOCS.find(x => x.id === docId);
+        const b = document.createElement('button');
+        b.className = 'ref';
+        b.title = d.title + ' · ' + d.date;
+        b.innerHTML = icon('file', 12);
+        b.onclick = () => openDoc(docId, quote);
+        return b;
+    }
+
+    function saveSession() {
+        if (!lastAnswer) return;
+        sessions.push(lastAnswer);
+        const box = document.getElementById('sessions');
+        box.style.display = 'block';
+        const ul = document.getElementById('sessions-list');
+        ul.innerHTML = '';
+        sessions.forEach(s => {
+            const li = document.createElement('li');
+            li.textContent = s;
+            ul.appendChild(li);
+        });
+        const btn = document.getElementById('save-btn');
+        btn.disabled = true;
+        btn.textContent = 'Guardada';
+    }
+
+    /* === MISIÓN === */
+    const MISSION = [
+        {
+            q: '1. ¿Qué persona aparece en más documentos?',
+            opts: ['Martina Ruiz', 'Tomás Benítez', 'Sofía Ledesma', 'Lucas Ferreyra'],
+            ok: 'Tomás Benítez',
+            hint: 'Mirá "Filtrar colección" → Por personas: el número indica en cuántos documentos aparece cada una.'
+        },
+        {
+            q: '2. ¿En qué lugar votaron hacer la feria?',
+            opts: ['Patio central', 'Club Social Villa Sol', 'Biblioteca'],
+            ok: 'Club Social Villa Sol',
+            hint: 'Abrí la grabación de la asamblea y buscá el momento de la votación.'
+        },
+        {
+            q: '3. ¿Cuánto suman los dos presupuestos juntos?',
+            opts: ['$ 40.000', '$ 65.500', '$ 105.500'],
+            ok: '$ 105.500',
+            hint: 'En Datos estructurados, tocá Comenzar y mirá el total sin filtros.'
+        },
+        {
+            q: '4. ¿Cuántos documentos mencionan "buffet" pero no "viaje"?',
+            opts: ['1', '2', '4'],
+            ok: '2',
+            hint: 'Buscá: buffet -viaje (el guion excluye la palabra).'
+        }
+    ];
+
+    function renderMission() {
+        const box = document.getElementById('mission-list');
+        MISSION.forEach((m, i) => {
+            const div = document.createElement('div');
+            div.className = 'mission-q';
+            div.id = 'mq-' + i;
+            div.innerHTML = `<h3></h3><div class="opts"></div><div class="hint"></div>`;
+            div.querySelector('h3').textContent = m.q;
+            const opts = div.querySelector('.opts');
+            m.opts.forEach(o => {
+                const label = document.createElement('label');
+                label.innerHTML = `<input type="radio" name="mq-${i}"><span></span>`;
+                label.querySelector('input').value = o;
+                label.querySelector('span').textContent = o;
+                opts.appendChild(label);
+            });
+            box.appendChild(div);
+        });
+    }
+
+    function checkMission() {
+        let score = 0;
+        MISSION.forEach((m, i) => {
+            const div = document.getElementById('mq-' + i);
+            const sel = div.querySelector('input:checked');
+            const ok = sel && sel.value === m.ok;
+            if (ok) score++;
+            div.classList.toggle('ok', !!ok);
+            div.classList.toggle('bad', !ok);
+            div.querySelector('.hint').textContent = ok ? 'Correcto.' : (sel ? 'Revisalo. ' : 'Falta responder. ') + 'Pista: ' + m.hint;
+        });
+        const s = document.getElementById('mission-score');
+        s.style.display = 'block';
+        s.textContent = score === MISSION.length
+            ? `${score} de ${MISSION.length}: misión cumplida.`
+            : `${score} de ${MISSION.length} correctas. Usá las pistas y volvé a comprobar.`;
+    }
+
+    /* === PESTAÑAS Y GENERAL === */
+    function showTab(name) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+        document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
+    }
+
+    document.querySelectorAll('.real img').forEach(img => img.addEventListener('click', () => {
+        const box = document.getElementById('lightbox');
+        box.querySelector('img').src = img.src;
+        box.querySelector('img').alt = img.alt;
+        box.classList.add('open');
+    }));
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            closeDoc();
+            document.getElementById('lightbox').classList.remove('open');
+        }
+    });
+
+    function closeModule() {
+        if (document.referrer) {
+            history.back();
+        } else {
+            window.close();
+        }
+    }
+
+    fillIcons();
+    renderAll();
+    renderGemini();
+    renderMission();
+</script>
+</body>
+</html>

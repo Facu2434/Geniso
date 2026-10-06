@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script>
+(function(){
+    try{
+        if(localStorage.getItem('geniso-theme')==='dark'){
+            document.documentElement.setAttribute('data-theme','dark');
+        }
+    }catch(e){}
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comunicación, Cultura y Sociedad</title>
+
+<style>
+
+:root{
+    --bg:#f7f4ef;
+    --panel:#f3ede5;
+    --line:#ddd1c0;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --accent:#c96d1f;
+    --current:#4b8a4d;
+    --badge-bg:#efe2cd;
+    --icon-bg:#ffffff;
+    --icon-border:#eadfce;
+    --card-border:#e5d9ca;
+    --modal-bg:#ffffff;
+    --footer-color:#8b7355;
+    --btn-bg:#ffffff;
+    --current-icon-border:#cce3cd;
+}
+
+:root[data-theme="dark"]{
+    --bg:#0f172a;
+    --panel:#1e293b;
+    --line:#334155;
+    --text:#e5e7eb;
+    --muted:#94a3b8;
+    --accent:#e08a4f;
+    --current:#5fb463;
+    --badge-bg:#3a2c1c;
+    --icon-bg:#1e293b;
+    --icon-border:#334155;
+    --card-border:#334155;
+    --modal-bg:#1e293b;
+    --footer-color:#a68a6d;
+    --btn-bg:#1e293b;
+    --current-icon-border:#2f5a34;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Inter,system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    transition:background .3s, color .3s;
+}
+
+.container{
+    max-width:1500px;
+    margin:auto;
+    padding:40px 30px 80px;
+}
+
+header{
+    margin-bottom:50px;
+    text-align:center;
+}
+
+.header-actions{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-top:18px;
+}
+
+.badge{
+    display:inline-block;
+    background:var(--badge-bg);
+    color:var(--accent);
+    font-weight:700;
+    font-size:.85rem;
+    padding:8px 14px;
+    border-radius:10px;
+    margin-bottom:18px;
+}
+
+header h1{
+    font-size:clamp(2.2rem,4vw,3.8rem);
+    line-height:1;
+    font-weight:800;
+    margin-bottom:12px;
+}
+
+header p{
+    font-size:1.15rem;
+    color:var(--muted);
+}
+
+.timeline{
+
+    position:relative;
+
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    gap:40px;
+
+    flex-wrap:wrap;
+}
+
+.timeline::before{
+    content:"";
+    position:absolute;
+    top:115px;
+    left:120px;
+    right:120px;
+    height:3px;
+
+    background:
+    repeating-linear-gradient(
+        to right,
+        var(--line) 0 8px,
+        transparent 8px 18px
+    );
+}
+
+.lesson{
+    width:230px;
+    text-align:center;
+    position:relative;
+    z-index:2;
+}
+
+@media(max-width:1200px){
+
+    .timeline::before{
+        display:none;
+    }
+
+}
+
+.circle{
+
+    width:220px;
+    height:220px;
+
+    border-radius:50%;
+
+    background:var(--panel);
+
+    border:2px solid var(--card-border);
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    cursor:pointer;
+
+    transition:.25s, background .3s, border-color .3s;
+}
+
+.circle:hover{
+    transform:translateY(-6px);
+}
+
+.circle:focus-visible{
+    outline:3px solid var(--accent);
+    outline-offset:3px;
+}
+
+.current .circle{
+    border:3px solid var(--current);
+    background:var(--panel);
+}
+
+.icon{
+
+    width:56px;
+    height:56px;
+
+    border-radius:50%;
+
+    background:var(--icon-bg);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:26px;
+
+    margin-bottom:14px;
+
+    border:2px solid var(--icon-border);
+    transition:background .3s, border-color .3s;
+}
+
+.current .icon{
+    color:var(--current);
+    border-color:var(--current-icon-border);
+}
+
+.date{
+    font-size:1.05rem;
+    font-weight:800;
+    margin-bottom:10px;
+}
+
+.separator{
+    width:80px;
+    height:2px;
+    background:var(--accent);
+    margin-bottom:14px;
+}
+
+.title{
+    font-size:1rem;
+    font-weight:700;
+    line-height:1.25;
+    max-width:160px;
+}
+
+.resources{
+
+    margin-top:20px;
+
+    text-align:left;
+
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.resources a{
+    text-decoration:none;
+    color:var(--text);
+    font-size:.95rem;
+}
+
+.resources a:hover{
+    color:var(--accent);
+}
+
+.resources a::before{
+    content:"•";
+    color:var(--accent);
+    margin-right:10px;
+}
+
+.current-tag{
+
+    position:absolute;
+    top:-42px;
+    left:50%;
+    transform:translateX(-50%);
+    white-space:nowrap;
+
+    display:inline-block;
+
+    background:var(--current);
+    color:white;
+
+    padding:8px 14px;
+
+    border-radius:8px;
+
+    font-size:.8rem;
+    font-weight:700;
+}
+
+.footer-note{
+
+    text-align:center;
+
+    margin-top:50px;
+
+    color:var(--footer-color);
+
+    font-size:1rem;
+}
+
+.orientation-btn,
+.theme-toggle-btn{
+    background:var(--btn-bg);
+    color:var(--accent);
+    border:2px solid var(--line);
+    padding:10px 18px;
+    border-radius:10px;
+    font-weight:700;
+    cursor:pointer;
+    transition:transform .2s, background .3s, border-color .3s;
+}
+.orientation-btn:hover,
+.theme-toggle-btn:hover{transform:translateY(-2px);}
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.6);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+}
+.modal-box{
+    background:var(--modal-bg);
+    color:var(--text);
+    width:min(900px,90vw);
+    max-height:85vh;
+    overflow-y:auto;
+    padding:45px;
+    border-radius:20px;
+    position:relative;
+    line-height:1.7;
+    transition:background .3s, color .3s;
+}
+.modal-box h2{margin-bottom:22px;}
+.modal-box h3{margin-top:28px;margin-bottom:12px;}
+.modal-box p{margin-bottom:16px;}
+.modal-box ul{margin:12px 0 18px 24px;}
+.modal-box li{margin-bottom:10px;}
+.close-btn{
+    position:absolute;
+    top:15px;
+    right:15px;
+    width:40px;
+    height:40px;
+    border:2px solid var(--line);
+    border-radius:50%;
+    cursor:pointer;
+    background:var(--btn-bg);
+    color:var(--text);
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<header>
+
+    <div class="badge">
+        CURSO 2026
+    </div>
+
+    <h1>
+        Comunicación, Cultura y Sociedad
+    </h1>
+
+    <p>
+        Clases y materiales
+    </p>
+
+    <div class="header-actions">
+        <button class="orientation-btn" onclick="openOrientation()">
+            🎓 Conocé la orientación
+        </button>
+
+        <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()" aria-pressed="false">
+            🌙 Modo oscuro
+        </button>
+    </div>
+
+</header>
+
+<section class="timeline">
+
+    <article class="lesson">
+
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='cv.html'" onkeydown="if(event.key==='Enter'){window.location.href='cv.html'}">
+
+            <div class="icon">📄</div>
+
+            <div class="date">15/04</div>
+
+            <div class="separator"></div>
+
+            <div class="title">
+                Introducción al CV
+            </div>
+
+        </div>
+
+        <div class="resources">
+            <a href="cv.html">CV interactivo</a>
+            <a href="comparacion.html">Bueno vs Malo</a>
+            <a href="guia.html">Guía Completa</a>
+        </div>
+
+    </article>
+
+    <article class="lesson">
+
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='canva2.html'" onkeydown="if(event.key==='Enter'){window.location.href='canva2.html'}">
+
+            <div class="icon">🖥️</div>
+
+            <div class="date">22/04</div>
+
+            <div class="separator"></div>
+
+            <div class="title">
+                CV en Canva
+            </div>
+
+        </div>
+
+        <div class="resources">
+            <a href="canva2.html">Lo pasamos a Canva</a>
+        </div>
+
+    </article>
+
+    <article class="lesson">
+
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='29-04.html'" onkeydown="if(event.key==='Enter'){window.location.href='29-04.html'}">
+
+            <div class="icon">✏️</div>
+
+            <div class="date">29/04</div>
+
+            <div class="separator"></div>
+
+            <div class="title">
+                Plantilla CV en Canva
+            </div>
+
+        </div>
+
+        <div class="resources">
+            <a href="29-04.html">Repaso + Continuación</a>
+        </div>
+
+    </article>
+
+    <article class="lesson">
+
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='foto.html'" onkeydown="if(event.key==='Enter'){window.location.href='foto.html'}">
+
+            <div class="icon">📷</div>
+
+            <div class="date">13/05</div>
+
+            <div class="separator"></div>
+
+            <div class="title">
+                Mejorar foto y ATS
+            </div>
+
+        </div>
+
+        <div class="resources">
+            <a href="foto.html">Nos hacemos profesionales</a>
+            <a href="guia-foto.pdf">Guía PDF</a>
+        </div>
+
+    </article>
+
+    <article class="lesson">
+
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='intro.html'" onkeydown="if(event.key==='Enter'){window.location.href='intro.html'}">
+
+            <div class="icon">👤</div>
+
+            <div class="date">20/05</div>
+
+            <div class="separator"></div>
+
+            <div class="title">
+                Introducción a LinkedIn
+            </div>
+
+        </div>
+
+        <div class="resources">
+            <a href="intro.html">Tu primer perfil profesional</a>
+        </div>
+
+    </article>
+
+    <article class="lesson">
+
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='notebook.html'" onkeydown="if(event.key==='Enter'){window.location.href='notebook.html'}">
+
+            <div class="icon">📚</div>
+
+            <div class="date">17/06</div>
+
+            <div class="separator"></div>
+
+            <div class="title">
+                NotebookLM y Fake News
+            </div>
+
+        </div>
+
+        <div class="resources">
+            <a href="notebook.html">¿Qué es NotebookLM?</a>
+            <a href="fakenews.html">Fake News y Desinformación</a>
+        </div>
+
+    </article>
+
+    <article class="lesson">
+
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='cierre.html'" onkeydown="if(event.key==='Enter'){window.location.href='cierre.html'}">
+
+            <div class="icon">📚</div>
+
+            <div class="date">23/06</div>
+
+            <div class="separator"></div>
+
+            <div class="title">
+                Cierre de pendientes
+            </div>
+
+        </div>
+
+        <div class="resources">
+            <a href="cierre.html">¿Qué nos quedó pendiente?</a>
+        </div>
+
+    </article>
+
+    <article class="lesson">
+
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='hemerotecas.html'" onkeydown="if(event.key==='Enter'){window.location.href='hemerotecas.html'}">
+
+            <div class="icon">🗞️</div>
+
+            <div class="date">02/09</div>
+
+            <div class="separator"></div>
+
+            <div class="title">
+                IA y fuentes históricas
+            </div>
+
+        </div>
+
+        <div class="resources">
+            <a href="hemerotecas.html">Investigar con IA</a>
+        </div>
+
+    </article>
+
+    <article class="lesson">
+
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='tp9-tp10.html'" onkeydown="if(event.key==='Enter'){window.location.href='tp9-tp10.html'}">
+
+            <div class="icon">🎓</div>
+
+            <div class="date">09/09</div>
+
+            <div class="separator"></div>
+
+            <div class="title">
+                TP9 y TP10: de la consigna al resultado
+            </div>
+
+        </div>
+
+        <div class="resources">
+            <a href="tp9-tp10.html">Cómo resolvimos los dos TP</a>
+        </div>
+
+    </article>
+
+    <article class="lesson current">
+
+        <div class="current-tag">
+            CLASE ACTUAL
+        </div>
+
+        <div class="circle" role="link" tabindex="0" onclick="window.location.href='deepresearch-pinpoint.html'" onkeydown="if(event.key==='Enter'){window.location.href='deepresearch-pinpoint.html'}">
+
+            <div class="icon">🔎</div>
+
+            <div class="date">07/10</div>
+
+            <div class="separator"></div>
+
+            <div class="title">
+                Deep Research y Pinpoint
+            </div>
+
+        </div>
+
+        <div class="resources">
+            <a href="deepresearch-pinpoint.html">Presentación de la clase</a>
+            <a href="simulador-deepresearch.html">Simulador de Deep Research</a>
+            <a href="simulador-pinpoint.html">Simulador de Pinpoint</a>
+        </div>
+
+    </article>
+
+</section>
+
+<div class="footer-note">
+    Hacé clic en cada clase para ver los materiales
+</div>
+
+</div>
+
+
+<div id="orientationModal" class="modal">
+    <div class="modal-box">
+        <button class="close-btn" onclick="closeOrientation()">✕</button>
+
+        <h2>🎓 El Bachiller con Orientación en Comunicación Social</h2>
+
+        <p>El Bachiller con Orientación en Comunicación Social (o Comunicación) es un título de educación secundaria que forma estudiantes con un fuerte pensamiento crítico sobre los medios, la cultura y las tecnologías de la información.</p>
+
+        <p>El plan de estudios enfatiza la lectura crítica, la investigación social y la producción de contenidos en diversos formatos.</p>
+
+        <h3>🧠 Perfil del Egresado</h3>
+
+        <ul>
+            <li>Análisis crítico de los procesos comunicacionales, políticos y culturales.</li>
+            <li>Producción de textos, materiales audiovisuales y contenidos digitales utilizando TIC.</li>
+            <li>Participación ciudadana y comprensión del impacto de los medios y las industrias culturales.</li>
+        </ul>
+
+        <h3>📚 Salidas y Continuidad Académica</h3>
+
+        <ul>
+            <li>Periodismo y Redacción.</li>
+            <li>Ciencias de la Comunicación Social.</li>
+            <li>Publicidad y Relaciones Públicas.</li>
+            <li>Producción de radio, televisión y contenidos multimedia.</li>
+            <li>Sociología y Ciencias Políticas.</li>
+        </ul>
+
+        <h3>💻 Herramientas trabajadas en este espacio</h3>
+
+        <p>CV · Canva · LinkedIn · Inteligencia Artificial · NotebookLM · Fake News · Análisis de Fuentes Históricas · Ciudadanía Digital.</p>
+    </div>
+</div>
+
+<script>
+function openOrientation(){
+ document.getElementById('orientationModal').style.display='flex';
+}
+function closeOrientation(){
+ document.getElementById('orientationModal').style.display='none';
+}
+window.onclick=function(e){
+ const modal=document.getElementById('orientationModal');
+ if(e.target===modal){modal.style.display='none';}
+}
+
+function updateThemeButton(){
+    const btn=document.getElementById('themeToggle');
+    const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+    btn.textContent=isDark ? '☀️ Modo claro' : '🌙 Modo oscuro';
+    btn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+}
+
+function toggleTheme(){
+    const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+    if(isDark){
+        document.documentElement.removeAttribute('data-theme');
+        try{ localStorage.setItem('geniso-theme','light'); }catch(e){}
+    } else {
+        document.documentElement.setAttribute('data-theme','dark');
+        try{ localStorage.setItem('geniso-theme','dark'); }catch(e){}
+    }
+    updateThemeButton();
+}
+
+updateThemeButton();
+</script>
+
+</body>
+</html>
