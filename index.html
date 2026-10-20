@@ -248,6 +248,54 @@ header p{
     font-size:.95rem;
 }
 
+.icon.tools{
+    width:auto;
+    min-width:56px;
+    padding:0 6px;
+    border-radius:30px;
+    gap:4px;
+}
+
+.icon.tools img{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    object-fit:cover;
+    display:block;
+}
+
+.tool-names{
+    font-size:.78rem;
+    font-weight:700;
+    color:var(--accent);
+    margin-top:6px;
+    max-width:170px;
+    line-height:1.25;
+}
+
+.resources a.tl{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.resources a.tl::before{
+    content:none;
+}
+
+.resources a.tl img{
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    object-fit:cover;
+    flex-shrink:0;
+}
+
+.resources a.tl img + img{
+    margin-left:-14px;
+    border:2px solid var(--panel);
+}
+
 .resources a:hover{
     color:var(--accent);
 }
@@ -583,22 +631,24 @@ header p{
 
         <div class="circle" role="link" tabindex="0" onclick="window.location.href='deepresearch-pinpoint.html'" onkeydown="if(event.key==='Enter'){window.location.href='deepresearch-pinpoint.html'}">
 
-            <div class="icon">🔎</div>
+            <div class="icon tools"><img src="img/logo-chatgpt.jpg" alt=""><img src="img/logo-pinpoint.jpg" alt=""></div>
 
             <div class="date">07/10</div>
 
             <div class="separator"></div>
 
             <div class="title">
-                Deep Research y Pinpoint
+                Investigar con IA
             </div>
+
+            <div class="tool-names">ChatGPT Deep Research y Google Pinpoint</div>
 
         </div>
 
         <div class="resources">
-            <a href="deepresearch-pinpoint.html">Presentación de la clase</a>
-            <a href="simulador-deepresearch.html">Simulador de Deep Research</a>
-            <a href="simulador-pinpoint.html">Simulador de Pinpoint</a>
+            <a class="tl" href="deepresearch-pinpoint.html"><img src="img/logo-chatgpt.jpg" alt=""><img src="img/logo-pinpoint.jpg" alt=""><span>Presentación de la clase</span></a>
+            <a class="tl" href="simulador-deepresearch.html"><img src="img/logo-chatgpt.jpg" alt=""><span>Simulador de ChatGPT Deep Research</span></a>
+            <a class="tl" href="simulador-pinpoint.html"><img src="img/logo-pinpoint.jpg" alt=""><span>Simulador de Google Pinpoint</span></a>
         </div>
 
     </article>
@@ -607,21 +657,23 @@ header p{
 
         <div class="circle" role="link" tabindex="0" onclick="window.location.href='ejercicio-deepresearch.html'" onkeydown="if(event.key==='Enter'){window.location.href='ejercicio-deepresearch.html'}">
 
-            <div class="icon">✅</div>
+            <div class="icon tools"><img src="img/logo-chatgpt.jpg" alt=""></div>
 
             <div class="date">14/10</div>
 
             <div class="separator"></div>
 
             <div class="title">
-                Deep Research: ejercicio resuelto
+                Ejercicio resuelto
             </div>
+
+            <div class="tool-names">ChatGPT Deep Research</div>
 
         </div>
 
         <div class="resources">
-            <a href="ejercicio-deepresearch.html">Investigamos y verificamos</a>
-            <a href="simulador-deepresearch.html">Simulador de Deep Research</a>
+            <a class="tl" href="ejercicio-deepresearch.html"><img src="img/logo-chatgpt.jpg" alt=""><span>Investigamos y verificamos con ChatGPT</span></a>
+            <a class="tl" href="simulador-deepresearch.html"><img src="img/logo-chatgpt.jpg" alt=""><span>Simulador de ChatGPT Deep Research</span></a>
         </div>
 
     </article>
@@ -634,21 +686,23 @@ header p{
 
         <div class="circle" role="link" tabindex="0" onclick="window.location.href='ejercicio-gemini.html'" onkeydown="if(event.key==='Enter'){window.location.href='ejercicio-gemini.html'}">
 
-            <div class="icon">⚖️</div>
+            <div class="icon tools"><img src="img/logo-gemini.jpg" alt=""><img src="img/logo-chatgpt.jpg" alt=""></div>
 
             <div class="date">21/10</div>
 
             <div class="separator"></div>
 
             <div class="title">
-                Gemini Deep Research y comparación
+                Misma pregunta, otra herramienta
             </div>
+
+            <div class="tool-names">Gemini vs. ChatGPT</div>
 
         </div>
 
         <div class="resources">
-            <a href="ejercicio-gemini.html">Investigamos con Gemini</a>
-            <a href="comparativa-deepresearch.html">ChatGPT vs. Gemini</a>
+            <a class="tl" href="ejercicio-gemini.html"><img src="img/logo-gemini.jpg" alt=""><span>Investigamos con Gemini</span></a>
+            <a class="tl" href="comparativa-deepresearch.html"><img src="img/logo-chatgpt.jpg" alt=""><img src="img/logo-gemini.jpg" alt=""><span>Cuadro comparativo: ChatGPT vs. Gemini</span></a>
         </div>
 
     </article>

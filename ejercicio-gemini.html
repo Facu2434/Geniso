@@ -875,9 +875,39 @@
         .shot-stack { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
         .shot-stack .shot img { max-height: 205px; }
 
+
+        /* === HERRAMIENTA EN USO (logo + nombre) === */
+        .nav-center { display: flex; align-items: center; gap: 10px; }
+        .tool-indicator { display: flex; gap: 6px; }
+        .tool-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 999px;
+            padding: 3px 12px 3px 3px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: var(--dark-bg);
+            white-space: nowrap;
+            line-height: 1.15;
+        }
+        .tool-chip img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; display: block; flex-shrink: 0; }
+        .tool-chip small { display: block; font-size: 0.78rem; font-weight: 600; color: var(--text-light); }
+        .tool-hero { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-bottom: 22px; }
+        .tool-hero .tool-chip { font-size: 1.2rem; padding: 5px 20px 5px 5px; text-align: left; }
+        .tool-hero .tool-chip img { width: 48px; height: 48px; }
+        .ilogo { width: 1.3em; height: 1.3em; border-radius: 50%; object-fit: cover; display: inline-block; vertical-align: -0.3em; margin-right: 7px; }
+        @media (max-width: 768px) {
+            .tool-indicator .tool-chip > span { display: none; }
+            .tool-indicator .tool-chip { padding: 2px; }
+            .tool-indicator .tool-chip img { width: 26px; height: 26px; }
+        }
+
 </style>
 </head>
-<body>
+<body data-tool="gemini">
 
     <div class="app-container">
 
@@ -889,6 +919,7 @@
         <!-- PANTALLA 1: PORTADA -->
         <div class="screen active center-screen" id="screen-1">
             <span class="eyebrow">Ejercicio resuelto · Gemini Deep Research</span>
+            <div class="tool-hero" data-tools="gemini"></div>
             <h1 class="title" style="font-size: clamp(2.8rem, 6vw, 4.2rem);">
                 La misma pregunta,<br>
                 <span style="color: var(--accent-blue);">otra herramienta</span>
@@ -1469,7 +1500,7 @@
         </div>
 
         <!-- PANTALLA 25: AHORA USTEDES -->
-        <div class="screen top" id="screen-25">
+        <div class="screen top" id="screen-25" data-tool="gemini chatgpt">
             <span class="eyebrow">Actividad</span>
             <h1 class="title">Ahora ustedes</h1>
 
@@ -1514,8 +1545,11 @@
                 Anterior
             </button>
 
-            <div class="step-counter" id="step-counter">
+            <div class="nav-center">
+                <div class="tool-indicator" id="tool-indicator"></div>
+                <div class="step-counter" id="step-counter">
                 1 / 26
+            </div>
             </div>
 
             <button class="btn btn-next" id="btn-next" onclick="changeStep(1)">
@@ -1529,6 +1563,31 @@
     <div class="lightbox" id="lightbox" onclick="closeZoom()"></div>
 
     <script>
+        /* === HERRAMIENTA EN USO === */
+        const TOOLS = {
+            chatgpt: { img: 'img/logo-chatgpt.jpg', name: 'ChatGPT', sub: 'Deep Research (Investigación profunda)' },
+            gemini: { img: 'img/logo-gemini.jpg', name: 'Gemini', sub: 'Deep Research' },
+            pinpoint: { img: 'img/logo-pinpoint.jpg', name: 'Google Pinpoint', sub: 'Colecciones de documentos' }
+        };
+
+        function toolChip(key, big) {
+            const t = TOOLS[key];
+            if (!t) return '';
+            return `<span class="tool-chip" title="${t.name} · ${t.sub}"><img src="${t.img}" alt="Logo de ${t.name}"><span>${t.name}${big ? `<small>${t.sub}</small>` : ''}</span></span>`;
+        }
+
+        function renderTool(screen) {
+            const box = document.getElementById('tool-indicator');
+            if (!box) return;
+            const own = screen.getAttribute('data-tool');
+            const keys = (own !== null ? own : (document.body.dataset.tool || '')).split(' ').filter(Boolean);
+            box.innerHTML = keys.map(k => toolChip(k, false)).join('');
+        }
+
+        document.querySelectorAll('[data-tools]').forEach(el => {
+            el.innerHTML = el.dataset.tools.split(' ').map(k => toolChip(k, true)).join('');
+        });
+
         /* === ÍCONOS SVG (se insertan donde haya data-i) === */
         const ICONS = {
             book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
@@ -1600,6 +1659,7 @@
             activeScreen.scrollTop = 0;
 
             document.getElementById('step-counter').innerText = `${currentStep} / ${totalSteps}`;
+            renderTool(document.getElementById(`screen-${currentStep}`));
 
             document.getElementById('btn-prev').style.visibility = currentStep === 1 ? 'hidden' : 'visible';
             document.getElementById('btn-next').style.visibility = currentStep === totalSteps ? 'hidden' : 'visible';

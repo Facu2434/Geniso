@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Investigar con IA: Deep Research y Pinpoint</title>
+    <title>Investigar con IA: ChatGPT Deep Research y Google Pinpoint</title>
     <style>
         /* === VARIABLES DE COLOR === */
         :root {
@@ -844,9 +844,40 @@
             width: auto;
         }
 
+
+        /* === HERRAMIENTA EN USO (logo + nombre) === */
+        .nav-center { display: flex; align-items: center; gap: 10px; }
+        .tool-indicator { display: flex; gap: 6px; }
+        .tool-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 999px;
+            padding: 3px 12px 3px 3px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: var(--dark-bg);
+            white-space: nowrap;
+            line-height: 1.15;
+        }
+        .tool-chip img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; display: block; flex-shrink: 0; }
+        .tool-chip small { display: block; font-size: 0.78rem; font-weight: 600; color: var(--text-light); }
+        .tool-hero { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-bottom: 22px; }
+        .tool-hero .tool-chip { font-size: 1.2rem; padding: 5px 20px 5px 5px; text-align: left; }
+        .tool-hero .tool-chip img { width: 48px; height: 48px; }
+        .cmp-table thead .ilogo, .compare-label .ilogo { box-shadow: 0 0 0 2px #fff; }
+        .ilogo { width: 1.3em; height: 1.3em; border-radius: 50%; object-fit: cover; display: inline-block; vertical-align: -0.3em; margin-right: 7px; }
+        @media (max-width: 768px) {
+            .tool-indicator .tool-chip > span { display: none; }
+            .tool-indicator .tool-chip { padding: 2px; }
+            .tool-indicator .tool-chip img { width: 26px; height: 26px; }
+        }
+
 </style>
 </head>
-<body>
+<body data-tool="chatgpt pinpoint">
 
     <div class="app-container">
 
@@ -858,9 +889,10 @@
         <!-- PANTALLA 1: PORTADA -->
         <div class="screen active center-screen" id="screen-1">
             <span class="eyebrow">Investigar con IA</span>
+            <div class="tool-hero" data-tools="chatgpt pinpoint"></div>
             <h1 class="title" style="font-size: clamp(3rem, 6vw, 4.5rem);">
-                Deep Research<br>
-                <span style="color: var(--accent-blue);">y Pinpoint</span>
+                ChatGPT Deep Research<br>
+                <span style="color: var(--accent-blue);">y Google Pinpoint</span>
             </h1>
             <p class="subtitle" style="margin-top: 10px;">
                 Qué hace cada una, cómo se usan y cuándo conviene cada una.
@@ -868,7 +900,7 @@
         </div>
 
         <!-- PANTALLA 2: LO QUE YA VIMOS -->
-        <div class="screen" id="screen-2">
+        <div class="screen" id="screen-2" data-tool="">
             <h1 class="title">Lo que ya vimos</h1>
 
             <ul class="concept-list">
@@ -892,9 +924,9 @@
         </div>
 
         <!-- PANTALLA 3: QUÉ ES DEEP RESEARCH -->
-        <div class="screen" id="screen-3">
-            <span class="eyebrow">Deep Research · OpenAI</span>
-            <h1 class="title">¿Qué es Deep Research?</h1>
+        <div class="screen" id="screen-3" data-tool="chatgpt">
+            <span class="eyebrow">ChatGPT Deep Research · OpenAI</span>
+            <h1 class="title">¿Qué es ChatGPT Deep Research?</h1>
 
             <ul class="concept-list">
                 <li>
@@ -912,13 +944,13 @@
             </ul>
 
             <div class="highlight-box highlight-small">
-                Deep Research = "investigá este tema por mí".
+                ChatGPT Deep Research = "investigá este tema por mí".
             </div>
         </div>
 
         <!-- PANTALLA 4: PASO 1 ACTIVAR -->
-        <div class="screen" id="screen-4">
-            <span class="eyebrow">Deep Research · Paso 1</span>
+        <div class="screen" id="screen-4" data-tool="chatgpt">
+            <span class="eyebrow">ChatGPT Deep Research · Paso 1</span>
             <h1 class="title">Activarla</h1>
 
             <div class="shot-row">
@@ -938,8 +970,8 @@
         </div>
 
         <!-- PANTALLA 5: PASO 2 PREGUNTA -->
-        <div class="screen" id="screen-5">
-            <span class="eyebrow">Deep Research · Paso 2</span>
+        <div class="screen" id="screen-5" data-tool="chatgpt">
+            <span class="eyebrow">ChatGPT Deep Research · Paso 2</span>
             <h1 class="title">Escribir la pregunta</h1>
 
             <div class="shot-row">
@@ -963,8 +995,8 @@
         </div>
 
         <!-- PANTALLA 6: PASO 3 PLAN -->
-        <div class="screen" id="screen-6">
-            <span class="eyebrow">Deep Research · Paso 3</span>
+        <div class="screen" id="screen-6" data-tool="chatgpt">
+            <span class="eyebrow">ChatGPT Deep Research · Paso 3</span>
             <h1 class="title">Revisar el plan</h1>
 
             <div class="shot-row">
@@ -986,8 +1018,8 @@
         </div>
 
         <!-- PANTALLA 7: PASO 4 AJUSTAR -->
-        <div class="screen top" id="screen-7">
-            <span class="eyebrow">Deep Research · Paso 4</span>
+        <div class="screen top" id="screen-7" data-tool="chatgpt">
+            <span class="eyebrow">ChatGPT Deep Research · Paso 4</span>
             <h1 class="title">Ajustar el plan</h1>
 
             <div class="shot-pair">
@@ -1016,8 +1048,8 @@
         </div>
 
         <!-- PANTALLA 8: PASO 5 INVESTIGA -->
-        <div class="screen" id="screen-8">
-            <span class="eyebrow">Deep Research · Paso 5</span>
+        <div class="screen" id="screen-8" data-tool="chatgpt">
+            <span class="eyebrow">ChatGPT Deep Research · Paso 5</span>
             <h1 class="title">Investiga</h1>
 
             <div class="shot-row">
@@ -1041,8 +1073,8 @@
         </div>
 
         <!-- PANTALLA 9: PASO 6 INFORME -->
-        <div class="screen" id="screen-9">
-            <span class="eyebrow">Deep Research · Paso 6</span>
+        <div class="screen" id="screen-9" data-tool="chatgpt">
+            <span class="eyebrow">ChatGPT Deep Research · Paso 6</span>
             <h1 class="title">El informe</h1>
 
             <div class="shot-row">
@@ -1068,8 +1100,8 @@
         </div>
 
         <!-- PANTALLA 10: PROBALO VOS (DR) -->
-        <div class="screen top" id="screen-10">
-            <span class="eyebrow">Deep Research</span>
+        <div class="screen top" id="screen-10" data-tool="chatgpt">
+            <span class="eyebrow">ChatGPT Deep Research</span>
             <h1 class="title">Probalo vos</h1>
 
             <div class="comparison-grid" style="margin-top: 0;">
@@ -1092,7 +1124,7 @@
             <a class="launch-card" href="simulador-deepresearch.html" target="_blank" rel="noopener" style="margin-top: 22px;">
                 <div class="icon-box" data-i="play" data-s="30"></div>
                 <div>
-                    <h3>Simulador de Deep Research</h3>
+                    <h3>Simulador de ChatGPT Deep Research</h3>
                     <p>Los mismos pasos que en ChatGPT: activar, preguntar, revisar el plan, investigar e informe.</p>
                 </div>
                 <div class="go" data-i="arrow" data-s="28"></div>
@@ -1100,8 +1132,8 @@
         </div>
 
         <!-- PANTALLA 11: QUÉ ES PINPOINT -->
-        <div class="screen" id="screen-11">
-            <span class="eyebrow">Pinpoint · Google</span>
+        <div class="screen" id="screen-11" data-tool="pinpoint">
+            <span class="eyebrow">Google Pinpoint</span>
             <h1 class="title">¿Qué es Pinpoint?</h1>
 
             <ul class="concept-list">
@@ -1125,8 +1157,8 @@
         </div>
 
         <!-- PANTALLA 12: PASO 1 COLECCIÓN -->
-        <div class="screen top" id="screen-12">
-            <span class="eyebrow">Pinpoint · Paso 1</span>
+        <div class="screen top" id="screen-12" data-tool="pinpoint">
+            <span class="eyebrow">Google Pinpoint · Paso 1</span>
             <h1 class="title">Crear una colección</h1>
 
             <div class="shot-pair">
@@ -1155,8 +1187,8 @@
         </div>
 
         <!-- PANTALLA 13: PASO 2 AGREGAR -->
-        <div class="screen top" id="screen-13">
-            <span class="eyebrow">Pinpoint · Paso 2</span>
+        <div class="screen top" id="screen-13" data-tool="pinpoint">
+            <span class="eyebrow">Google Pinpoint · Paso 2</span>
             <h1 class="title">Agregar documentos</h1>
 
             <div class="shot-pair">
@@ -1188,8 +1220,8 @@
         </div>
 
         <!-- PANTALLA 14: PASO 3 BUSCAR -->
-        <div class="screen top" id="screen-14">
-            <span class="eyebrow">Pinpoint · Paso 3</span>
+        <div class="screen top" id="screen-14" data-tool="pinpoint">
+            <span class="eyebrow">Google Pinpoint · Paso 3</span>
             <h1 class="title">Buscar</h1>
 
             <div class="shot-row">
@@ -1217,8 +1249,8 @@
         </div>
 
         <!-- PANTALLA 15: PASO 4 DOCUMENTO -->
-        <div class="screen" id="screen-15">
-            <span class="eyebrow">Pinpoint · Paso 4</span>
+        <div class="screen" id="screen-15" data-tool="pinpoint">
+            <span class="eyebrow">Google Pinpoint · Paso 4</span>
             <h1 class="title">Dentro del documento</h1>
 
             <div class="shot-row">
@@ -1238,8 +1270,8 @@
         </div>
 
         <!-- PANTALLA 16: PASO 5 FILTRAR -->
-        <div class="screen" id="screen-16">
-            <span class="eyebrow">Pinpoint · Paso 5</span>
+        <div class="screen" id="screen-16" data-tool="pinpoint">
+            <span class="eyebrow">Google Pinpoint · Paso 5</span>
             <h1 class="title">Filtrar la colección</h1>
 
             <div class="shot-row">
@@ -1260,8 +1292,8 @@
         </div>
 
         <!-- PANTALLA 17: PASO 6 GEMINI -->
-        <div class="screen top" id="screen-17">
-            <span class="eyebrow">Pinpoint · Paso 6</span>
+        <div class="screen top" id="screen-17" data-tool="pinpoint">
+            <span class="eyebrow">Google Pinpoint · Paso 6</span>
             <h1 class="title">Preguntarle a Gemini</h1>
 
             <div class="shot-pair shot-pair-wide">
@@ -1290,8 +1322,8 @@
         </div>
 
         <!-- PANTALLA 18: PASO 7 DATOS ESTRUCTURADOS -->
-        <div class="screen" id="screen-18">
-            <span class="eyebrow">Pinpoint · Paso 7</span>
+        <div class="screen" id="screen-18" data-tool="pinpoint">
+            <span class="eyebrow">Google Pinpoint · Paso 7</span>
             <h1 class="title">Datos estructurados</h1>
 
             <div class="shot-row">
@@ -1310,8 +1342,8 @@
         </div>
 
         <!-- PANTALLA 19: EXPLORAR + SIMULADOR PINPOINT -->
-        <div class="screen top" id="screen-19">
-            <span class="eyebrow">Pinpoint</span>
+        <div class="screen top" id="screen-19" data-tool="pinpoint">
+            <span class="eyebrow">Google Pinpoint</span>
             <h1 class="title">Colecciones públicas</h1>
 
             <div class="shot-row">
@@ -1344,7 +1376,7 @@
             <div style="overflow-x: auto;">
             <table class="cmp-table">
                 <thead>
-                    <tr><th></th><th>Deep Research</th><th>Pinpoint</th></tr>
+                    <tr><th></th><th><img class="ilogo" src="img/logo-chatgpt.jpg" alt="">ChatGPT Deep Research</th><th><img class="ilogo" src="img/logo-pinpoint.jpg" alt="">Google Pinpoint</th></tr>
                 </thead>
                 <tbody>
                     <tr><th>Empresa</th><td>OpenAI</td><td>Google</td></tr>
@@ -1360,7 +1392,7 @@
             </div>
 
             <div class="highlight-box highlight-small">
-                Se complementan: Pinpoint explora tus documentos; Deep Research los contrasta con fuentes de afuera.
+                Se complementan: Pinpoint explora tus documentos; ChatGPT Deep Research los contrasta con fuentes de afuera.
             </div>
         </div>
 
@@ -1377,10 +1409,10 @@
 
                 <div class="quiz-options">
                     <button class="quiz-opt" data-opt="dr" onclick="answerQuiz('dr')">
-                        <span data-i="globe" data-s="26"></span>Deep Research
+                        <img class="ilogo" src="img/logo-chatgpt.jpg" alt="">ChatGPT Deep Research
                     </button>
                     <button class="quiz-opt" data-opt="pp" onclick="answerQuiz('pp')">
-                        <span data-i="folder" data-s="26"></span>Pinpoint
+                        <img class="ilogo" src="img/logo-pinpoint.jpg" alt="">Google Pinpoint
                     </button>
                     <button class="quiz-opt" data-opt="chat" onclick="answerQuiz('chat')">
                         <span data-i="message" data-s="26"></span>Chat común
@@ -1407,7 +1439,7 @@
 
             <div class="comparison-grid" style="margin-top: 0;">
                 <div class="compare-card">
-                    <div class="compare-label label-blue">Deep Research</div>
+                    <div class="compare-label label-blue"><img class="ilogo" src="img/logo-chatgpt.jpg" alt="">ChatGPT Deep Research</div>
                     <div class="compare-content">
                         <ul class="mini-list">
                             <li><span data-i="alert" data-s="20"></span>En el plan gratuito, la cantidad de usos por mes es limitada.</li>
@@ -1417,7 +1449,7 @@
                     </div>
                 </div>
                 <div class="compare-card">
-                    <div class="compare-label label-dark">Pinpoint</div>
+                    <div class="compare-label label-dark"><img class="ilogo" src="img/logo-pinpoint.jpg" alt="">Google Pinpoint</div>
                     <div class="compare-content">
                         <ul class="mini-list">
                             <li><span data-i="alert" data-s="20"></span>Para crear colecciones propias hay que ser mayor de 18 años.</li>
@@ -1442,21 +1474,21 @@
                     <div class="icon-box" data-i="grad"></div>
                     <div>
                         <h3>Elegir una carrera</h3>
-                        <p>Comparar planes, duración y salida laboral, con fuentes. Deep Research.</p>
+                        <p>Comparar planes, duración y salida laboral, con fuentes. ChatGPT Deep Research.</p>
                     </div>
                 </div>
                 <div class="part-card">
                     <div class="icon-box" data-i="cart"></div>
                     <div>
                         <h3>Antes de una compra grande</h3>
-                        <p>Comparar opiniones y características de varios sitios. Deep Research.</p>
+                        <p>Comparar opiniones y características de varios sitios. ChatGPT Deep Research.</p>
                     </div>
                 </div>
                 <div class="part-card">
                     <div class="icon-box" data-i="file"></div>
                     <div>
                         <h3>Trabajos prácticos</h3>
-                        <p>Partir de un informe con citas y revisar cada fuente. Deep Research.</p>
+                        <p>Partir de un informe con citas y revisar cada fuente. ChatGPT Deep Research.</p>
                     </div>
                 </div>
                 <div class="part-card">
@@ -1475,7 +1507,7 @@
 
             <ul class="step-list">
                 <li><span>En grupo, elegir un tema y escribir una <strong>pregunta completa</strong>.</span></li>
-                <li><span>En el <a href="simulador-deepresearch.html" target="_blank" rel="noopener">Simulador de Deep Research</a> o en ChatGPT (una cuenta por grupo): <strong>+ → Investigación profunda</strong>.</span></li>
+                <li><span>En el <a href="simulador-deepresearch.html" target="_blank" rel="noopener">Simulador de ChatGPT Deep Research</a> o en ChatGPT (una cuenta por grupo): <strong>+ → Investigación profunda</strong>.</span></li>
                 <li><span>Cuando aparezca el plan, tocar <strong>Editar</strong> y pedir un cambio antes de <strong>Comenzar</strong>.</span></li>
                 <li><span>En el informe, abrir <strong>2 citas</strong> y comprobar que la fuente diga lo mismo.</span></li>
                 <li><span>Resolver la <strong>misión</strong> del <a href="simulador-pinpoint.html" target="_blank" rel="noopener">Simulador de Pinpoint</a>.</span></li>
@@ -1493,7 +1525,7 @@
                 <span data-i="search" data-s="80" style="color: var(--accent-blue);"></span>
 
                 <p style="font-size: clamp(2.2rem, 4.5vw, 3.2rem); font-weight: 800; color: var(--dark-bg); line-height: 1.2; margin: 0;">
-                    Deep Research investiga por vos.<br>Pinpoint te ayuda a investigar lo que ya tenés.
+                    ChatGPT Deep Research investiga por vos.<br>Pinpoint te ayuda a investigar lo que ya tenés.
                 </p>
                 <p style="font-size: clamp(1.8rem, 3.6vw, 2.6rem); font-weight: 600; color: var(--accent-blue); line-height: 1.2; margin: 0;">
                     Verificar sigue siendo tu parte.
@@ -1510,8 +1542,11 @@
                 Anterior
             </button>
 
-            <div class="step-counter" id="step-counter">
+            <div class="nav-center">
+                <div class="tool-indicator" id="tool-indicator"></div>
+                <div class="step-counter" id="step-counter">
                 1 / 25
+            </div>
             </div>
 
             <button class="btn btn-next" id="btn-next" onclick="changeStep(1)">
@@ -1525,6 +1560,31 @@
     <div class="lightbox" id="lightbox" onclick="closeZoom()"></div>
 
     <script>
+        /* === HERRAMIENTA EN USO === */
+        const TOOLS = {
+            chatgpt: { img: 'img/logo-chatgpt.jpg', name: 'ChatGPT', sub: 'Deep Research (Investigación profunda)' },
+            gemini: { img: 'img/logo-gemini.jpg', name: 'Gemini', sub: 'Deep Research' },
+            pinpoint: { img: 'img/logo-pinpoint.jpg', name: 'Google Pinpoint', sub: 'Colecciones de documentos' }
+        };
+
+        function toolChip(key, big) {
+            const t = TOOLS[key];
+            if (!t) return '';
+            return `<span class="tool-chip" title="${t.name} · ${t.sub}"><img src="${t.img}" alt="Logo de ${t.name}"><span>${t.name}${big ? `<small>${t.sub}</small>` : ''}</span></span>`;
+        }
+
+        function renderTool(screen) {
+            const box = document.getElementById('tool-indicator');
+            if (!box) return;
+            const own = screen.getAttribute('data-tool');
+            const keys = (own !== null ? own : (document.body.dataset.tool || '')).split(' ').filter(Boolean);
+            box.innerHTML = keys.map(k => toolChip(k, false)).join('');
+        }
+
+        document.querySelectorAll('[data-tools]').forEach(el => {
+            el.innerHTML = el.dataset.tools.split(' ').map(k => toolChip(k, true)).join('');
+        });
+
         /* === ÍCONOS SVG (se insertan donde haya data-i) === */
         const ICONS = {
             book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
@@ -1557,7 +1617,7 @@
         });
 
         /* === JUEGO: ¿CUÁL USARÍAS? === */
-        const NAMES = { dr: 'Deep Research', pp: 'Pinpoint', chat: 'Chat común' };
+        const NAMES = { dr: 'ChatGPT Deep Research', pp: 'Google Pinpoint', chat: 'Chat común' };
         const CASES = [
             {
                 text: 'Tenés que hacer un trabajo sobre cómo las redes sociales influyen en las elecciones, comparando varias fuentes.',
@@ -1582,7 +1642,7 @@
             {
                 text: 'Querés comparar la carrera de Comunicación en tres universidades: duración, plan de estudios y salida laboral.',
                 answer: 'dr',
-                why: 'Hay que buscar en varios sitios oficiales y comparar. Deep Research arma el informe con los enlaces.'
+                why: 'Hay que buscar en varios sitios oficiales y comparar. ChatGPT Deep Research arma el informe con los enlaces.'
             },
             {
                 text: 'Tenés 200 planillas escaneadas, todas con el mismo formato, y necesitás los datos en una hoja de cálculo.',
@@ -1685,6 +1745,7 @@
             activeScreen.scrollTop = 0;
 
             document.getElementById('step-counter').innerText = `${currentStep} / ${totalSteps}`;
+            renderTool(document.getElementById(`screen-${currentStep}`));
 
             document.getElementById('btn-prev').style.visibility = currentStep === 1 ? 'hidden' : 'visible';
             document.getElementById('btn-next').style.visibility = currentStep === totalSteps ? 'hidden' : 'visible';

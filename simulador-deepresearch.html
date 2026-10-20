@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Deep Research</title>
+    <title>Simulador de ChatGPT Deep Research</title>
     <style>
         :root {
             --bg-body: #e2e8f0;
@@ -848,7 +848,8 @@
             .report { padding: 16px; }
             .src-detail { margin: 0 16px 16px; }
         }
-    </style>
+            .ilogo { width: 1.15em; height: 1.15em; border-radius: 50%; object-fit: cover; display: inline-block; vertical-align: -0.18em; margin-right: 10px; }
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -858,7 +859,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
         <span class="eyebrow">Simulador</span>
-        <h1>Así trabaja Deep Research</h1>
+        <h1><img class="ilogo" src="img/logo-chatgpt.jpg" alt="Logo de ChatGPT">Así trabaja ChatGPT Deep Research</h1>
         <p>Los mismos pasos que en ChatGPT, con la captura real de cada uno al costado.</p>
         <div class="sim-note">
             Es una simulación para practicar: no se conecta a ChatGPT y las fuentes del informe son ejemplos sin enlace real.
@@ -906,7 +907,7 @@
         <div class="stage-grid">
             <div>
                 <h2>Elegí una pregunta</h2>
-                <p class="lead">Una de estas no necesita Deep Research. ¿Cuál?</p>
+                <p class="lead">Una de estas no necesita ChatGPT Deep Research. ¿Cuál?</p>
                 <div class="q-list" id="q-list"></div>
                 <div class="msg" id="simple-msg">
                     Para esta pregunta no hace falta Investigación profunda: el chat común responde al instante.
@@ -1570,7 +1571,7 @@
 
             if (item.custom) {
                 p.className = 'gap';
-                p.textContent = 'Punto agregado por vos. En una investigación real, Deep Research sumaría esta sección con sus propias fuentes.';
+                p.textContent = 'Punto agregado por vos. En una investigación real, ChatGPT Deep Research sumaría esta sección con sus propias fuentes.';
                 r.appendChild(p);
                 return;
             }
