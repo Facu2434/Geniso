@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha de verificación</title>
+<style>
+:root {
+  --bg-body:#e2e8f0; --card-bg:#fff; --dark-bg:#1e293b; --text-main:#334155; --text-light:#64748b;
+  --accent-blue:#1d4ed8; --accent-blue-light:#eff6ff; --accent-hover:#1e40af;
+  --accent-green:#059669; --accent-green-light:#ecfdf5;
+  --accent-red:#dc2626; --accent-red-light:#fef2f2;
+  --accent-amber:#b45309; --accent-amber-light:#fffbeb;
+  --font-main: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans","Helvetica Neue",sans-serif;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:var(--font-main); background:var(--bg-body); color:var(--text-main); line-height:1.5; padding:20px; }
+.wrap { max-width:920px; margin:0 auto; }
+.card { background:var(--card-bg); border-radius:20px; padding:26px 30px; margin-bottom:18px; box-shadow:0 10px 25px -8px rgba(30,41,59,.12); }
+header.top { border-top:6px solid var(--accent-blue); }
+.school { font-size:.85rem; color:var(--text-light); margin-bottom:10px; }
+.eyebrow { display:inline-block; background:var(--accent-blue-light); color:var(--accent-blue); font-weight:800; font-size:.85rem; letter-spacing:1px; text-transform:uppercase; padding:5px 12px; border-radius:20px; margin-bottom:10px; }
+h1 { font-size:clamp(1.6rem,4vw,2.2rem); color:var(--dark-bg); line-height:1.15; letter-spacing:-.5px; margin-bottom:8px; }
+.pregunta { font-weight:600; color:var(--dark-bg); margin-bottom:12px; }
+.links a, .linkbtn { color:var(--accent-blue); font-weight:700; text-decoration:none; font-size:.95rem; margin-right:16px; }
+.links a:hover { text-decoration:underline; }
+h2 { font-size:1.3rem; color:var(--dark-bg); margin-bottom:4px; display:flex; align-items:center; gap:10px; }
+h2 .n { display:inline-flex; width:34px; height:34px; border-radius:50%; background:var(--dark-bg); color:#fff; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+.hint { color:var(--text-light); font-size:.95rem; margin-bottom:14px; }
+/* informe */
+.meta { font-size:.88rem; color:var(--text-light); font-style:italic; margin-bottom:10px; }
+.informe h3 { font-size:1.05rem; color:var(--dark-bg); margin:16px 0 6px; }
+.informe p { margin-bottom:8px; }
+.informe ul { margin:0 0 8px 22px; }
+.informe li { margin-bottom:5px; }
+.informe mark { background:#fde047; color:#1e293b; padding:1px 3px; border-radius:3px; }
+.informe .mk { color:var(--accent-red); font-weight:800; }
+.tbl { overflow-x:auto; margin:8px 0 12px; }
+.tbl table { border-collapse:collapse; width:100%; min-width:560px; font-size:.92rem; }
+.tbl th, .tbl td { border:1px solid #e2e8f0; padding:7px 9px; text-align:left; vertical-align:top; }
+.tbl thead th { background:var(--dark-bg); color:#fff; }
+/* formulario */
+label.lb { display:block; font-weight:700; color:var(--dark-bg); font-size:.95rem; margin:12px 0 5px; }
+label.lb small { font-weight:500; color:var(--text-light); }
+textarea, input[type=text] { width:100%; font:inherit; color:var(--text-main); padding:10px 12px; border:2px solid #cbd5e1; border-radius:10px; background:#fff; resize:vertical; }
+textarea { min-height:70px; }
+textarea:focus, input[type=text]:focus { outline:none; border-color:var(--accent-blue); box-shadow:0 0 0 3px var(--accent-blue-light); }
+.bad { border-color:var(--accent-red) !important; background:var(--accent-red-light); }
+.row2 { display:grid; grid-template-columns:2fr 1fr; gap:16px; }
+.dato { border:2px solid #e2e8f0; border-radius:16px; padding:18px 20px; margin-bottom:16px; background:#f8fafc; }
+.dato h3 { font-size:1.1rem; color:var(--dark-bg); margin-bottom:10px; }
+.dato h3 .mk { color:var(--accent-red); font-weight:800; margin-right:6px; }
+.src { background:#fff; border:2px solid #e2e8f0; border-radius:12px; padding:12px 14px; }
+.src .sname { font-weight:700; color:var(--dark-bg); font-size:.95rem; margin-bottom:6px; }
+.src .url { font-size:.8rem; color:var(--text-light); word-break:break-all; margin-bottom:8px; }
+.btn { display:inline-block; font:inherit; font-weight:700; font-size:.95rem; background:var(--accent-blue); color:#fff; border:2px solid var(--accent-blue); border-radius:10px; padding:9px 15px; text-decoration:none; cursor:pointer; }
+.btn:hover { background:var(--accent-hover); border-color:var(--accent-hover); }
+.btn.alt { background:#fff; color:var(--accent-blue); }
+.btn.alt:hover { background:var(--accent-blue-light); }
+.btn.big { font-size:1.15rem; padding:14px 24px; }
+.ctrl { margin-top:10px; font-size:.95rem; }
+.ctrlf { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#e2e8f0; border-radius:6px; padding:2px 8px; font-weight:700; color:var(--dark-bg); }
+.opts { display:flex; flex-wrap:wrap; gap:8px; }
+.opts input { position:absolute; opacity:0; pointer-events:none; }
+.opts label { cursor:pointer; padding:8px 14px; border-radius:999px; border:2px solid #cbd5e1; background:#fff; font-weight:700; font-size:.92rem; color:var(--text-main); }
+.opts input:focus-visible + span { outline:3px solid var(--accent-blue); outline-offset:3px; }
+.opts label.o-ok:has(input:checked) { background:var(--accent-green-light); border-color:var(--accent-green); color:var(--accent-green); }
+.opts label.o-warn:has(input:checked) { background:var(--accent-amber-light); border-color:var(--accent-amber); color:var(--accent-amber); }
+.opts label.o-bad:has(input:checked) { background:var(--accent-red-light); border-color:var(--accent-red); color:var(--accent-red); }
+.opts.bad { border-radius:12px; outline:2px solid var(--accent-red); outline-offset:4px; }
+.score { font-size:1.2rem; font-weight:800; color:var(--dark-bg); background:var(--accent-blue-light); border-left:6px solid var(--accent-blue); border-radius:0 12px 12px 0; padding:14px 18px; margin-bottom:6px; }
+.msg { margin-top:14px; border-radius:12px; padding:14px 18px; font-size:.98rem; }
+.msg.err { background:var(--accent-red-light); color:#991b1b; border-left:6px solid var(--accent-red); }
+.msg.ok { background:var(--accent-green-light); color:#065f46; border-left:6px solid var(--accent-green); }
+.msg ul { margin:6px 0 0 20px; }
+.msg ol { margin:6px 0 10px 20px; }
+.actions { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+.small { font-size:.88rem; color:var(--text-light); margin-top:10px; }
+.qlist { display:grid; gap:12px; margin-top:12px; }
+.qlist a { display:block; text-decoration:none; background:#f8fafc; border:2px solid #e2e8f0; border-radius:14px; padding:14px 18px; color:var(--dark-bg); font-weight:700; }
+.qlist a:hover { border-color:var(--accent-blue); }
+.qlist a span { display:block; font-size:.8rem; letter-spacing:1px; text-transform:uppercase; color:var(--accent-blue); }
+footer.pie { text-align:center; font-size:.82rem; color:var(--text-light); padding:6px 0 18px; }
+.hide { display:none !important; }
+@media (max-width:640px) { body { padding:10px; } .card { padding:20px 16px; } .row2 { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="card top">
+  <div class="school">EEM N° 3 D.E. 19 "Carlos Geniso" · Comunicación, Cultura y Sociedad · 5° TM</div>
+  <span class="eyebrow" id="eyebrow">Ficha de verificación</span>
+  <h1 id="titulo">Ficha de verificación</h1>
+  <p class="pregunta" id="pregunta"></p>
+  <p class="links"><a href="verificamos-informes.html">Volver a la clase</a><a id="lnkInforme" href="informes-completos.html" target="_blank" rel="noopener">Ver el informe completo</a></p>
+</header>
+
+<!-- Selector cuando no se indicó la pregunta -->
+<section class="card hide" id="selector">
+  <h2>Elegí la pregunta de tu grupo</h2>
+  <div class="qlist" id="qlist"></div>
+</section>
+
+<div id="ficha" class="hide">
+
+  <section class="card informe">
+    <h2><span class="n">1</span>Leé el informe</h2>
+    <p class="hint">Tiene 3 datos marcados en amarillo: [1] [2] [3]. Son los que hay que comprobar.</p>
+    <p class="meta" id="meta"></p>
+    <div id="informe"></div>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">2</span>Datos del grupo</h2>
+    <div class="row2">
+      <div>
+        <label class="lb" for="integrantes">Integrantes <small>(un nombre por línea)</small></label>
+        <textarea id="integrantes" rows="3" autocomplete="off"></textarea>
+      </div>
+      <div>
+        <label class="lb" for="curso">Curso</label>
+        <input type="text" id="curso" autocomplete="off" value="5° TM">
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">3</span>Comprobá los 3 datos</h2>
+    <p class="hint">Para cada dato: copiá lo que dice el informe, abrí la fuente, buscá la palabra indicada con Ctrl + F y copiá lo que dice la fuente. Después marcá el resultado.</p>
+    <div id="datos"></div>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">4</span>Cierre</h2>
+    <div class="score" id="score">El informe acertó 0 de 3 datos.</div>
+    <p class="small">Cuenta los datos que marcaste como “Correcto”.</p>
+    <label class="lb" for="opinion">¿Confiarías en este informe sin revisarlo? ¿Por qué? <small>(una frase)</small></label>
+    <textarea id="opinion" rows="3" autocomplete="off"></textarea>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">5</span>Generá el PDF y entregalo</h2>
+    <div class="actions">
+      <button class="btn big" id="btnPdf" type="button">Generar PDF</button>
+      <button class="btn alt" id="btnBorrar" type="button">Borrar todo y empezar de nuevo</button>
+    </div>
+    <p class="small">Lo que escribís se guarda solo en esta computadora, así que si cerrás la página no se pierde.</p>
+    <div id="mensaje"></div>
+  </section>
+
+</div>
+
+<footer class="pie">Taller El Profe · servicio técnico de computadoras, desbloqueo de equipos · <a href="https://linktr.ee/Taller_El_Profe" target="_blank" rel="noopener" style="color:inherit">linktr.ee/Taller_El_Profe</a></footer>
+</div>
+
+<script src="ficha-assets/fichas-datos.js"></script>
+<script src="ficha-assets/jspdf.umd.min.js"></script>
+<script src="ficha-assets/jspdf.plugin.autotable.min.js"></script>
+<script src="ficha-assets/ficha.js"></script>
+</body>
+</html>
